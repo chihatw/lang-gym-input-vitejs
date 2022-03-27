@@ -1,13 +1,11 @@
-import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import { Article, buildArticle } from '../../../../../entities/Article';
-import {
-  deleteArticle,
-  updateArticle,
-} from '../../../../../repositories/article';
-import { deleteFile } from '../../../../../repositories/file';
-import { db } from '../../../../../repositories/firebase';
-import { deleteSentences } from '../../../../../repositories/sentence';
+import { useEffect, useState } from 'react';
+
+import { db } from '../../../../repositories/firebase';
+import { deleteFile } from '../../../../repositories/file';
+import { deleteSentences } from '../../../../repositories/sentence';
+import { Article, buildArticle } from '../../../../entities/Article';
+import { deleteArticle, updateArticle } from '../../../../repositories/article';
 
 export const useArticleListPage = (limit: number) => {
   const history = useHistory();
@@ -83,8 +81,8 @@ export const useArticleListPage = (limit: number) => {
   };
 
   return {
-    articles,
     history,
+    articles,
     onEdit,
     onDelete,
     onClickVoice,

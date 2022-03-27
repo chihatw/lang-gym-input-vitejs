@@ -1,8 +1,9 @@
-import AudioEdit from '@bit/chihatw.lang-gym.audio-edit';
 import React from 'react';
+import AudioEdit from '@bit/chihatw.lang-gym.audio-edit'; // TODO 内部化
 import { Redirect, useRouteMatch } from 'react-router';
-import { useEditArticleVoicePage } from './services/editArticleVoicePage';
+
 import TableLayout from '../../../templates/TableLayout';
+import { useEditArticleVoicePage } from './services/editArticleVoicePage';
 
 const EditArticleVoicePage = () => {
   const match = useRouteMatch<{ id: string }>();

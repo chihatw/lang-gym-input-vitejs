@@ -55,117 +55,41 @@ export type Unit = {
 
 export type Word = {
   id: string;
-  hinshi: Hinshi;
   text: string;
-  note?: string;
+  hinshi: string;
 };
-
-export type Hinshi =
-  | 'meishi'
-  | 'jisuushi'
-  | 'doushi'
-  | 'ikeiyoushi'
-  | 'nakeiyoushi'
-  | 'hukushi'
-  | 'rentaishi'
-  | 'setsuzokushi'
-  | 'meishibunmatsu'
-  | 'other'
-  | 'sentence';
 
 export type Branch = {
   id: string;
   lock?: boolean;
-  joshi: RentaiJoshi | RenyouJoshi;
+  joshi:
+    | {
+        hasRentaiJoshi: boolean;
+      }
+    | {
+        kakuJoshi: string;
+        kakariJoshi: string;
+      };
   unitID: string;
 };
-
-export type RentaiJoshi = {
-  hasRentaiJoshi: boolean;
-};
-
-export type RenyouJoshi = {
-  kakuJoshi: KakuJoshi | null;
-  kakariJoshi: KakariJoshi | null;
-};
-
-export type KakuJoshi =
-  | 'ga'
-  | 'ni'
-  | 'wo'
-  | 'de'
-  | 'to'
-  | 'he'
-  | 'kara'
-  | 'made'
-  | 'madeni'
-  | 'yori'
-  | 'toisshoni'
-  | 'toshite'
-  | 'nishite'
-  | 'nitotte'
-  | 'nitsuite'
-  | 'nitaishite'
-  | 'no';
-
-export type KakariJoshi =
-  | 'ha'
-  | 'mo'
-  | 'shika'
-  | 'koso'
-  | 'sae'
-  | 'sura'
-  | 'demo'
-  | 'datte'
-  | 'made'
-  | 'dake'
-  | 'bakari'
-  | 'kurai'
-  | 'gurai'
-  | 'hodo'
-  | 'nado'
-  | 'nante';
 
 export type Sentence = {
   id: string;
   topic: string;
   comments: string[];
-  shuuJoshi: ShuuJoshi | null;
-  juntaiJoshi: JuntaiJoshi | null;
+  shuuJoshi: string;
+  juntaiJoshi: string;
   buntouSeibuns: string[];
-  setsuzokuJoshis: { [id: string]: SetsuzokuJoshi };
+  setsuzokuJoshis: { [id: string]: string };
   juntaiJoshiBunmatsu: string;
 };
-
-export type ShuuJoshi =
-  | 'ka'
-  | 'ne'
-  | 'kana'
-  | 'yo'
-  | 'yone'
-  | 'kke'
-  | 'kadouka';
-
-export type JuntaiJoshi = 'no' | 'n';
-
-export type SetsuzokuJoshi =
-  | 'ga'
-  | 'kedo'
-  | 'node'
-  | 'noka'
-  | 'kara'
-  | 'karaka'
-  | 'noni'
-  | 'to'
-  | 'nara'
-  | 'shi';
 
 export const INITIAL_SENTENCE: Sentence = {
   id: '',
   topic: '',
   comments: [],
-  shuuJoshi: null,
-  juntaiJoshi: null,
+  shuuJoshi: '',
+  juntaiJoshi: '',
   buntouSeibuns: [],
   setsuzokuJoshis: {},
   juntaiJoshiBunmatsu: '',

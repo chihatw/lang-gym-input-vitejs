@@ -1,5 +1,5 @@
 import React from 'react';
-import SignInForm from '@bit/chihatw.lang-gym.sign-in-form';
+import SignInForm from '@bit/chihatw.lang-gym.sign-in-form'; // TODO 内部化
 import { useSignInPage } from './services/signInPage';
 import { Container } from '@mui/material';
 

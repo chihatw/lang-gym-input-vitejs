@@ -1,5 +1,5 @@
 import { SentencePitchLine } from '@chihatw/lang-gym-h.ui.sentence-pitch-line';
-import SelectUser from '@bit/chihatw.lang-gym.select-user';
+import SelectUser from '@bit/chihatw.lang-gym.select-user'; // TODO 内部化
 import Speaker from '@bit/chihatw.lang-gym.speaker';
 import { Button, Card, IconButton } from '@mui/material';
 import Edit from '@mui/icons-material/Edit';

@@ -2,7 +2,7 @@ import React from 'react';
 import { Switch } from 'react-router';
 import SentenceParseListPage from '../pages/sentenceParse/SentenceParseListPage';
 import ArticleAssignmentPage from '../pages/article/ArticleAssignmentPage';
-import ArticleListPage from '../pages/article/ArticleListPage';
+import ArticleListPage from '../pages/ArticleListPage';
 import ArticlePage from '../pages/article/ArticlePage';
 import CreateArticlePage from '../pages/article/CreateArticlePage';
 import EditArticleAssignmentPage from '../pages/article/EditArticleAssignmentPage';

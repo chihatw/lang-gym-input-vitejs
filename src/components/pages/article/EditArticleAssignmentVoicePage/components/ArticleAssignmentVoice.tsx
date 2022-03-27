@@ -1,4 +1,4 @@
-import AudioEdit from '@bit/chihatw.lang-gym.audio-edit';
+import AudioEdit from '@bit/chihatw.lang-gym.audio-edit'; // TODO 内部化
 import { Grid } from '@mui/material';
 import React from 'react';
 import { Mark } from '../../../../../entities/Mark';

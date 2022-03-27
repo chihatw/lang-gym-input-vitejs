@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button } from '@mui/material';
 import { Article } from '../../../../../entities/Article';
 import { Sentence } from '../../../../../entities/Sentence';
 import { useSentenceParseForm } from '../services/sentenceParseForm';
-// debug
-// import ComplexSentenceInput from '@bit/chihatw.lang-gym.complex-sentence-input';
-// import ComplexSentenceDrawer from '@bit/chihatw.lang-gym.complex-sentence-drawer';
+import {
+  ComplexSentencePane,
+  ComplexSentencePaneProps,
+} from '@chihatw/sentence-form.complex-sentence-pane';
+import sentenceParseNew2SentenceParseProps from 'sentence-parse-new2sentence-parse-props';
+import { ComplexSentenceInput } from '@chihatw/sentence-form.complex-sentence-input';
 
 const SentenceParseForm: React.FC<{ article: Article; sentence: Sentence }> = ({
   article,
@@ -27,11 +30,30 @@ const SentenceParseForm: React.FC<{ article: Article; sentence: Sentence }> = ({
     setActiveSentenceID,
     globalSentenceArrays,
     setGlobalSentenceArrays,
-    globalBranchInvisibilities,
-    globalCommentInvisibilities,
-    setGlobalBranchInvisibilities,
-    setGlobalCommentInvisibilities,
   } = useSentenceParseForm(article, sentence);
+  const [sentenceParseProps, setSentenceParseProps] = useState<
+    Omit<ComplexSentencePaneProps, 'Cursor'>
+  >({
+    units: {},
+    sentences: {},
+    sentenceArrays: [],
+  });
+  useEffect(() => {
+    const sentenceParseProps = sentenceParseNew2SentenceParseProps({
+      words: globalWords,
+      units: globalUnits,
+      branches: globalBranches,
+      sentences: globalSentences,
+      sentenceArrays: globalSentenceArrays,
+    });
+    setSentenceParseProps({ ...sentenceParseProps });
+  }, [
+    globalWords,
+    globalUnits,
+    globalBranches,
+    globalSentences,
+    globalSentenceArrays,
+  ]);
   return (
     <div>
       <div style={{ fontSize: 12, color: '#555', paddingLeft: 8 }}>
@@ -44,8 +66,7 @@ const SentenceParseForm: React.FC<{ article: Article; sentence: Sentence }> = ({
       </div>
       <div style={{ height: 16 }} />
       <div>
-        under construction
-        {/* <ComplexSentenceInput
+        <ComplexSentenceInput
           sentenceID={sentenceID}
           globalUnits={globalUnits}
           globalWords={globalWords}
@@ -59,29 +80,19 @@ const SentenceParseForm: React.FC<{ article: Article; sentence: Sentence }> = ({
           setActiveSentenceID={setActiveSentenceID}
           globalSentenceArrays={globalSentenceArrays}
           setGlobalSentenceArrays={setGlobalSentenceArrays}
-        /> */}
+        />
       </div>
       <div style={{ height: 32 }} />
-      <div>
-        under construction
-        {/* <ComplexSentenceDrawer
-          globalUnits={globalUnits}
-          globalWords={globalWords}
-          setGlobalUnits={setGlobalUnits}
-          setGlobalWords={setGlobalWords}
-          globalBranches={globalBranches}
-          globalSentences={globalSentences}
-          setGlobalBranches={setGlobalBranches}
-          setGlobalSentences={setGlobalSentences}
-          isHideJoshiTooltip={true}
-          globalSentenceArrays={globalSentenceArrays}
-          setGlobalSentenceArrays={setGlobalSentenceArrays}
-          globalBranchInvisibilities={globalBranchInvisibilities}
-          globalCommentInvisibilities={globalCommentInvisibilities}
-          setGlobalBranchInvisibilities={setGlobalBranchInvisibilities}
-          setGlobalCommentInvisibilities={setGlobalCommentInvisibilities}
-        /> */}
-      </div>
+      {sentenceParseProps.sentenceArrays.length && (
+        <div>
+          <ComplexSentencePane
+            Cursor={null}
+            units={sentenceParseProps.units}
+            sentences={sentenceParseProps.sentences}
+            sentenceArrays={sentenceParseProps.sentenceArrays}
+          />
+        </div>
+      )}
       <div style={{ height: 40 }} />
       <div>
         <Button variant='contained' onClick={onSubmit}>

@@ -1,7 +1,7 @@
 import { Box, Grid } from '@mui/material';
 import React from 'react';
 
-// TODO なにこれ？
+// アクセント問題で使用
 const JapaneseMonitor: React.FC<{ japanese: string }> = ({ japanese }) => {
   return (
     <Box fontSize={12} px={2} fontFamily='"M PLUS Rounded 1c"' color='#555'>

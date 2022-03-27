@@ -1,9 +1,9 @@
 import React from 'react';
 import { Redirect, useRouteMatch } from 'react-router-dom';
 
-import AudioEdit from '@bit/chihatw.lang-gym.audio-edit';
-import { useEditOndokuVoicePage } from './services/editOndokuVoicePage';
+import AudioEdit from '@bit/chihatw.lang-gym.audio-edit'; // TODO　内部化
 import TableLayout from '../../../templates/TableLayout';
+import { useEditOndokuVoicePage } from './services/editOndokuVoicePage';
 
 const EditOndokuVoicePage = () => {
   const match = useRouteMatch<{ id: string }>();

@@ -6,23 +6,24 @@ import {
   TableBody,
   IconButton,
 } from '@mui/material';
-import Delete from '@mui/icons-material/Delete';
 import {
+  Mic,
+  Edit,
+  Person,
+  Delete,
   Subject,
   FlashOn,
+  FlashOff,
+  SettingsOutlined,
   VisibilityOutlined,
   VisibilityOffOutlined,
-  FlashOff,
 } from '@mui/icons-material';
-import Person from '@mui/icons-material/Person';
-import Mic from '@mui/icons-material/Mic';
-import SettingsOutlined from '@mui/icons-material/SettingsOutlined';
-import Edit from '@mui/icons-material/Edit';
 import React from 'react';
-import { Article } from '../../../../entities/Article';
-import { useArticleListPage } from './services/articleListPage';
-import TableLayout from '../../../templates/TableLayout';
 import dayjs from 'dayjs';
+
+import { Article } from '../../../entities/Article';
+import TableLayout from '../../templates/TableLayout';
+import { useArticleListPage } from './services/articleListPage';
 
 const ArticleListPage = () => {
   const {

@@ -1,4 +1,4 @@
-import ArticleForm from '@bit/chihatw.lang-gym.article-form';
+import ArticleForm from '@bit/chihatw.lang-gym.article-form'; // TODO 内部化
 import React from 'react';
 import { useRouteMatch } from 'react-router';
 import { useEditArticlePage } from './services/editArticlePage';
