@@ -1,16 +1,13 @@
-import { Button, FormControlLabel, Switch, TextField } from '@mui/material';
-import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import React from 'react';
-import {
-  KeyboardDatePicker,
-  MuiPickersUtilsProvider,
-} from '@material-ui/pickers';
-import DayJsUtils from '@date-io/dayjs';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import MobileDatePicker from '@mui/lab/MobileDatePicker';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import { Button, FormControlLabel, Switch, TextField } from '@mui/material';
 
 const OndokuForm: React.FC<{
   date: Date;
   onSubmit: () => void;
-  onPickDate: (date: MaterialUiPickersDate) => void;
+  onPickDate: (date: Date | null) => void;
   isShowAccents: boolean;
   textFieldItems: {
     label: string;
@@ -31,15 +28,17 @@ const OndokuForm: React.FC<{
 }) => {
   return (
     <div>
-      <MuiPickersUtilsProvider utils={DayJsUtils}>
-        <KeyboardDatePicker
-          onChange={onPickDate}
-          value={date}
-          fullWidth
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <MobileDatePicker
           label='Created at'
-          format='YYYY年M月D日'
+          inputFormat='yyyy年MM月dd日'
+          value={date}
+          onChange={onPickDate}
+          renderInput={(params) => (
+            <TextField {...params} size='small' fullWidth />
+          )}
         />
-      </MuiPickersUtilsProvider>
+      </LocalizationProvider>
       <div style={{ height: 16 }} />
       <FormControlLabel
         label='isShowAccents'

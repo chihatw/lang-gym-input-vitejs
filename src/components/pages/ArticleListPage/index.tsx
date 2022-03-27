@@ -1,3 +1,6 @@
+import dayjs from 'dayjs';
+import { useHistory } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Table,
@@ -18,26 +21,93 @@ import {
   VisibilityOutlined,
   VisibilityOffOutlined,
 } from '@mui/icons-material';
-import React from 'react';
-import dayjs from 'dayjs';
 
-import { Article } from '../../../entities/Article';
+import { db } from '../../../repositories/firebase';
 import TableLayout from '../../templates/TableLayout';
-import { useArticleListPage } from './services/articleListPage';
+import { Article } from '../../../entities/Article';
+import { deleteFile } from '../../../repositories/file';
+import { buildArticle } from '../../../entities/Article';
+import { deleteSentences } from '../../../repositories/sentence';
+import { deleteArticle, updateArticle } from '../../../repositories/article';
+
+const LIMIT = 6;
+
+// TODO article に hasRecButton を追加
+// OPTIMIZE firebase 9.0, データベースとのやりとりをAppに上げる
 
 const ArticleListPage = () => {
-  const {
-    articles,
-    history,
-    onEdit,
-    onDelete,
-    onClickVoice,
-    onClickSentences,
-    onClickAssignment,
-    onToggleShowAccents,
-    onToggleShowParse,
-    onClickSentenceParse,
-  } = useArticleListPage(6);
+  const history = useHistory();
+  const articlesRef = db.collection('articles');
+  const [articles, setArticles] = useState<Article[]>([]);
+  useEffect(() => {
+    const unsubscribe = articlesRef
+      .orderBy('createdAt', 'desc')
+      .limit(LIMIT)
+      .onSnapshot((snapshot) => {
+        console.log('snapshot article');
+        const articles = snapshot.docs.map((doc) =>
+          buildArticle(doc.id, doc.data())
+        );
+        setArticles(articles);
+      });
+
+    return () => {
+      unsubscribe();
+    };
+    // articlesRefをdependanciesに加えるとループする
+    // eslint-disable-next-line
+  }, [history]);
+
+  const onEdit = (articleID: string) => {
+    history.push(`/article/${articleID}/edit`);
+  };
+  const onClickSentences = (articleID: string) => {
+    history.push(`/article/${articleID}`);
+  };
+  const onClickSentenceParse = (articleID: string) => {
+    history.push(`/article/${articleID}/parse`);
+  };
+  const onClickVoice = (articleID: string) => {
+    history.push(`/article/${articleID}/voice`);
+  };
+  const onClickAssignment = (articleID: string) => {
+    history.push(`/article/${articleID}/assignment`);
+  };
+  const onToggleShowAccents = async (article: Article) => {
+    const newArticle: Article = {
+      ...article,
+      isShowAccents: !article.isShowAccents,
+    };
+    await updateArticle(newArticle);
+  };
+  const onToggleShowParse = async (article: Article) => {
+    const newArticle: Article = {
+      ...article,
+      isShowParse: !article.isShowParse,
+    };
+    await updateArticle(newArticle);
+  };
+  const onDelete = async ({
+    id,
+    title,
+    downloadURL,
+  }: {
+    id: string;
+    title: string;
+    downloadURL: string;
+  }) => {
+    if (window.confirm(`${title}を削除しますか`)) {
+      if (downloadURL) {
+        const path = decodeURIComponent(
+          downloadURL.split('/')[7].split('?')[0]
+        );
+        await deleteFile(path);
+      }
+      await deleteSentences(id);
+      await deleteArticle(id);
+    }
+  };
+
   return (
     <TableLayout title='作文一覧' onCreate={() => history.push('/article')}>
       <Table>

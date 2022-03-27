@@ -1,7 +1,8 @@
 import React from 'react';
-import { useCreateArticlePage } from './services/createArticlePage';
-import ArticleForm from '@bit/chihatw.lang-gym.article-form'; //TODO 内部化
+
 import TableLayout from '../../../templates/TableLayout';
+import ArticleForm from '../../../organisms/ArticleForm';
+import { useCreateArticlePage } from './services/createArticlePage';
 
 const CreateArticlePage = () => {
   const {

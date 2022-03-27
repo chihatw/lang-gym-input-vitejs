@@ -1,12 +1,11 @@
-import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
+import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 
-import dayjs from 'dayjs';
+import { User } from '../../../../../entities/User';
+import { getUsers } from '../../../../../repositories/user';
 import { useHistory } from 'react-router-dom';
 import { CreateArticle } from '../../../../../entities/Article';
 import { createArticle } from '../../../../../repositories/article';
-import { User } from '../../../../../entities/User';
-import { getUsers } from '../../../../../repositories/user';
 
 export const useCreateArticlePage = () => {
   const history = useHistory();
@@ -89,8 +88,8 @@ export const useCreateArticlePage = () => {
     fetchData();
   }, []);
 
-  const onPickDate = (date: MaterialUiPickersDate) => {
-    !!date && setDate(date.toDate());
+  const onPickDate = (date: Date | null) => {
+    !!date && setDate(date);
   };
 
   const onChangeUid = (uid: string) => {

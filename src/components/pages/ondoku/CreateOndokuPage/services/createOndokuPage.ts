@@ -1,9 +1,9 @@
-import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
+import dayjs from 'dayjs';
 import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import { CreateOndoku } from '../../../../../entities/Ondoku';
 import { createOndoku } from '../../../../../repositories/ondoku';
-import dayjs from 'dayjs';
-import { useHistory } from 'react-router-dom';
 
 export const useCreateOndokuPage = () => {
   const history = useHistory();
@@ -36,8 +36,8 @@ export const useCreateOndokuPage = () => {
     },
   ];
 
-  const onPickDate = (date: MaterialUiPickersDate) => {
-    !!date && setDate(date.toDate());
+  const onPickDate = (date: Date | null) => {
+    !!date && setDate(date);
   };
   const onToggleShowAccents = () => {
     setIsShowAccents(!isShowAccents);

@@ -1,7 +1,7 @@
-import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
-import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import { useHistory } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+
 import { User } from '../../../../../entities/User';
 import { Article } from '../../../../../entities/Article';
 import { getUsers } from '../../../../../repositories/user';
@@ -106,8 +106,8 @@ export const useEditArticlePage = (id: string) => {
     },
   ];
 
-  const onPickDate = (date: MaterialUiPickersDate) => {
-    !!date && setDate(date.toDate());
+  const onPickDate = (date: Date | null) => {
+    !!date && setDate(date);
   };
   const onChangeTitle = (title: string) => {
     setTitle(title);

@@ -1,8 +1,9 @@
-import ArticleForm from '@bit/chihatw.lang-gym.article-form'; // TODO 内部化
 import React from 'react';
 import { useRouteMatch } from 'react-router';
-import { useEditArticlePage } from './services/editArticlePage';
+
 import TableLayout from '../../../templates/TableLayout';
+import ArticleForm from '../../../organisms/ArticleForm';
+import { useEditArticlePage } from './services/editArticlePage';
 
 const EditArticlePage = () => {
   const match = useRouteMatch<{ id: string }>();
