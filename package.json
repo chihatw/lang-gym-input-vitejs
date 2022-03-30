@@ -13,9 +13,9 @@
     "@bit/chihatw.lang-gym.select-user": "^0.0.1",
     "@bit/chihatw.lang-gym.sign-in-form": "^0.0.4",
     "@bit/chihatw.lang-gym.speaker": "^0.0.5",
-    "@chihatw/lang-gym-h.ui.pitch-line": "^1.0.0",
     "@chihatw/lang-gym-h.ui.sentence-pitch-line": "^1.0.0",
     "@chihatw/lang-gym-h.ui.youtube-embeded": "^1.0.2",
+    "@chihatw/pitch-line.pitch-line": "^1.0.0",
     "@chihatw/sentence-form.word-pane": "^1.0.0",
     "@date-io/core": "^2.13.1",
     "@date-io/dayjs": "^2.13.1",
@@ -50,7 +50,8 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "^5.0.0",
     "react-youtube": "^7.14.0",
-    "sentence-parse-new2sentence-parse-props": "^1.0.8"
+    "sentence-parse-new2sentence-parse-props": "^1.0.8",
+    "string2pitches-array": "^1.0.1"
   },
   "devDependencies": {
     "@types/react": "^17.0.43",
