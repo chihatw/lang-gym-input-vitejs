@@ -1,28 +1,37 @@
+// https://firebase.google.com/docs/storage/web/upload-files
+// https://firebase.google.com/docs/storage/web/delete-files
+import { ref, uploadBytes, deleteObject, UploadResult } from 'firebase/storage';
 import { storage } from './firebase';
 
 export const uploadFile = async (
   file: File,
   collection: 'articles' | 'ondokus'
-) => {
-  try {
-    const snapshot = await storage
-      .ref()
-      .child(`${collection}/${new Date().getTime()}.mp3`)
-      .put(file, { contentType: file.type });
-    return { success: true, snapshot };
-  } catch (e) {
-    console.warn(e);
-    return { success: false };
-  }
+): Promise<{
+  success: boolean;
+  snapshot?: UploadResult;
+}> => {
+  const storageRef = ref(storage, `${collection}/${new Date().getTime()}.mp3`);
+  const metadata = { contentType: file.type };
+  console.log('upload file');
+  return uploadBytes(storageRef, file, metadata)
+    .then((snapshot) => {
+      // debug snapshot の中身確認
+      console.log(snapshot);
+      return { success: true, snapshot };
+    })
+    .catch((error) => {
+      console.warn(error);
+      return { success: false };
+    });
 };
 
 export const deleteFile = async (path: string) => {
-  try {
-    await storage.ref().child(path).delete();
-    console.log('deleted file');
-    return { success: true };
-  } catch (e) {
-    console.warn(e);
-    return { success: false };
-  }
+  const storageRef = ref(storage, path);
+  console.log('deleted file');
+  return deleteObject(storageRef)
+    .then(() => ({ success: true }))
+    .catch((error) => {
+      console.warn(error);
+      return { success: false };
+    });
 };

@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+
 import { auth } from '../../../../repositories/firebase';
 
 export const useSignInPage = () => {
@@ -32,7 +34,7 @@ const onSignInMail = async (
   error?: any;
 }> => {
   try {
-    await auth.signInWithEmailAndPassword(email, password);
+    await signInWithEmailAndPassword(auth, email, password);
     return { success: true, error: { emailErrMsg: '', passwordErrMsg: '' } };
   } catch (error) {
     let emailErrMsg = 'サインインできませんでした。';

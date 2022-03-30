@@ -1,4 +1,5 @@
-import firebase from 'firebase/app';
+import { User as _User } from 'firebase/auth';
+
 import { createContext } from 'react';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -17,7 +18,7 @@ import { createQuestionSet } from '../repositories/questionSet';
 import { AudioItem } from './useAudioItems';
 
 export const AppContext = createContext<{
-  user: firebase.User | null;
+  user: _User | null;
   audioItems: AudioItem[];
   initializing: boolean;
   deleteAudioItem: (value: string) => void;
