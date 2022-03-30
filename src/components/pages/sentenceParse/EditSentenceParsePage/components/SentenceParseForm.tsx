@@ -3,12 +3,12 @@ import { Button } from '@mui/material';
 import { Article } from '../../../../../entities/Article';
 import { Sentence } from '../../../../../entities/Sentence';
 import { useSentenceParseForm } from '../services/sentenceParseForm';
+import sentenceParseNew2SentenceParseProps from 'sentence-parse-new2sentence-parse-props';
+import { ComplexSentenceInput } from '../../../../complex-sentence-input';
 import {
   ComplexSentencePane,
   ComplexSentencePaneProps,
-} from '@chihatw/sentence-form.complex-sentence-pane';
-import sentenceParseNew2SentenceParseProps from 'sentence-parse-new2sentence-parse-props';
-import { ComplexSentenceInput } from '@chihatw/sentence-form.complex-sentence-input';
+} from '../../../../complex-sentence-pane';
 
 const SentenceParseForm: React.FC<{ article: Article; sentence: Sentence }> = ({
   article,

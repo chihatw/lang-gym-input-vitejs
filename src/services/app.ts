@@ -129,7 +129,7 @@ export const useApp = () => {
             questionGroups: [questionGroupID!],
             title: `${title} - 特殊拍`,
             type: 'articleRhythms',
-            uid: process.env.REACT_APP_ADMIN_UID,
+            uid: import.meta.env.VITE_ADMIN_UID,
             unlockedAt: new Date().getTime(),
             userDisplayname: '原田',
           };

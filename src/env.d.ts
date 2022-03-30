@@ -10,6 +10,7 @@ interface ImportMetaEnv {
   readonly VITE_MESSAGING_SENDER_ID: string;
   readonly VITE_APP_ID: string;
   readonly VITE_DATABASE_URL: string;
+  readonly VITE_ADMIN_UID: string;
 }
 
 interface ImportMeta {
