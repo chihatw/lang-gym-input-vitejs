@@ -1,9 +1,11 @@
-import { SentencePitchLine } from '@chihatw/lang-gym-h.ui.sentence-pitch-line';
-import Speaker from '@bit/chihatw.lang-gym.speaker';
-import { TextField, Button } from '@mui/material';
 import React from 'react';
-import { buildAccents } from '../../../../../entities/Accent';
+import Speaker from '@bit/chihatw.lang-gym.speaker';
+import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
+import { TextField, Button } from '@mui/material';
+import accentsForPitchesArray from 'accents-for-pitches-array';
+
 import { Sentence } from '../../../../../entities/Sentence';
+import { buildAccents } from '../../../../../entities/Accent';
 
 const EditAssignmentSentenceForm: React.FC<{
   end: number;
@@ -44,7 +46,9 @@ const EditAssignmentSentenceForm: React.FC<{
       >
         <div>{sentence.japanese}</div>
         <div style={{ height: 16 }} />
-        <SentencePitchLine accents={sentence.accents} />
+        <SentencePitchLine
+          pitchesArray={accentsForPitchesArray(sentence.accents)}
+        />
       </div>
       <div style={{ height: 16 }} />
       <TextField
@@ -57,7 +61,9 @@ const EditAssignmentSentenceForm: React.FC<{
         onChange={(e) => onChangeAccentString(e.target.value)}
       />
       <div style={{ height: 16 }} />
-      <SentencePitchLine accents={buildAccents(accentString)} />
+      <SentencePitchLine
+        pitchesArray={accentsForPitchesArray(buildAccents(accentString))}
+      />
       <div style={{ height: 16 }} />
       <TextField
         variant='outlined'

@@ -1,7 +1,9 @@
-import { Box, Grid, Button, TextField } from '@mui/material';
 import React from 'react';
 import Speaker from '@bit/chihatw.lang-gym.speaker';
-import { SentencePitchLine } from '@chihatw/lang-gym-h.ui.sentence-pitch-line';
+import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
+import accentsForPitchesArray from 'accents-for-pitches-array';
+import { Box, Grid, Button, TextField } from '@mui/material';
+
 import { buildAccents } from '../../../../../entities/Accent';
 
 const OndokuSentenceForm: React.FC<{
@@ -41,7 +43,9 @@ const OndokuSentenceForm: React.FC<{
       </Grid>
       <Grid item>
         <Box px={1}>
-          <SentencePitchLine accents={buildAccents(accentString)} />
+          <SentencePitchLine
+            pitchesArray={accentsForPitchesArray(buildAccents(accentString))}
+          />
         </Box>
       </Grid>
       <Grid item>

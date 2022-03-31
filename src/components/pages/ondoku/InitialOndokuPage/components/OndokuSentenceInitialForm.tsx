@@ -1,6 +1,8 @@
-import { SentencePitchLine } from '@chihatw/lang-gym-h.ui.sentence-pitch-line';
-import { Box, Grid, Button, TextField } from '@mui/material';
 import React from 'react';
+import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
+import accentsForPitchesArray from 'accents-for-pitches-array';
+import { Box, Grid, Button, TextField } from '@mui/material';
+
 import { CreateOndokuSentence } from '../../../../../entities/OndokuSentence';
 
 const OndokuSentenceInitialForm: React.FC<{
@@ -52,7 +54,9 @@ const OndokuSentenceInitialForm: React.FC<{
             {ondokuSentences.map((s, index) => (
               <Grid item key={index}>
                 {s.japanese}
-                <SentencePitchLine accents={s.accents} />
+                <SentencePitchLine
+                  pitchesArray={accentsForPitchesArray(s.accents)}
+                />
               </Grid>
             ))}
           </Grid>

@@ -1,14 +1,16 @@
-import { SentencePitchLine } from '@chihatw/lang-gym-h.ui.sentence-pitch-line';
-import SelectUser from '@bit/chihatw.lang-gym.select-user'; // TODO 内部化
-import Speaker from '@bit/chihatw.lang-gym.speaker';
-import { Button, Card, IconButton } from '@mui/material';
 import Edit from '@mui/icons-material/Edit';
 import React from 'react';
+import Speaker from '@bit/chihatw.lang-gym.speaker';
+import SelectUser from '@bit/chihatw.lang-gym.select-user'; // TODO 内部化
+import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
+import accentsForPitchesArray from 'accents-for-pitches-array';
+import { Button, Card, IconButton } from '@mui/material';
 import { useHistory, useRouteMatch } from 'react-router';
-import { Accent } from '../../../../../entities/Accent';
-import { AssignmentSentence } from '../../../../../entities/AssignmentSentence';
-import { OndokuSentence } from '../../../../../entities/OndokuSentence';
+
 import { User } from '../../../../../entities/User';
+import { Accent } from '../../../../../entities/Accent';
+import { OndokuSentence } from '../../../../../entities/OndokuSentence';
+import { AssignmentSentence } from '../../../../../entities/AssignmentSentence';
 
 const OndokuAssignment: React.FC<{
   users: User[];
@@ -48,7 +50,9 @@ const OndokuAssignment: React.FC<{
                       accents={sentenceAccents}
                     />
                     <div style={{ marginTop: 16, padding: 8 }}>
-                      <SentencePitchLine accents={accents} />
+                      <SentencePitchLine
+                        pitchesArray={accentsForPitchesArray(accents)}
+                      />
                       <AssignmentSentenceFooter
                         downloadURL={downloadURL}
                         start={start}
@@ -101,7 +105,7 @@ const CorrectSentence: React.FC<{ japanese: string; accents: Accent[] }> = ({
 }) => (
   <div style={{ background: '#eee', padding: 8, borderRadius: 4 }}>
     <div style={{ fontSize: 12, color: '#555' }}>{japanese}</div>
-    <SentencePitchLine accents={accents} />
+    <SentencePitchLine pitchesArray={accentsForPitchesArray(accents)} />
   </div>
 );
 

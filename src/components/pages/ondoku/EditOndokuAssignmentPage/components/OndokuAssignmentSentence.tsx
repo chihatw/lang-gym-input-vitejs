@@ -1,7 +1,9 @@
-import { SentencePitchLine } from '@chihatw/lang-gym-h.ui.sentence-pitch-line';
-import Speaker from '@bit/chihatw.lang-gym.speaker';
-import { Button, TextField } from '@mui/material';
 import React from 'react';
+import Speaker from '@bit/chihatw.lang-gym.speaker';
+import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
+import { Button, TextField } from '@mui/material';
+import accentsForPitchesArray from 'accents-for-pitches-array';
+
 import { Accent, buildAccents } from '../../../../../entities/Accent';
 import { OndokuSentence } from '../../../../../entities/OndokuSentence';
 
@@ -38,7 +40,9 @@ const OndokuAssignmentSentence: React.FC<{
         onChangeAccentString={onChangeAccentString}
       />
       <div style={{ height: 16 }} />
-      <SentencePitchLine accents={buildAccents(accentString)} />
+      <SentencePitchLine
+        pitchesArray={accentsForPitchesArray(buildAccents(accentString))}
+      />
       <div style={{ height: 16 }} />
       <StartInput start={start} onChangeStart={onChangeStart} />
       <div style={{ height: 16 }} />
@@ -67,7 +71,7 @@ const CorrectSentence: React.FC<{ japanese: string; accents: Accent[] }> = ({
   <div style={{ background: '#eee', padding: 8, borderRadius: 4 }}>
     <div style={{ fontSize: 12, color: '#555' }}>{japanese}</div>
     <div style={{ height: 16 }} />
-    <SentencePitchLine accents={accents} />
+    <SentencePitchLine pitchesArray={accentsForPitchesArray(accents)} />
   </div>
 );
 

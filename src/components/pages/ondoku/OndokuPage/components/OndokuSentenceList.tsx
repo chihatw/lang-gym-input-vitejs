@@ -1,7 +1,8 @@
 import Edit from '@mui/icons-material/Edit';
 import React from 'react';
 import Speaker from '@bit/chihatw.lang-gym.speaker';
-import { SentencePitchLine } from '@chihatw/lang-gym-h.ui.sentence-pitch-line';
+import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
+import accentsForPitchesArray from 'accents-for-pitches-array';
 import { Card, IconButton, Button } from '@mui/material';
 
 import { Ondoku } from '../../../../../entities/Ondoku';
@@ -26,7 +27,11 @@ const OndokuSentenceList: React.FC<{
                   </div>
                   <div style={{ height: 16 }} />
 
-                  <SentencePitchLine accents={ondokuSentence.accents} />
+                  <SentencePitchLine
+                    pitchesArray={accentsForPitchesArray(
+                      ondokuSentence.accents
+                    )}
+                  />
                   <div style={{ height: 16 }} />
 
                   <div

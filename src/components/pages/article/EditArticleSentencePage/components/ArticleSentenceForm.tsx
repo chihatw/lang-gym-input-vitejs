@@ -1,11 +1,13 @@
-import { SentencePitchLine } from '@chihatw/lang-gym-h.ui.sentence-pitch-line';
-import Speaker from '@bit/chihatw.lang-gym.speaker';
 import React from 'react';
-import { buildAccents } from '../../../../../entities/Accent';
+import Speaker from '@bit/chihatw.lang-gym.speaker';
+import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
+import { Button, TextField } from '@mui/material';
+import accentsForPitchesArray from 'accents-for-pitches-array';
+
 import { Article } from '../../../../../entities/Article';
 import { Sentence } from '../../../../../entities/Sentence';
+import { buildAccents } from '../../../../../entities/Accent';
 import { useArticleSentenceForm } from '../services/articleSentenceForm';
-import { Button, TextField } from '@mui/material';
 const ArticleSentenceForm: React.FC<{
   article: Article;
   sentence: Sentence;
@@ -35,7 +37,11 @@ const ArticleSentenceForm: React.FC<{
           />
           {item.label === 'accents' && (
             <div style={{ padding: '16px 8px 0' }}>
-              <SentencePitchLine accents={buildAccents(accentString)} />
+              <SentencePitchLine
+                pitchesArray={accentsForPitchesArray(
+                  buildAccents(accentString)
+                )}
+              />
             </div>
           )}
           <div style={{ height: 16 }} />

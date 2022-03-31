@@ -1,11 +1,13 @@
-import { SentencePitchLine } from '@chihatw/lang-gym-h.ui.sentence-pitch-line';
-import Speaker from '@bit/chihatw.lang-gym.speaker';
-import { Button, Card, IconButton } from '@mui/material';
 import Edit from '@mui/icons-material/Edit';
 import React from 'react';
+import Speaker from '@bit/chihatw.lang-gym.speaker';
+import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
+import { Button, Card, IconButton } from '@mui/material';
 import { useHistory, useRouteMatch } from 'react-router';
-import { AssignmentSentence } from '../../../../../entities/AssignmentSentence';
+import accentsForPitchesArray from 'accents-for-pitches-array';
+
 import { Sentence } from '../../../../../entities/Sentence';
+import { AssignmentSentence } from '../../../../../entities/AssignmentSentence';
 
 const ArticleAssignment: React.FC<{
   sentences: Sentence[];
@@ -35,11 +37,17 @@ const ArticleAssignment: React.FC<{
                     }}
                   >
                     <div>{s.japanese}</div>
-                    <SentencePitchLine accents={s.accents} />
+                    <SentencePitchLine
+                      pitchesArray={accentsForPitchesArray(s.accents)}
+                    />
                   </div>
                   <div style={{ height: 16 }} />
                   <div style={{ padding: 8 }}>
-                    <SentencePitchLine accents={assignmentSentence.accents} />
+                    <SentencePitchLine
+                      pitchesArray={accentsForPitchesArray(
+                        assignmentSentence.accents
+                      )}
+                    />
                     <div
                       style={{
                         display: 'flex',

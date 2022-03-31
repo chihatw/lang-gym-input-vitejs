@@ -1,10 +1,11 @@
-import { SentencePitchLine } from '@chihatw/lang-gym-h.ui.sentence-pitch-line';
-import Speaker from '@bit/chihatw.lang-gym.speaker';
-import { Card, IconButton, Tooltip, Button } from '@mui/material';
 import Edit from '@mui/icons-material/Edit';
+import Speaker from '@bit/chihatw.lang-gym.speaker';
 import SettingsOutlined from '@mui/icons-material/SettingsOutlined';
-import React from 'react';
-import { useContext } from 'react';
+import React, { useContext } from 'react';
+import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
+import { Card, IconButton, Tooltip, Button } from '@mui/material';
+import accentesForPitchesArray from 'accents-for-pitches-array';
+
 import { AppContext } from '../../../../../services/app';
 import { ArticlePaneContext } from '../services/articlePage';
 import { useArticleSentenceList } from '../services/articleSentenceList';
@@ -69,7 +70,9 @@ const SentencePane: React.FC<{ index: number }> = ({ index }) => {
         <div style={{ height: 0 }} />
         <div style={{ color: '#52a2aa' }}>{sentence.chinese}</div>
         <div style={{ height: 8 }} />
-        <SentencePitchLine accents={sentence.accents} />
+        <SentencePitchLine
+          pitchesArray={accentesForPitchesArray(sentence.accents)}
+        />
         <div style={{ height: 16 }} />
         <div
           style={{
