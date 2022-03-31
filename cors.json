@@ -9,6 +9,7 @@
     "http://localhost:8002", 
     "http://localhost:4173",
     "https://priceless-ptolemy-aa3542.netlify.app", 
+    "https://lang-gym-input-vitejs.vercel.app",
     "https://lang-gym-input-react.vercel.app"
   ], 
   "responseHeader": ["Content-Type"]

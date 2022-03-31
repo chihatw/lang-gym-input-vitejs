@@ -12,7 +12,7 @@
     "@bit/chihatw.lang-gym.audio-edit": "^0.0.9",
     "@bit/chihatw.lang-gym.select-user": "^0.0.1",
     "@bit/chihatw.lang-gym.sign-in-form": "^0.0.4",
-    "@bit/chihatw.lang-gym.speaker": "^0.0.5",
+    "@bit/chihatw.lang-gym.speaker": "^0.0.6",
     "@chihatw/lang-gym-h.ui.sentence-pitch-line": "^1.0.0",
     "@chihatw/lang-gym-h.ui.youtube-embeded": "^1.0.2",
     "@chihatw/pitch-line.pitch-line": "^1.0.0",

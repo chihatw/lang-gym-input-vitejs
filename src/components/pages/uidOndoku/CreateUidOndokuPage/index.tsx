@@ -1,8 +1,9 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
-import { useCreateUidOndokuPage } from './services/createUidOndokuPage';
-import CreateUidOndoku from './components/CreateUidOndoku';
+
 import TableLayout from '../../../templates/TableLayout';
+import CreateUidOndoku from './components/CreateUidOndoku';
+import { useCreateUidOndokuPage } from './services/createUidOndokuPage';
 
 const CreateUidOndokuPage = () => {
   const match = useRouteMatch<{ id: string }>();

@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Redirect, useRouteMatch } from 'react-router';
+
+import TableLayout from '../../../templates/TableLayout';
+import { AppContext } from '../../../../services/app';
 import { useOndokuPage } from './services/ondokuPage';
 import OndokuSentenceList from './components/OndokuSentenceList';
-import TableLayout from '../../../templates/TableLayout';
-import { useContext } from 'react';
-import { AppContext } from '../../../../services/app';
 
 const OndokuSentencesPage: React.FC = () => {
   const match = useRouteMatch<{ id: string }>();
