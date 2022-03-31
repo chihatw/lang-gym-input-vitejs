@@ -1,3 +1,4 @@
+import { getDownloadURL } from '@firebase/storage';
 import { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { CreateAssignment } from '../../../../../entities/Assignment';
@@ -91,7 +92,7 @@ export const useArticleAssignmentPage = (id: string) => {
     const file = e.target.files[0];
     const { success, snapshot } = await uploadFile(file, 'articles');
     if (!!success && !!snapshot) {
-      const url = await snapshot.ref.getDownloadURL();
+      const url = await getDownloadURL(snapshot.ref);
       const assignment: CreateAssignment = {
         ondoku: '',
         article: id,

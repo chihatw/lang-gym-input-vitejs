@@ -1,4 +1,4 @@
-import firebase from 'firebase/app';
+import { DocumentData } from '@firebase/firestore';
 
 import { Accent } from './Accent';
 import { Tags } from './Tags';
@@ -22,10 +22,7 @@ export type Sentence = {
 
 export type CreateSentence = Omit<Sentence, 'id'>;
 
-export const buildSentence = (
-  id: string,
-  data: firebase.firestore.DocumentData
-) => {
+export const buildSentence = (id: string, data: DocumentData) => {
   const sentence: Sentence = {
     id,
     accents: data.accents,

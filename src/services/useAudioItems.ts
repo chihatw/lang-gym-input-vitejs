@@ -1,3 +1,4 @@
+import { collection, onSnapshot, deleteDoc, doc } from '@firebase/firestore';
 import { useEffect, useState } from 'react';
 import { db } from '../repositories/firebase';
 
@@ -13,12 +14,14 @@ export type AudioItem = {
 };
 
 const COLLECTION = 'audioItems';
+const colRef = collection(db, COLLECTION);
 
 const useAudioItems = () => {
   const [audioItems, setAudioItems] = useState<AudioItem[]>([]);
 
   useEffect(() => {
-    const unsub = db.collection(COLLECTION).onSnapshot(
+    const unsub = onSnapshot(
+      colRef,
       (snapshot) => {
         const audioItems: AudioItem[] = [];
         snapshot.forEach((doc) => {
@@ -35,7 +38,7 @@ const useAudioItems = () => {
 
   const deleteAudioItem = (id: string) => {
     if (window.confirm('delete?')) {
-      db.collection(COLLECTION).doc(id).delete();
+      deleteDoc(doc(db, COLLECTION, id));
     }
   };
 

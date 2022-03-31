@@ -1,11 +1,28 @@
 import {
+  collection,
+  startAfter,
+  getDoc,
+  getDocs,
+  doc,
+  query,
+  where,
+  limit,
+  orderBy,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  writeBatch,
+} from '@firebase/firestore';
+import {
   AssignmentSentence,
   buildAssignmentSentence,
   CreateAssignmentSentence,
 } from '../entities/AssignmentSentence';
 import { db } from './firebase';
 
-const assignmentSentencesRef = db.collection('aSentences');
+const COLLECTION = 'aSentences';
+
+const assignmentSentencesRef = collection(db, COLLECTION);
 
 type GetAssignmentSentenceProps = {
   uid: string;
@@ -21,14 +38,13 @@ export const getAssignmentSentence = async ({
   line,
 }: GetAssignmentSentenceProps) => {
   try {
-    const query = !!articleID
-      ? assignmentSentencesRef.where('article', '==', articleID)
-      : assignmentSentencesRef.where('ondoku', '==', ondokuID);
+    let q = !!articleID
+      ? query(assignmentSentencesRef, where('article', '==', articleID))
+      : query(assignmentSentencesRef, where('ondoku', '==', ondokuID));
+
+    q = query(q, where('uid', '==', uid), where('line', '==', line));
     console.log('get assignment sentence');
-    const snapshot = await query
-      .where('uid', '==', uid)
-      .where('line', '==', line)
-      .get();
+    const snapshot = await getDocs(q);
     const doc = snapshot.docs[0];
     return buildAssignmentSentence(doc.id, doc.data());
   } catch (e) {
@@ -49,11 +65,14 @@ export const getAssignmentSentences = async ({
   ondokuID,
 }: GetAssignmentSentencesProps) => {
   try {
-    const query = !!articleID
-      ? assignmentSentencesRef.where('article', '==', articleID)
-      : assignmentSentencesRef.where('ondoku', '==', ondokuID);
+    let q = !!articleID
+      ? query(assignmentSentencesRef, where('article', '==', articleID))
+      : query(assignmentSentencesRef, where('ondoku', '==', ondokuID));
+
+    q = query(q, where('uid', '==', uid), orderBy('line'));
+
     console.log('get assignment sentences');
-    const snapshot = await query.where('uid', '==', uid).orderBy('line').get();
+    const snapshot = await getDocs(q);
     const assignmentSentences = snapshot.docs.map((doc) =>
       buildAssignmentSentence(doc.id, doc.data())
     );
@@ -68,10 +87,11 @@ export const getAssignmentSentences = async ({
 export const createAssignmentSentenes = async (
   assignmentSentences: CreateAssignmentSentence[]
 ) => {
-  const batch = db.batch();
+  const batch = writeBatch(db);
   try {
-    assignmentSentences.forEach((s) => {
-      batch.set(assignmentSentencesRef.doc(), s, { merge: false });
+    assignmentSentences.forEach((aSentence) => {
+      const docRef = doc(assignmentSentencesRef);
+      batch.set(docRef, aSentence);
     });
     console.log('create assignment sentences');
     await batch.commit();
@@ -88,7 +108,7 @@ export const updateAssignmentSentence = async (
   try {
     const { id, ...omittedAssignmentSentence } = assignmentSentence;
     console.log('update assignment sentence');
-    await assignmentSentencesRef.doc(id).update(omittedAssignmentSentence);
+    await updateDoc(doc(db, COLLECTION, id), { ...omittedAssignmentSentence });
     return { success: true };
   } catch (e) {
     console.warn(e);
@@ -99,11 +119,12 @@ export const updateAssignmentSentence = async (
 export const updateAssignmentSentences = async (
   assignmentSentences: AssignmentSentence[]
 ) => {
-  const batch = db.batch();
+  const batch = writeBatch(db);
   try {
     assignmentSentences.forEach((assignmentSentence) => {
       const { id, ...omittedAssignmentSentence } = assignmentSentence;
-      batch.update(assignmentSentencesRef.doc(id), omittedAssignmentSentence);
+
+      batch.update(doc(db, COLLECTION, id), { ...omittedAssignmentSentence });
     });
     console.log('update assignment sentences');
     await batch.commit();
@@ -115,10 +136,10 @@ export const updateAssignmentSentences = async (
 };
 
 export const deleteAssignmentSentences = async (ids: string[]) => {
-  const batch = db.batch();
+  const batch = writeBatch(db);
   try {
     ids.forEach((id) => {
-      batch.delete(assignmentSentencesRef.doc(id));
+      batch.delete(doc(db, COLLECTION, id));
     });
     console.log('delete assignment sentences');
     await batch.commit();

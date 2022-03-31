@@ -1,4 +1,4 @@
-import firebase from 'firebase/app';
+import { DocumentData } from '@firebase/firestore';
 
 export type Article = {
   id: string;
@@ -15,10 +15,7 @@ export type Article = {
 
 export type CreateArticle = Omit<Article, 'id'>;
 
-export const buildArticle = (
-  id: string,
-  data: firebase.firestore.DocumentData
-) => {
+export const buildArticle = (id: string, data: DocumentData) => {
   const article: Article = {
     id,
     uid: data.uid,

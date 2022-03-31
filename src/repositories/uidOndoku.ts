@@ -1,20 +1,40 @@
+import {
+  collection,
+  query,
+  getDocs,
+  where,
+  orderBy,
+  limit,
+  startAfter,
+  addDoc,
+  deleteDoc,
+  doc,
+} from '@firebase/firestore';
+
 import { buildUidOndoku, CreateUidOndoku } from '../entities/UidOndoku';
 import { db } from './firebase';
 
-const uidOndokusRef = db.collection('uidOndokus');
+const COLLECTION = 'uidOndokus';
+
+const uidOndokusRef = collection(db, COLLECTION);
 
 export const getUidOndokus = async (
-  limit: number,
+  _limit: number,
   uid?: string,
-  startAfter?: number
+  _startAfter?: number
 ) => {
   try {
-    let query = !!uid ? uidOndokusRef.where('uid', '==', uid) : uidOndokusRef;
-    query = query.orderBy('createdAt', 'desc').limit(limit);
+    let q = query(uidOndokusRef);
+    if (!!uid) {
+      q = query(q, where('uid', '==', uid));
+    }
+    q = query(q, orderBy('createdAt', 'desc'), limit(_limit));
+
+    if (!!startAfter) {
+      q = query(q, startAfter(_startAfter));
+    }
     console.log('get uid ondoku');
-    const snapshot = !startAfter
-      ? await query.get()
-      : await query.startAfter(startAfter).get();
+    const snapshot = await getDocs(q);
     const uidOndokus = snapshot.docs.map((doc) =>
       buildUidOndoku(doc.id, doc.data())
     );
@@ -28,7 +48,7 @@ export const getUidOndokus = async (
 export const createUidOndoku = async (uidOndoku: CreateUidOndoku) => {
   try {
     console.log('create uid ondoku');
-    await uidOndokusRef.add(uidOndoku);
+    await addDoc(uidOndokusRef, uidOndoku);
     return { success: true };
   } catch (e) {
     console.warn(e);
@@ -39,7 +59,7 @@ export const createUidOndoku = async (uidOndoku: CreateUidOndoku) => {
 export const deleteUidOndoku = async (id: string) => {
   try {
     console.log('delete uid ondoku');
-    await uidOndokusRef.doc(id).delete();
+    await deleteDoc(doc(db, COLLECTION, id));
   } catch (e) {
     console.warn(e);
   }

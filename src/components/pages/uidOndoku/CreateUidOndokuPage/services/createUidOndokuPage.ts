@@ -1,3 +1,4 @@
+import { doc } from '@firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { CreateUidOndoku } from '../../../../../entities/UidOndoku';
@@ -6,6 +7,8 @@ import { db } from '../../../../../repositories/firebase';
 import { getOndoku } from '../../../../../repositories/ondoku';
 import { createUidOndoku } from '../../../../../repositories/uidOndoku';
 import { getUsers } from '../../../../../repositories/user';
+
+const COLLECTION = 'ondokus';
 
 export const useCreateUidOndokuPage = (id: string, limit: number) => {
   const history = useHistory();
@@ -42,7 +45,7 @@ export const useCreateUidOndokuPage = (id: string, limit: number) => {
     const uidOndoku: CreateUidOndoku = {
       createdAt: new Date().getTime(),
       uid,
-      ondoku: db.collection('ondokus').doc(id),
+      ondoku: doc(db, COLLECTION, id),
     };
     const { success } = await createUidOndoku(uidOndoku);
     if (success) {

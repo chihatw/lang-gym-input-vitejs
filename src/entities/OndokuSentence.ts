@@ -1,4 +1,4 @@
-import firebase from 'firebase/app';
+import { DocumentData } from '@firebase/firestore';
 import { Accent } from './Accent';
 
 export type OndokuSentence = {
@@ -19,10 +19,7 @@ export type UpdateOndokuSentence = Omit<
   'id' | 'createdAt' | 'line' | 'ondoku'
 >;
 
-export const buildOndokuSentence = (
-  id: string,
-  data: firebase.firestore.DocumentData
-) => {
+export const buildOndokuSentence = (id: string, data: DocumentData) => {
   const ondokuSentence: OndokuSentence = {
     id,
     accents: data.accents,

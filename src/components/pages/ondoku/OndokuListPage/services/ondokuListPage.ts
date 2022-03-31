@@ -1,3 +1,11 @@
+import {
+  query,
+  onSnapshot,
+  collection,
+  orderBy,
+  limit,
+} from '@firebase/firestore';
+
 import { useEffect, useState } from 'react';
 import { deleteOndoku, updateOndoku } from '../../../../../repositories/ondoku';
 import { useHistory } from 'react-router-dom';
@@ -5,24 +13,29 @@ import { buildOndoku, Ondoku } from '../../../../../entities/Ondoku';
 import { db } from '../../../../../repositories/firebase';
 import { deleteOndokuSentences } from '../../../../../repositories/ondokuSentence';
 import { deleteFile } from '../../../../../repositories/file';
-export const useOndokuListPage = (limit: number) => {
+
+const COLLECTION = 'ondokus';
+const ondokusRef = collection(db, 'ondokus');
+
+export const useOndokuListPage = (_limit: number) => {
   const history = useHistory();
-  const ondokusRef = db.collection('ondokus');
+
   const [ondokus, setOndokus] = useState<Ondoku[]>([]);
   useEffect(() => {
-    const unsubscribe = ondokusRef
-      .orderBy('createdAt', 'desc')
-      .limit(limit)
-      .onSnapshot(
-        (snapshot) => {
-          console.log('snapshot ondoku');
-          const ondokus = snapshot.docs.map((doc) =>
-            buildOndoku(doc.id, doc.data())
-          );
-          setOndokus(ondokus);
-        },
-        (error) => {}
-      );
+    const q = query(ondokusRef, orderBy('createdAt', 'desc'), limit(_limit));
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        console.log('snapshot ondoku');
+        const ondokus = snapshot.docs.map((doc) =>
+          buildOndoku(doc.id, doc.data())
+        );
+        setOndokus(ondokus);
+      },
+      (e) => {
+        console.warn(e);
+      }
+    );
 
     return () => {
       unsubscribe();

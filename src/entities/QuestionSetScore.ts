@@ -1,4 +1,4 @@
-import firebase from 'firebase/app';
+import { DocumentData } from '@firebase/firestore';
 export type QuestionSetScore = {
   id: string;
   answers: { [key: string]: string };
@@ -11,10 +11,7 @@ export type QuestionSetScore = {
 
 export type CreateQuestionSetScore = Omit<QuestionSetScore, 'id'>;
 
-export const buildQuestionSetScore = (
-  id: string,
-  data: firebase.firestore.DocumentData
-) => {
+export const buildQuestionSetScore = (id: string, data: DocumentData) => {
   const questionSetScore: QuestionSetScore = {
     id,
     answers: data.answers,

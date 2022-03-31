@@ -1,3 +1,10 @@
+import {
+  onSnapshot,
+  query,
+  collection,
+  orderBy,
+  limit,
+} from '@firebase/firestore';
 import { useEffect, useState } from 'react';
 import { buildUidOndoku, UidOndoku } from '../../../../../entities/UidOndoku';
 import { db } from '../../../../../repositories/firebase';
@@ -5,7 +12,10 @@ import { getOndoku } from '../../../../../repositories/ondoku';
 import { deleteUidOndoku } from '../../../../../repositories/uidOndoku';
 import { getUser } from '../../../../../repositories/user';
 
-export const useUidOndokuListPage = (limit: number) => {
+const COLLECTION = 'uidOndokus';
+const colRef = collection(db, COLLECTION);
+
+export const useUidOndokuListPage = (_limit: number) => {
   const [uidOndokus, setUidOndokus] = useState<UidOndoku[]>([]);
   const [uids, setUids] = useState<string[]>([]);
   const [ondokuIDs, setOndokuIDs] = useState<string[]>([]);
@@ -15,23 +25,21 @@ export const useUidOndokuListPage = (limit: number) => {
   const [titles, setTitles] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
-    const unsubscribe = db
-      .collection('uidOndokus')
-      .orderBy('createdAt', 'desc')
-      .limit(limit)
-      .onSnapshot(
-        (snapshot) => {
-          console.log('snapshot uid ondokus');
-          if (!snapshot.empty) {
-            setUidOndokus(
-              snapshot.docs.map((doc) => buildUidOndoku(doc.id, doc.data()))
-            );
-          }
-        },
-        (error) => {
-          console.warn(error);
+    const q = query(colRef, orderBy('createdAt', 'desc'), limit(_limit));
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        console.log('snapshot uid ondokus');
+        if (!snapshot.empty) {
+          setUidOndokus(
+            snapshot.docs.map((doc) => buildUidOndoku(doc.id, doc.data()))
+          );
         }
-      );
+      },
+      (error) => {
+        console.warn(error);
+      }
+    );
 
     return () => {
       unsubscribe();

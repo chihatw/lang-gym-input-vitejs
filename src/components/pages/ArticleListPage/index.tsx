@@ -1,3 +1,11 @@
+import {
+  onSnapshot,
+  collection,
+  query,
+  orderBy,
+  limit,
+} from '@firebase/firestore';
+
 import dayjs from 'dayjs';
 import { useHistory } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
@@ -35,21 +43,29 @@ const LIMIT = 6;
 // TODO article に hasRecButton を追加
 // OPTIMIZE firebase 9.0, データベースとのやりとりをAppに上げる
 
+const COLLECTION = 'articles';
+
+const articlesRef = collection(db, COLLECTION);
+
 const ArticleListPage = () => {
   const history = useHistory();
-  const articlesRef = db.collection('articles');
+
   const [articles, setArticles] = useState<Article[]>([]);
   useEffect(() => {
-    const unsubscribe = articlesRef
-      .orderBy('createdAt', 'desc')
-      .limit(LIMIT)
-      .onSnapshot((snapshot) => {
+    const q = query(articlesRef, orderBy('createdAt', 'desc'), limit(LIMIT));
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
         console.log('snapshot article');
         const articles = snapshot.docs.map((doc) =>
           buildArticle(doc.id, doc.data())
         );
         setArticles(articles);
-      });
+      },
+      (e) => {
+        console.warn(e);
+      }
+    );
 
     return () => {
       unsubscribe();

@@ -1,15 +1,29 @@
 import {
+  collection,
+  getDoc,
+  doc,
+  query,
+  getDocs,
+  where,
+  orderBy,
+  limit,
+  setDoc,
+  writeBatch,
+} from '@firebase/firestore';
+import {
   buildQuestionSetScore,
   CreateQuestionSetScore,
 } from '../entities/QuestionSetScore';
 import { db } from './firebase';
 
-const questionSetScoresRef = db.collection('questionSetScores');
+const COLLECTION = 'questionSetScores';
+
+const questionSetScoresRef = collection(db, 'questionSetScores');
 
 export const getQuestionSetScore = async (id: string) => {
   try {
     console.log('get question set score');
-    const snapshot = await questionSetScoresRef.doc(id).get();
+    const snapshot = await getDoc(doc(db, COLLECTION, id));
     return buildQuestionSetScore(id, snapshot.data()!);
   } catch (e) {
     console.warn(e);
@@ -17,14 +31,16 @@ export const getQuestionSetScore = async (id: string) => {
   }
 };
 
-export const getQuestionSetScores = async (uid: string, limit: number) => {
+export const getQuestionSetScores = async (uid: string, _limit: number) => {
   try {
     console.log('get question set scores');
-    const snapshot = await questionSetScoresRef
-      .where('uid', '==', uid)
-      .orderBy('createdAt', 'desc')
-      .limit(limit)
-      .get();
+    const q = query(
+      questionSetScoresRef,
+      where('uid', '==', uid),
+      orderBy('createdAt', 'desc'),
+      limit(_limit)
+    );
+    const snapshot = await getDocs(q);
     const questionSetScores = snapshot.docs.map((doc) =>
       buildQuestionSetScore(doc.id, doc.data())
     );
@@ -39,8 +55,8 @@ export const createQuestionSetScore = async (
 ) => {
   try {
     console.log('create question set score');
-    const docRef = questionSetScoresRef.doc();
-    await questionSetScoresRef.doc(docRef.id).set(questionSetScore);
+    const docRef = doc(questionSetScoresRef);
+    await setDoc(docRef, questionSetScore);
     return docRef.id;
   } catch (e) {
     console.warn(e);
@@ -51,12 +67,14 @@ export const createQuestionSetScore = async (
 export const deleteQuestionSetScoresByQuestionSetID = async (
   questionSetID: string
 ) => {
-  const batch = db.batch();
+  const batch = writeBatch(db);
   try {
     console.log('get question set scores');
-    const snapshot = await questionSetScoresRef
-      .where('questionSet', '==', questionSetID)
-      .get();
+    const q = query(
+      questionSetScoresRef,
+      where('questionSet', '==', questionSetID)
+    );
+    const snapshot = await getDocs(q);
     if (!snapshot.empty) {
       snapshot.forEach((doc) => {
         batch.delete(doc.ref);

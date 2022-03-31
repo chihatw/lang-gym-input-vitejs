@@ -1,4 +1,4 @@
-import firebase from 'firebase/app';
+import { DocumentData } from '@firebase/firestore';
 
 export type Assignment = {
   id: string;
@@ -10,10 +10,7 @@ export type Assignment = {
 
 export type CreateAssignment = Omit<Assignment, 'id'>;
 
-export const buildAssignment = (
-  id: string,
-  data: firebase.firestore.DocumentData
-) => {
+export const buildAssignment = (id: string, data: DocumentData) => {
   const assignment: Assignment = {
     id,
     article: data.article,

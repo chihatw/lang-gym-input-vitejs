@@ -1,4 +1,4 @@
-import firebase from 'firebase/app';
+import { DocumentData } from '@firebase/firestore';
 
 export type SentenceParseNew = {
   id: string;
@@ -27,10 +27,7 @@ export type CreateSentenceParseNew = {
   commentInvisibilities: string;
 };
 
-export const buildSentenceParseNew = (
-  id: string,
-  data: firebase.firestore.DocumentData
-) => {
+export const buildSentenceParseNew = (id: string, data: DocumentData) => {
   const sentenceParse: SentenceParseNew = {
     id,
     line: data.line,

@@ -1,4 +1,4 @@
-import firebase from 'firebase/app';
+import { DocumentData } from '@firebase/firestore';
 
 export type Ondoku = {
   id: string;
@@ -12,10 +12,7 @@ export type CreateOndoku = Omit<Ondoku, 'id'>;
 
 export type UpdateOndoku = Omit<Ondoku, 'id'>;
 
-export const buildOndoku = (
-  id: string,
-  data: firebase.firestore.DocumentData
-) => {
+export const buildOndoku = (id: string, data: DocumentData) => {
   const ondoku: Ondoku = {
     id,
     createdAt: data.createdAt,

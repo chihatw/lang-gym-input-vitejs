@@ -1,14 +1,27 @@
-import firebase from 'firebase/app';
+import {
+  collection,
+  doc,
+  getDoc,
+  query,
+  where,
+  getDocs,
+  orderBy,
+  limit,
+  writeBatch,
+  updateDoc,
+} from '@firebase/firestore';
 import { buildSentence, CreateSentence, Sentence } from '../entities/Sentence';
 import { db } from './firebase';
 
-const sentencesRef = db.collection('sentences');
+const COLLECTION = 'sentences';
+
+const sentencesRef = collection(db, COLLECTION);
 
 export const getSentence = async (id: string) => {
   try {
     console.log('get sentence');
-    const doc = await sentencesRef.doc(id).get();
-    return buildSentence(doc.id, doc.data()!);
+    const snapshot = await getDoc(doc(db, COLLECTION, id));
+    return buildSentence(snapshot.id, snapshot.data()!);
   } catch (e) {
     console.warn(e);
     return null;
@@ -18,10 +31,12 @@ export const getSentence = async (id: string) => {
 export const getSentences = async (articleID: string) => {
   try {
     console.log('get sentences');
-    const snapshot = await sentencesRef
-      .where('article', '==', articleID)
-      .orderBy('line')
-      .get();
+    const q = query(
+      sentencesRef,
+      where('article', '==', articleID),
+      orderBy('line')
+    );
+    const snapshot = await getDocs(q);
     const sentences = snapshot.docs.map((doc) =>
       buildSentence(doc.id, doc.data())
     );
@@ -35,16 +50,18 @@ export const getSentences = async (articleID: string) => {
 export const getSentencesByTags = async (
   tags: string[],
   uid: string,
-  limit: number
+  _limit: number
 ) => {
   try {
-    let query: firebase.firestore.Query = db.collection('sentences');
+    let q = query(sentencesRef);
+    // let query: firebase.firestore.Query = db.collection('sentences');
     if (!tags.length) return [];
     tags.forEach((tag) => {
-      query = sentencesRef.where(`tags.${tag}`, '==', true);
+      q = query(q, where(`tags.${tag}`, '==', true));
     });
     console.log('get sentnces by tags');
-    const snapshot = await query.where('uid', '==', uid).limit(limit).get();
+    q = query(q, where('uid', '==', uid), limit(_limit));
+    const snapshot = await getDocs(q);
     const sentences = snapshot.docs.map((doc) =>
       buildSentence(doc.id, doc.data())
     );
@@ -56,10 +73,11 @@ export const getSentencesByTags = async (
 };
 
 export const createSentences = async (sentences: CreateSentence[]) => {
-  const batch = db.batch();
+  const batch = writeBatch(db);
   try {
-    sentences.forEach((s) => {
-      batch.set(sentencesRef.doc(), s, { merge: false });
+    sentences.forEach((sentence) => {
+      const docRef = doc(sentencesRef);
+      batch.set(docRef, sentence);
     });
     console.log('create sentences');
     await batch.commit();
@@ -74,7 +92,7 @@ export const updateSentence = async (sentence: Sentence) => {
   try {
     const { id, ...omittedSentence } = sentence;
     console.log('update sentence');
-    await sentencesRef.doc(id).update(omittedSentence);
+    await updateDoc(doc(db, COLLECTION, id), { ...omittedSentence });
     return { success: true };
   } catch (e) {
     console.warn(e);
@@ -83,11 +101,11 @@ export const updateSentence = async (sentence: Sentence) => {
 };
 
 export const updateSentences = async (sentences: Sentence[]) => {
-  const batch = db.batch();
+  const batch = writeBatch(db);
   try {
     sentences.forEach((s) => {
       const { id, ...omittedSentence } = s;
-      batch.update(sentencesRef.doc(id), omittedSentence);
+      batch.update(doc(db, COLLECTION, id), { ...omittedSentence });
     });
     console.log('update sentences');
     await batch.commit();
@@ -99,13 +117,16 @@ export const updateSentences = async (sentences: Sentence[]) => {
 };
 
 export const deleteSentences = async (articleID: string) => {
-  const batch = db.batch();
+  const batch = writeBatch(db);
   try {
     console.log('get sentences');
-    const snapshot = await sentencesRef
-      .where('article', '==', articleID)
-      .orderBy('line')
-      .get();
+    const q = query(
+      sentencesRef,
+      where('article', '==', articleID),
+      orderBy('line')
+    );
+    const snapshot = await getDocs(q);
+
     if (!snapshot.empty) {
       snapshot.docs.forEach((doc) => {
         batch.delete(doc.ref);

@@ -1,3 +1,12 @@
+import {
+  collection,
+  query,
+  onSnapshot,
+  where,
+  orderBy,
+  limit,
+} from '@firebase/firestore';
+
 import { useEffect, useState } from 'react';
 import { getUser } from '../../../../../repositories/user';
 import { useHistory } from 'react-router-dom';
@@ -14,6 +23,10 @@ import { deleteQuestions } from '../../../../../repositories/question';
 import { deleteQuestionSetScoresByQuestionSetID } from '../../../../../repositories/questionSetScore';
 import { deleteQuestionSet } from '../../../../../repositories/questionSet';
 
+const LIMIT = 5;
+const COLLECTION = 'questionSets';
+const colRef = collection(db, COLLECTION);
+
 export const useAccentsQuestionListPage = () => {
   const history = useHistory();
   const [uids, setUids] = useState<string[]>([]);
@@ -22,30 +35,32 @@ export const useAccentsQuestionListPage = () => {
     [id: string]: string;
   }>({});
   useEffect(() => {
-    const unsubscribe = db
-      .collection('questionSets')
-      .where('type', '==', 'articleAccents')
-      .orderBy('createdAt', 'desc')
-      .limit(5)
-      .onSnapshot(
-        (snapshot) => {
-          console.log('snapshot question set');
-          if (!snapshot.empty) {
-            const questionSets = snapshot.docs.map((doc) =>
-              buildQuestionSet(doc.id, doc.data())
-            );
-            setQuestionSets(questionSets);
-            setUids(
-              questionSets
-                .map((q) => q.uid)
-                .filter((item, index, self) => self.indexOf(item) === index)
-            );
-          }
-        },
-        (error) => {
-          console.warn(error);
+    const q = query(
+      colRef,
+      where('type', '==', 'articleAccents'),
+      orderBy('createdAt', 'desc'),
+      limit(LIMIT)
+    );
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        console.log('snapshot question set');
+        if (!snapshot.empty) {
+          const questionSets = snapshot.docs.map((doc) =>
+            buildQuestionSet(doc.id, doc.data())
+          );
+          setQuestionSets(questionSets);
+          setUids(
+            questionSets
+              .map((q) => q.uid)
+              .filter((item, index, self) => self.indexOf(item) === index)
+          );
         }
-      );
+      },
+      (e) => {
+        console.warn(e);
+      }
+    );
 
     return () => {
       unsubscribe();

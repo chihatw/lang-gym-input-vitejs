@@ -1,4 +1,15 @@
 import {
+  doc,
+  query,
+  where,
+  getDoc,
+  getDocs,
+  orderBy,
+  updateDoc,
+  collection,
+  writeBatch,
+} from '@firebase/firestore';
+import {
   buildOndokuSentence,
   CreateOndokuSentence,
   OndokuSentence,
@@ -6,13 +17,16 @@ import {
 } from '../entities/OndokuSentence';
 import { db } from './firebase';
 
-const ondokuSentencesRef = db.collection('oSentences');
+const COLLECTION = 'oSentences';
+const ondokuSentencesRef = collection(db, 'oSentences');
 
 export const getOndokuSentence = async (id: string) => {
   try {
     console.log('get ondoku sentence');
-    const doc = await ondokuSentencesRef.doc(id).get();
-    return doc.exists ? buildOndokuSentence(doc.id, doc.data()!) : null;
+    const snapshot = await getDoc(doc(db, COLLECTION, id));
+    return snapshot.exists()
+      ? buildOndokuSentence(snapshot.id, snapshot.data())
+      : null;
   } catch (e) {
     console.warn(e);
     return null;
@@ -22,10 +36,13 @@ export const getOndokuSentence = async (id: string) => {
 export const getOndokuSentences = async (ondokuID: string) => {
   try {
     console.log('get ondoku sentences');
-    const snapshot = await ondokuSentencesRef
-      .where('ondoku', '==', ondokuID)
-      .orderBy('line')
-      .get();
+    const q = query(
+      ondokuSentencesRef,
+      where('ondoku', '==', ondokuID),
+      orderBy('line')
+    );
+
+    const snapshot = await getDocs(q);
     const ondokuSentences = snapshot.docs.map((doc) =>
       buildOndokuSentence(doc.id, doc.data())
     );
@@ -42,7 +59,7 @@ export const updateOndokuSentence = async (
 ) => {
   try {
     console.log('update ondoku sentence');
-    await ondokuSentencesRef.doc(id).update(ondokuSentence);
+    await updateDoc(doc(db, COLLECTION, id), { ...ondokuSentence });
     return { success: true };
   } catch (e) {
     console.warn(e);
@@ -53,11 +70,11 @@ export const updateOndokuSentence = async (
 export const updateOndokuSentences = async (
   ondokuSentences: OndokuSentence[]
 ) => {
-  const batch = db.batch();
+  const batch = writeBatch(db);
   try {
     ondokuSentences.forEach((s) => {
       const { id, ...omittedOndokuSentence } = s;
-      batch.update(ondokuSentencesRef.doc(id), omittedOndokuSentence);
+      batch.update(doc(db, COLLECTION, id), { ...omittedOndokuSentence });
     });
     console.log('update ondoku sentences');
     await batch.commit();
@@ -72,9 +89,10 @@ export const createOndokuSentences = async (
   ondokuSentences: CreateOndokuSentence[]
 ) => {
   try {
-    const batch = db.batch();
-    ondokuSentences.forEach((s) => {
-      batch.set(ondokuSentencesRef.doc(), s, { merge: false });
+    const batch = writeBatch(db);
+    ondokuSentences.forEach((oSentence) => {
+      const docRef = doc(ondokuSentencesRef);
+      batch.set(docRef, oSentence);
     });
     console.log('create ondoku sentences');
     await batch.commit();
@@ -88,10 +106,11 @@ export const createOndokuSentences = async (
 export const deleteOndokuSentences = async (ondokuID: string) => {
   try {
     console.log('get ondoku sentences');
-    const snapshot = await ondokuSentencesRef
-      .where('ondoku', '==', ondokuID)
-      .get();
-    const batch = db.batch();
+
+    const q = query(ondokuSentencesRef, where('ondoku', '==', ondokuID));
+
+    const snapshot = await getDocs(q);
+    const batch = writeBatch(db);
     snapshot.forEach((doc) => {
       batch.delete(doc.ref);
     });

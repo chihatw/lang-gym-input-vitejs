@@ -1,12 +1,28 @@
+import {
+  collection,
+  startAfter,
+  getDoc,
+  getDocs,
+  doc,
+  query,
+  where,
+  limit,
+  orderBy,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+} from '@firebase/firestore';
 import { db } from './firebase';
 import { Article, buildArticle, CreateArticle } from '../entities/Article';
 
-const articlesRef = db.collection('articles');
+const COLLECTION = 'articles';
+
+const articlesRef = collection(db, COLLECTION);
 
 export const getArticle = async (id: string) => {
   try {
     console.log('get article');
-    const snapshot = await articlesRef.doc(id).get();
+    const snapshot = await getDoc(doc(db, COLLECTION, id));
 
     return buildArticle(id, snapshot.data()!);
   } catch (e) {
@@ -17,18 +33,25 @@ export const getArticle = async (id: string) => {
 
 export const getArticles = async (
   uid: string,
-  limit: number,
-  startAfter?: number
+  _limit: number,
+  _startAfter?: number
 ) => {
   try {
-    const query = articlesRef
-      .where('uid', '==', uid)
-      .orderBy('createdAt', 'desc')
-      .limit(limit);
+    let q = query(
+      articlesRef,
+      where('uid', '==', uid),
+      orderBy('createdAt', 'desc'),
+      limit(_limit)
+    );
+
     console.log('get articles');
-    const snapshot = !startAfter
-      ? await query.get()
-      : await query.startAfter(startAfter).get();
+
+    if (!!startAfter) {
+      q = query(q, startAfter(_startAfter));
+    }
+
+    const snapshot = await getDocs(q);
+
     const articles = snapshot.docs.map((doc) =>
       buildArticle(doc.id, doc.data())
     );
@@ -42,7 +65,7 @@ export const getArticles = async (
 export const createArticle = async (article: CreateArticle) => {
   try {
     console.log('create article');
-    const docRef = await articlesRef.add(article);
+    const docRef = await addDoc(articlesRef, article);
     return { success: true, articleID: docRef.id };
   } catch (e) {
     console.warn(e);
@@ -54,7 +77,7 @@ export const updateArticle = async (article: Article) => {
   try {
     const { id, ...omittedArticle } = article;
     console.log('update article');
-    await articlesRef.doc(id).update(omittedArticle);
+    await updateDoc(doc(db, COLLECTION, id), { ...omittedArticle });
     return { success: true };
   } catch (e) {
     console.warn(e);
@@ -65,7 +88,7 @@ export const updateArticle = async (article: Article) => {
 export const deleteArticle = async (id: string) => {
   try {
     console.log('delete article');
-    await articlesRef.doc(id).delete();
+    await deleteDoc(doc(db, COLLECTION, id));
     return { success: true };
   } catch (e) {
     console.warn(e);

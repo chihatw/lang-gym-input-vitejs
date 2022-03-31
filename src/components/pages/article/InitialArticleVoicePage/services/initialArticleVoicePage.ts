@@ -1,3 +1,4 @@
+import { getDownloadURL } from '@firebase/storage';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Article } from '../../../../../entities/Article';
@@ -33,7 +34,7 @@ export const useInitialArticleVoicePage = (id: string) => {
     const file = e.target.files[0];
     const { success, snapshot } = await uploadFile(file, 'ondokus');
     if (!!success && !!snapshot) {
-      const url = await snapshot.ref.getDownloadURL();
+      const url = await getDownloadURL(snapshot.ref);
       const newArticle: Article = {
         ...article!,
         downloadURL: url,

@@ -1,4 +1,4 @@
-import firebase from 'firebase/app';
+import { DocumentData } from '@firebase/firestore';
 import { Accent } from './Accent';
 
 export type AssignmentSentence = {
@@ -15,10 +15,7 @@ export type AssignmentSentence = {
 
 export type CreateAssignmentSentence = Omit<AssignmentSentence, 'id'>;
 
-export const buildAssignmentSentence = (
-  id: string,
-  data: firebase.firestore.DocumentData
-) => {
+export const buildAssignmentSentence = (id: string, data: DocumentData) => {
   const assignmentSentence: AssignmentSentence = {
     id,
     accents: data.accents,

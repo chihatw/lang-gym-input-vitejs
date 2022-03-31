@@ -1,4 +1,4 @@
-import firebase from 'firebase/app';
+import { DocumentData } from '@firebase/firestore';
 
 export type QuestionSet = {
   id: string;
@@ -16,10 +16,7 @@ export type QuestionSet = {
 
 export type CreateQuestionSet = Omit<QuestionSet, 'id'>;
 
-export const buildQuestionSet = (
-  id: string,
-  data: firebase.firestore.DocumentData
-) => {
+export const buildQuestionSet = (id: string, data: DocumentData) => {
   const questionSet: QuestionSet = {
     id,
     answered: data.answered,

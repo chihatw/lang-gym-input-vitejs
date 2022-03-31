@@ -1,4 +1,13 @@
-import firebase from 'firebase/app';
+import {
+  collection,
+  getDocs,
+  doc,
+  query,
+  where,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+} from '@firebase/firestore';
 import {
   Assignment,
   buildAssignment,
@@ -6,7 +15,9 @@ import {
 } from '../entities/Assignment';
 import { db } from './firebase';
 
-const assignmentsRef = db.collection('assignments');
+const COLLECTION = 'assignments';
+
+const assignmentsRef = collection(db, COLLECTION);
 
 type Props = {
   uid: string;
@@ -16,11 +27,13 @@ type Props = {
 
 export const getAssignment = async ({ uid, articleID, ondokuID }: Props) => {
   try {
-    const query: firebase.firestore.Query = !!articleID
-      ? assignmentsRef.where('article', '==', articleID)
-      : assignmentsRef.where('ondoku', '==', ondokuID);
+    let q = !!articleID
+      ? query(assignmentsRef, where('article', '==', articleID))
+      : query(assignmentsRef, where('ondoku', '==', ondokuID));
+
+    q = query(q, where('uid', '==', uid));
     console.log('get assignment');
-    const snapshot = await query.where('uid', '==', uid).get();
+    const snapshot = await getDocs(q);
     const doc = snapshot.docs[0];
     return buildAssignment(doc.id, doc.data());
   } catch (e) {
@@ -32,7 +45,7 @@ export const getAssignment = async ({ uid, articleID, ondokuID }: Props) => {
 export const createAssignment = async (assignment: CreateAssignment) => {
   try {
     console.log('create assignment');
-    await assignmentsRef.add(assignment);
+    await addDoc(assignmentsRef, assignment);
     return { success: true };
   } catch (e) {
     console.warn(e);
@@ -44,7 +57,7 @@ export const updateAssignment = async (assignment: Assignment) => {
   try {
     const { id, ...omittedAssignment } = assignment;
     console.log('update assignment');
-    await assignmentsRef.doc(id).update(omittedAssignment);
+    await updateDoc(doc(db, COLLECTION, id), { ...omittedAssignment });
     return { success: true };
   } catch (e) {
     console.warn(e);
@@ -55,7 +68,7 @@ export const updateAssignment = async (assignment: Assignment) => {
 export const deleteAssignment = async (id: string) => {
   try {
     console.log('delete assignment');
-    await assignmentsRef.doc(id).delete();
+    await deleteDoc(doc(db, COLLECTION, id));
     return { success: true };
   } catch (e) {
     console.warn(e);

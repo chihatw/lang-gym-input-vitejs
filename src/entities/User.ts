@@ -1,4 +1,4 @@
-import firebase from 'firebase/app';
+import { DocumentData } from '@firebase/firestore';
 
 export type User = {
   id: string;
@@ -6,10 +6,7 @@ export type User = {
   displayname: string;
 };
 
-export const buildUser = (
-  id: string,
-  data: firebase.firestore.DocumentData
-) => {
+export const buildUser = (id: string, data: DocumentData) => {
   const user: User = {
     id,
     createdAt: data.createdAt,

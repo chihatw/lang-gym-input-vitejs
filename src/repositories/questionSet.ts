@@ -1,16 +1,31 @@
 import {
+  collection,
+  getDoc,
+  doc,
+  getDocs,
+  where,
+  orderBy,
+  limit,
+  query,
+  updateDoc,
+  addDoc,
+  deleteDoc,
+} from '@firebase/firestore';
+import {
   buildQuestionSet,
   CreateQuestionSet,
   QuestionSet,
 } from '../entities/QuestionSet';
 import { db } from './firebase';
 
-const questionSetsRef = db.collection('questionSets');
+const COLLECTION = 'questionSets';
+
+const questionSetsRef = collection(db, COLLECTION);
 
 export const getQuestionSet = async (id: string) => {
   try {
     console.log('get question set');
-    const snapshot = await questionSetsRef.doc(id).get();
+    const snapshot = await getDoc(doc(db, COLLECTION, id));
     return buildQuestionSet(id, snapshot.data()!);
   } catch (e) {
     console.warn(e);
@@ -18,17 +33,15 @@ export const getQuestionSet = async (id: string) => {
   }
 };
 
-export const getQuestionSets = async (limit: number, uid?: string) => {
+export const getQuestionSets = async (_limit: number, uid?: string) => {
   try {
-    let query = questionSetsRef;
+    let q = query(questionSetsRef);
     if (!!uid) {
-      query.where('uid', '==', uid);
+      q = query(q, where('uid', '==', uid));
     }
     console.log('get question sets');
-    const snapshot = await query
-      .orderBy('createdAt', 'desc')
-      .limit(limit)
-      .get();
+    q = query(q, orderBy('createdAt', 'desc'), limit(_limit));
+    const snapshot = await getDocs(q);
     const questionSets = snapshot.docs.map((doc) =>
       buildQuestionSet(doc.id, doc.data())
     );
@@ -43,7 +56,7 @@ export const updateQuestionSet = async (questionSet: QuestionSet) => {
   try {
     const { id, ...omittedQuestionSet } = questionSet;
     console.log('update question set');
-    await questionSetsRef.doc(id).update(omittedQuestionSet);
+    await updateDoc(doc(db, COLLECTION, id), { ...omittedQuestionSet });
     return { success: true };
   } catch (e) {
     console.warn(e);
@@ -54,7 +67,7 @@ export const updateQuestionSet = async (questionSet: QuestionSet) => {
 export const createQuestionSet = async (questionSet: CreateQuestionSet) => {
   try {
     console.log('create question set');
-    const docRef = await questionSetsRef.add(questionSet);
+    const docRef = await addDoc(questionSetsRef, questionSet);
     return { success: true, questionSetID: docRef.id };
   } catch (e) {
     console.warn(e);
@@ -65,7 +78,7 @@ export const createQuestionSet = async (questionSet: CreateQuestionSet) => {
 export const deleteQuestionSet = async (id: string) => {
   try {
     console.log('delete question set');
-    await questionSetsRef.doc(id).delete();
+    await deleteDoc(doc(db, COLLECTION, id));
     return { success: true };
   } catch (e) {
     console.log(e);

@@ -1,4 +1,4 @@
-import firebase from 'firebase/app';
+import { DocumentData } from '@firebase/firestore';
 import { Tags } from './Tags';
 
 export const INITIAL_QUESTION = {
@@ -33,10 +33,7 @@ export type Question = {
 
 export type CreateQuestion = Omit<Question, 'id'>;
 
-export const buildQuestion = (
-  id: string,
-  data: firebase.firestore.DocumentData
-) => {
+export const buildQuestion = (id: string, data: DocumentData) => {
   const question: Question = {
     id,
     answerExample: data.answerExample,

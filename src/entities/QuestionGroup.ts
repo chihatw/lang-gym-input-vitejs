@@ -1,4 +1,4 @@
-import firebase from 'firebase/app';
+import { DocumentData } from '@firebase/firestore';
 import { Tags } from './Tags';
 
 export type QuestionGroup = {
@@ -14,10 +14,7 @@ export type QuestionGroup = {
 
 export type CreateQuestionGroup = Omit<QuestionGroup, 'id'>;
 
-export const buildQuestionGroup = (
-  id: string,
-  data: firebase.firestore.DocumentData
-) => {
+export const buildQuestionGroup = (id: string, data: DocumentData) => {
   const questionGroup: QuestionGroup = {
     id,
     createdAt: data.createdAt,

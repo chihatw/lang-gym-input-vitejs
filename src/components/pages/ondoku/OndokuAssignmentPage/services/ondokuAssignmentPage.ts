@@ -1,5 +1,7 @@
+// https://firebase.google.com/docs/storage/web/download-files#download_data_via_url
 import { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
+import { getDownloadURL } from '@firebase/storage';
 import {
   Assignment,
   CreateAssignment,
@@ -104,7 +106,7 @@ export const useOndokuAssignmentPage = (id: string) => {
     const file = e.target.files[0];
     const { success, snapshot } = await uploadFile(file, 'ondokus');
     if (!!success && !!snapshot) {
-      const url = await snapshot.ref.getDownloadURL();
+      const url = await getDownloadURL(snapshot.ref);
       const assignment: CreateAssignment = {
         article: '',
         ondoku: id,
