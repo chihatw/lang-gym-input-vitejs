@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { AssignmentSentence } from '../../../../../entities/AssignmentSentence';
 import { Mark } from '../../../../../entities/Mark';
 import { getArticle } from '../../../../../repositories/article';
@@ -16,7 +16,7 @@ import { deleteFile } from '../../../../../repositories/file';
 import { getSentences } from '../../../../../repositories/sentence';
 
 export const useEditArticleAssignmentVoicePage = (id: string, uid: string) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [initializing, setInitializing] = useState(true);
   const [sentences, setSentences] = useState<string[]>([]);
@@ -85,7 +85,7 @@ export const useEditArticleAssignmentVoicePage = (id: string, uid: string) => {
             originalSentences.map((s) => s.id)
           );
           if (success) {
-            history.push('/article/list');
+            navigate('/article/list');
           }
         }
       }
@@ -106,7 +106,7 @@ export const useEditArticleAssignmentVoicePage = (id: string, uid: string) => {
     );
     const { success } = await updateAssignmentSentences(sentences);
     if (success) {
-      history.push(`/article/${id}/assignment/?uid=${uid}`);
+      navigate(`/article/${id}/assignment/?uid=${uid}`);
     }
   };
 

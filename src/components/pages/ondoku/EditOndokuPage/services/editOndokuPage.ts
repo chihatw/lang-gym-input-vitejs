@@ -1,12 +1,12 @@
 import dayjs from 'dayjs';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 import { Ondoku } from '../../../../../entities/Ondoku';
 import { getOndoku, updateOndoku } from '../../../../../repositories/ondoku';
 
 export const useEditOndokuPage = (id: string) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [date, setDate] = useState<Date>(new Date());
   const [isShowAccents, setIsShowAccents] = useState(false);
   const [title, setTitle] = useState('');
@@ -65,7 +65,7 @@ export const useEditOndokuPage = (id: string) => {
     };
     const { success } = await updateOndoku(newOndoku);
     if (success) {
-      history.push('/ondoku/list');
+      navigate('/ondoku/list');
     }
   };
   return {

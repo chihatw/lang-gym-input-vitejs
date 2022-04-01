@@ -1,13 +1,16 @@
 import React from 'react';
-import { useRouteMatch } from 'react-router';
+import { useMatch } from 'react-router-dom';
 import { useEditArticleAssignmentVoicePage } from './services/editArticleAssignmentVoicePage';
 import ArticleAssignmentVoice from './components/ArticleAssignmentVoice';
 import TableLayout from '../../../templates/TableLayout';
 
 const EditArticleAssignmentVoicePage = () => {
-  const match = useRouteMatch<{ id: string; uid: string }>();
+  const match = useMatch('/article/:id/assignment/uid/:uid/voice/');
   const { initializing, title, sentences, ...props } =
-    useEditArticleAssignmentVoicePage(match.params.id, match.params.uid);
+    useEditArticleAssignmentVoicePage(
+      match?.params.id || '',
+      match?.params.uid || ''
+    );
   if (initializing) {
     return <></>;
   } else {

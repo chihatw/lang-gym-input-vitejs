@@ -2,7 +2,7 @@ import Edit from '@mui/icons-material/Edit';
 import { Divider, IconButton } from '@mui/material';
 import FileCopyOutlined from '@mui/icons-material/FileCopyOutlined';
 import React, { useContext, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import YouTube from 'react-youtube';
 import SentenceParsePane from './SentenceParsePane';
 import SetMarksForm from './SetMarksForm';
@@ -11,7 +11,7 @@ import { css } from '@emotion/css';
 import { YoutubeEmbeded } from '@chihatw/lang-gym-h.ui.youtube-embeded';
 
 const SentenceParseList = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { sentenceParseNews, article, sentences, onCopy } = useContext(
     SentenceParseListPageContext
   );
@@ -68,9 +68,7 @@ const SentenceParseList = () => {
                 <div>
                   <IconButton
                     size='small'
-                    onClick={() =>
-                      history.push(`/sentence/${sentence.id}/parse`)
-                    }
+                    onClick={() => navigate(`/sentence/${sentence.id}/parse`)}
                   >
                     <Edit />
                   </IconButton>

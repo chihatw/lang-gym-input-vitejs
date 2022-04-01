@@ -1,12 +1,14 @@
 import React from 'react';
-import { Redirect, useRouteMatch } from 'react-router';
+import { Navigate, useMatch } from 'react-router-dom';
 import { ArticlePaneContext, useArticlePage } from './services/articlePage';
 import ArticleSentenceList from './components/ArticleSentenceList';
 import TableLayout from '../../../templates/TableLayout';
 
 const ArticlePage = () => {
-  const match = useRouteMatch<{ id: string }>();
-  const { initializing, article, sentences } = useArticlePage(match.params.id);
+  const match = useMatch('/article/:id');
+  const { initializing, article, sentences } = useArticlePage(
+    match?.params.id || ''
+  );
   if (initializing) {
     return <></>;
   } else {
@@ -19,7 +21,7 @@ const ArticlePage = () => {
         </ArticlePaneContext.Provider>
       );
     } else {
-      return <Redirect to={`/article/${match.params.id}/initial`} />;
+      return <Navigate to={`/article/${match?.params.id}/initial`} />;
     }
   }
 };

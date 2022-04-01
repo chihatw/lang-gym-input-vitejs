@@ -1,11 +1,11 @@
 import React from 'react';
-import { useRouteMatch } from 'react-router';
+import { useMatch } from 'react-router-dom';
 import { useArticleAssignmentPage } from './services/articleAssignmentPage';
 import ArticleAssignment from './components/ArticleAssignment';
 import TableLayout from '../../../templates/TableLayout';
 
 const ArticleAssignmentPage = () => {
-  const match = useRouteMatch<{ id: string; uid: string }>();
+  const match = useMatch('/article/:id/assignment');
   const {
     initializing,
     title,
@@ -14,7 +14,7 @@ const ArticleAssignmentPage = () => {
     assignmentSentences,
     onDelete,
     onUpload,
-  } = useArticleAssignmentPage(match.params.id);
+  } = useArticleAssignmentPage(match?.params.id || '');
   if (initializing) {
     return <></>;
   } else {

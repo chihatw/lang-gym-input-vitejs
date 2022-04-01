@@ -1,13 +1,13 @@
 import React from 'react';
-import { Redirect, useRouteMatch } from 'react-router';
+import { Navigate, useMatch } from 'react-router-dom';
 import { useInitialArticleVoicePage } from './services/initialArticleVoicePage';
 import TableLayout from '../../../templates/TableLayout';
 import { Button } from '@mui/material';
 
 const InitialArticleVoicePage = () => {
-  const match = useRouteMatch<{ id: string }>();
+  const match = useMatch('/article/:id/voice/initial');
   const { title, initializing, hasSentences, onUpload } =
-    useInitialArticleVoicePage(match.params.id);
+    useInitialArticleVoicePage(match?.params.id || '');
   if (initializing) {
     return <></>;
   } else {
@@ -26,7 +26,7 @@ const InitialArticleVoicePage = () => {
         </TableLayout>
       );
     } else {
-      return <Redirect to={`/article/${match.params.id}/initial`} />;
+      return <Navigate to={`/article/${match?.params.id}/initial`} />;
     }
   }
 };

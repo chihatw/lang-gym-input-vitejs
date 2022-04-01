@@ -1,11 +1,11 @@
 import React from 'react';
-import { useRouteMatch } from 'react-router-dom';
+import { useMatch } from 'react-router-dom';
 import { useEditOndokuPage } from './services/editOndokuPage';
 import OndokuForm from '../../../organisms/OndokuForm';
 import TableLayout from '../../../templates/TableLayout';
 
 const EditOndokuPage = () => {
-  const match = useRouteMatch<{ id: string }>();
+  const match = useMatch('/ondoku/edit/:id');
   const {
     date,
     onSubmit,
@@ -13,7 +13,7 @@ const EditOndokuPage = () => {
     isShowAccents,
     textFieldItems,
     onToggleShowAccents,
-  } = useEditOndokuPage(match.params.id);
+  } = useEditOndokuPage(match?.params.id || '');
   return (
     <TableLayout title='音読編集' backURL='/ondoku/list'>
       <OndokuForm

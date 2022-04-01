@@ -2,7 +2,7 @@ import { User as _User } from 'firebase/auth';
 
 import { createContext } from 'react';
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Accent } from '../entities/Accent';
 import { CreateQuestion } from '../entities/Question';
 import { CreateQuestionGroup, QuestionGroup } from '../entities/QuestionGroup';
@@ -44,7 +44,7 @@ export const AppContext = createContext<{
 });
 
 export const useApp = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [user, setUser] = useState(auth.currentUser);
   const [initializing, setInitializing] = useState(!auth.currentUser);
 
@@ -139,7 +139,7 @@ export const useApp = () => {
             questionSet
           );
           if (success) {
-            history.push(`/rhythmsQuestion/${questionSetID!}`);
+            navigate(`/rhythmsQuestion/${questionSetID!}`);
           }
         }
       }

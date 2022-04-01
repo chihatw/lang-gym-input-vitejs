@@ -1,6 +1,6 @@
 import { doc } from '@firebase/firestore';
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { CreateUidOndoku } from '../../../../../entities/UidOndoku';
 import { User } from '../../../../../entities/User';
 import { db } from '../../../../../repositories/firebase';
@@ -11,7 +11,7 @@ import { getUsers } from '../../../../../repositories/user';
 const COLLECTION = 'ondokus';
 
 export const useCreateUidOndokuPage = (id: string, limit: number) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [initializing, setInitializing] = useState(true);
   const [title, setTitle] = useState('');
   const [users, setUsers] = useState<User[]>([]);
@@ -49,7 +49,7 @@ export const useCreateUidOndokuPage = (id: string, limit: number) => {
     };
     const { success } = await createUidOndoku(uidOndoku);
     if (success) {
-      history.push('/ondoku/list');
+      navigate('/ondoku/list');
     }
   };
 

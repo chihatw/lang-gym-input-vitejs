@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { buildAccents } from '../../../../../entities/Accent';
 import { CreateSentence } from '../../../../../entities/Sentence';
 import { buildTags } from '../../../../../entities/Tags';
@@ -7,7 +7,7 @@ import { getArticle } from '../../../../../repositories/article';
 import { createSentences } from '../../../../../repositories/sentence';
 
 export const useInitialArticlePage = (id: string) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [initializing, setInitializing] = useState(true);
   const [title, setTitle] = useState('');
   const [uid, setUid] = useState('');
@@ -99,7 +99,7 @@ export const useInitialArticlePage = (id: string) => {
   const onSubmit = async () => {
     const { success } = await createSentences(sentences);
     if (success) {
-      history.push(`/article/${id}`);
+      navigate(`/article/${id}`);
     }
   };
 

@@ -1,20 +1,20 @@
 import React from 'react';
 import AudioEdit from '@bit/chihatw.lang-gym.audio-edit'; // TODO 内部化
-import { Redirect, useRouteMatch } from 'react-router';
+import { Navigate, useMatch } from 'react-router-dom';
 
 import TableLayout from '../../../templates/TableLayout';
 import { useEditArticleVoicePage } from './services/editArticleVoicePage';
 
 const EditArticleVoicePage = () => {
-  const match = useRouteMatch<{ id: string }>();
+  const match = useMatch('/article/:id/voice');
   const { title, initializing, ...props } = useEditArticleVoicePage(
-    match.params.id
+    match?.params.id || ''
   );
   if (initializing) {
     return <></>;
   } else {
     if (!props.downloadURL) {
-      return <Redirect to={`/article/${match.params.id}/voice/initial`} />;
+      return <Navigate to={`/article/${match?.params.id}/voice/initial`} />;
     } else {
       return (
         <TableLayout title={`${title} - 録音`} backURL={`/article/list`}>

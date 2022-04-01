@@ -8,7 +8,7 @@ import {
 
 import { useEffect, useState } from 'react';
 import { deleteOndoku, updateOndoku } from '../../../../../repositories/ondoku';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { buildOndoku, Ondoku } from '../../../../../entities/Ondoku';
 import { db } from '../../../../../repositories/firebase';
 import { deleteOndokuSentences } from '../../../../../repositories/ondokuSentence';
@@ -18,7 +18,7 @@ const COLLECTION = 'ondokus';
 const ondokusRef = collection(db, 'ondokus');
 
 export const useOndokuListPage = (_limit: number) => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [ondokus, setOndokus] = useState<Ondoku[]>([]);
   useEffect(() => {
@@ -43,10 +43,10 @@ export const useOndokuListPage = (_limit: number) => {
     // eslint-disable-next-line
   }, []);
   const onEdit = (ondoku: Ondoku) => {
-    history.push(`/ondoku/edit/${ondoku.id}`);
+    navigate(`/ondoku/edit/${ondoku.id}`);
   };
   const onAddUidOndoku = (ondoku: Ondoku) => {
-    history.push(`/uidOndoku/${ondoku.id}`);
+    navigate(`/uidOndoku/${ondoku.id}`);
   };
   const onToggleShowAccents = async (ondoku: Ondoku) => {
     const newOndoku: Ondoku = {
@@ -56,7 +56,7 @@ export const useOndokuListPage = (_limit: number) => {
     await updateOndoku(newOndoku);
   };
   const onShowVoice = (ondoku: Ondoku) => {
-    history.push(`/ondoku/${ondoku.id}/voice`);
+    navigate(`/ondoku/${ondoku.id}/voice`);
   };
   const onDelete = async (ondoku: Ondoku) => {
     if (window.confirm(`${ondoku.title}を削除しますか`)) {
@@ -71,11 +71,11 @@ export const useOndokuListPage = (_limit: number) => {
     }
   };
   const onShowSentences = (ondoku: Ondoku) => {
-    history.push(`/ondoku/${ondoku.id}`);
+    navigate(`/ondoku/${ondoku.id}`);
   };
 
   const onShowAssignment = (ondoku: Ondoku) => {
-    history.push(`/ondoku/${ondoku.id}/assignment`);
+    navigate(`/ondoku/${ondoku.id}/assignment`);
   };
 
   return {

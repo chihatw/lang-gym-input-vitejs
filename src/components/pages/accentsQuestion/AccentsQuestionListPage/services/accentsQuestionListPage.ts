@@ -9,7 +9,7 @@ import {
 
 import { useEffect, useState } from 'react';
 import { getUser } from '../../../../../repositories/user';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { db } from '../../../../../repositories/firebase';
 import {
   buildQuestionSet,
@@ -28,7 +28,7 @@ const COLLECTION = 'questionSets';
 const colRef = collection(db, COLLECTION);
 
 export const useAccentsQuestionListPage = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [uids, setUids] = useState<string[]>([]);
   const [questionSets, setQuestionSets] = useState<QuestionSet[]>([]);
   const [userDisplaynames, setUserDisplaynames] = useState<{
@@ -65,7 +65,7 @@ export const useAccentsQuestionListPage = () => {
     return () => {
       unsubscribe();
     };
-  }, [history]);
+  }, [navigate]);
 
   useEffect(() => {
     if (!uids.length) return;
@@ -85,7 +85,7 @@ export const useAccentsQuestionListPage = () => {
   }, [uids]);
 
   const onEdit = (q: QuestionSet) => {
-    history.push(`/accentsQuestion/${q.id}`);
+    navigate(`/accentsQuestion/${q.id}`);
   };
 
   const onDelete = (q: QuestionSet) => async () => {

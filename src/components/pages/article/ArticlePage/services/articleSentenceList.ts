@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { buildAccentString } from '../../../../../entities/Accent';
 import { CreateQuestion } from '../../../../../entities/Question';
 import {
@@ -16,13 +16,13 @@ import { createQuestionSet } from '../../../../../repositories/questionSet';
 import { ArticlePaneContext } from './articlePage';
 
 export const useArticleSentenceList = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { article, sentences } = useContext(ArticlePaneContext);
   const onEdit = (sentenceID: string) => {
-    history.push(`/sentence/${sentenceID}`);
+    navigate(`/sentence/${sentenceID}`);
   };
   const onEditParse = (sentenceID: string) => {
-    history.push(`/sentence/${sentenceID}/parse`);
+    navigate(`/sentence/${sentenceID}/parse`);
   };
 
   const onCreateAccentsQuestion = async () => {
@@ -91,7 +91,7 @@ export const useArticleSentenceList = () => {
             questionSet
           );
           if (success) {
-            history.push(`/accentsQuestion/${questionSetID}`);
+            navigate(`/accentsQuestion/${questionSetID}`);
           }
         }
       }

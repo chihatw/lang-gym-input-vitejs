@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Mark } from '../../../../../entities/Mark';
 import { Ondoku } from '../../../../../entities/Ondoku';
 import { OndokuSentence } from '../../../../../entities/OndokuSentence';
@@ -11,7 +11,7 @@ import {
 } from '../../../../../repositories/ondokuSentence';
 
 export const useEditOndokuVoicePage = (id: string) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [downloadURL, setDownloadURL] = useState('');
   const [initializing, setInitializing] = useState(true);
@@ -67,7 +67,7 @@ export const useEditOndokuVoicePage = (id: string) => {
           const ondoku: Ondoku = { ...originalOndoku!, downloadURL: '' };
           const { success } = await updateOndoku(ondoku);
           if (success) {
-            history.push('/ondoku/list');
+            navigate('/ondoku/list');
           }
         }
       }
@@ -86,7 +86,7 @@ export const useEditOndokuVoicePage = (id: string) => {
     }));
     const { success } = await updateOndokuSentences(sentences);
     if (success) {
-      history.push(`ondoku/${id}`);
+      navigate(`ondoku/${id}`);
     }
   };
 

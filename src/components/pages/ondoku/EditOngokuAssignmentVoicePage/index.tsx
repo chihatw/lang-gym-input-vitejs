@@ -1,13 +1,16 @@
 import React from 'react';
-import { useRouteMatch } from 'react-router';
+import { useMatch } from 'react-router-dom';
 import { useEditOndokuAssignmentVoicePage } from './services/editOndokuAssignmentVoicePage';
 import OndokuAssignmentVoice from './components/OndokuAssignmentVoice';
 import TableLayout from '../../../templates/TableLayout';
 
 const EditOndokuAssignmentVoicePage = () => {
-  const match = useRouteMatch<{ id: string; uid: string }>();
+  const match = useMatch('/ondoku/:id/assignment/uid/:uid/voice/');
   const { initializing, title, sentences, ...props } =
-    useEditOndokuAssignmentVoicePage(match.params.id, match.params.uid);
+    useEditOndokuAssignmentVoicePage(
+      match?.params.id || '',
+      match?.params.uid || ''
+    );
   if (initializing) {
     return <></>;
   } else {

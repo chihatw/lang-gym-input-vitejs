@@ -1,6 +1,6 @@
 // https://firebase.google.com/docs/storage/web/download-files#download_data_via_url
 import { useCallback, useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { getDownloadURL } from '@firebase/storage';
 import {
   Assignment,
@@ -29,7 +29,7 @@ import { getOndokuSentences } from '../../../../../repositories/ondokuSentence';
 import { getUsers } from '../../../../../repositories/user';
 
 export const useOndokuAssignmentPage = (id: string) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [initializing, setInitializing] = useState(true);
   const [ondoku, setOndoku] = useState<Ondoku | null>(null);
   const [uid, setUid] = useState('');
@@ -95,11 +95,11 @@ export const useOndokuAssignmentPage = (id: string) => {
           assignmentSentences.map((s) => s.id)
         );
         if (success) {
-          history.push('/ondoku/list');
+          navigate('/ondoku/list');
         }
       }
     }
-  }, [history, assignmentSentences, assignment]);
+  }, [navigate, assignmentSentences, assignment]);
 
   const onUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -129,7 +129,7 @@ export const useOndokuAssignmentPage = (id: string) => {
         );
         const { success } = await createAssignmentSentenes(assignmentSentences);
         if (success) {
-          history.push(`/ondoku/${id}/assignment/uid/${uid}/voice`);
+          navigate(`/ondoku/${id}/assignment/uid/${uid}/voice`);
         }
       }
     }

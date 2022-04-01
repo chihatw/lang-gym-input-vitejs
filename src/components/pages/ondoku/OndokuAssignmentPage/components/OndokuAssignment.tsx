@@ -1,16 +1,17 @@
 import Edit from '@mui/icons-material/Edit';
 import React from 'react';
 import Speaker from '@bit/chihatw.lang-gym.speaker';
-import SelectUser from '@bit/chihatw.lang-gym.select-user'; // TODO 内部化
+
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import accentsForPitchesArray from 'accents-for-pitches-array';
 import { Button, Card, IconButton } from '@mui/material';
-import { useHistory, useRouteMatch } from 'react-router';
+import { useNavigate, useMatch } from 'react-router-dom';
 
 import { User } from '../../../../../entities/User';
 import { Accent } from '../../../../../entities/Accent';
 import { OndokuSentence } from '../../../../../entities/OndokuSentence';
 import { AssignmentSentence } from '../../../../../entities/AssignmentSentence';
+import SelectUser from '../../../../SelectUser';
 
 const OndokuAssignment: React.FC<{
   users: User[];
@@ -116,8 +117,8 @@ const AssignmentSentenceFooter: React.FC<{
   uid: string;
   line: number;
 }> = ({ downloadURL, start, end, uid, line }) => {
-  const history = useHistory();
-  const match = useRouteMatch<{ id: string }>();
+  const navigate = useNavigate();
+  const match = useMatch('/ondoku/:id/assignment');
   return (
     <div
       style={{
@@ -128,8 +129,8 @@ const AssignmentSentenceFooter: React.FC<{
       <Speaker start={start} end={end} downloadURL={downloadURL} />
       <IconButton
         onClick={() =>
-          history.push(
-            `/ondoku/${match.params.id}/assignment/uid/${uid}/line/${line}`
+          navigate(
+            `/ondoku/${match?.params.id}/assignment/uid/${uid}/line/${line}`
           )
         }
       >

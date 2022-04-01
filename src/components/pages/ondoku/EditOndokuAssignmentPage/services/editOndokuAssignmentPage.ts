@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   buildAccents,
   buildAccentString,
@@ -19,7 +19,7 @@ export const useEditOndokuAssignmentPage = (
   uid: string,
   line: number
 ) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [initializing, setInitializing] = useState(true);
   const [title, setTitle] = useState('');
   const [sentence, setSentence] = useState<OndokuSentence | null>(null);
@@ -96,7 +96,7 @@ export const useEditOndokuAssignmentPage = (
     };
     const { success } = await updateAssignmentSentence(assignmentSentence);
     if (success) {
-      history.push(`/ondoku/${id}/assignment?uid=${uid}`);
+      navigate(`/ondoku/${id}/assignment?uid=${uid}`);
     }
   };
 

@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Ondoku } from '../../../../../entities/Ondoku';
 import { OndokuSentence } from '../../../../../entities/OndokuSentence';
 import { getOndoku } from '../../../../../repositories/ondoku';
 import { getOndokuSentences } from '../../../../../repositories/ondokuSentence';
 
 export const useOndokuPage = (id: string) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [ondoku, setOndoku] = useState<Ondoku | null>(null);
   const [initializing, setInitializing] = useState(true);
   const [ondokuSentences, setOndokuSentences] = useState<OndokuSentence[]>([]);
@@ -32,10 +32,10 @@ export const useOndokuPage = (id: string) => {
       setInitializing(false);
     };
     fetchData();
-  }, [ondoku, history, id]);
+  }, [ondoku, navigate, id]);
 
   const onEdit = (ondokuSentence: OndokuSentence) =>
-    history.push(`/ondoku/sentence/${ondokuSentence.id}`);
+    navigate(`/ondoku/sentence/${ondokuSentence.id}`);
 
   return {
     title,

@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react';
 
 import { User } from '../../../../../entities/User';
 import { getUsers } from '../../../../../repositories/user';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { CreateArticle } from '../../../../../entities/Article';
 import { createArticle } from '../../../../../repositories/article';
 
 export const useCreateArticlePage = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [date, setDate] = useState<Date>(new Date());
   const [isShowAccents, setIsShowAccents] = useState(false);
   const [isShowParse, setIsShowParse] = useState(false);
@@ -114,7 +114,7 @@ export const useCreateArticlePage = () => {
     };
     const { success, articleID } = await createArticle(article);
     if (success) {
-      history.push(`/article/${articleID}`);
+      navigate(`/article/${articleID}`);
     }
   };
   return {

@@ -1,13 +1,13 @@
 import { getDownloadURL } from '@firebase/storage';
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { Ondoku } from '../../../../../entities/Ondoku';
 import { uploadFile } from '../../../../../repositories/file';
 import { getOndoku, updateOndoku } from '../../../../../repositories/ondoku';
 import { getOndokuSentences } from '../../../../../repositories/ondokuSentence';
 
 export const useInitialOndokuVoicePage = (id: string) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [initializing, setInitializing] = useState(true);
   const [ondoku, setOndoku] = useState<Ondoku | null>(null);
@@ -41,7 +41,7 @@ export const useInitialOndokuVoicePage = (id: string) => {
       };
       const { success } = await updateOndoku(newOndoku);
       if (success) {
-        history.push(`/ondoku/${id}/voice`);
+        navigate(`/ondoku/${id}/voice`);
       }
     }
   };

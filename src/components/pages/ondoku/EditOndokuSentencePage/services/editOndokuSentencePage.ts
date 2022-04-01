@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   buildAccents,
   buildAccentString,
@@ -12,7 +12,7 @@ import {
 } from '../../../../../repositories/ondokuSentence';
 
 export const useEditOndokuSentencePage = (id: string) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [downloadURL, setDownloadURL] = useState('');
   const [ondokuID, setOndokuID] = useState('');
@@ -68,7 +68,7 @@ export const useEditOndokuSentencePage = (id: string) => {
     };
     const { success } = await updateOndokuSentence(id, newOndokuSentence);
     if (success) {
-      history.push(`/ondoku/${ondokuID}`);
+      navigate(`/ondoku/${ondokuID}`);
     }
   };
   return {

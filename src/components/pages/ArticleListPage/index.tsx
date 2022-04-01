@@ -7,7 +7,7 @@ import {
 } from '@firebase/firestore';
 
 import dayjs from 'dayjs';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import {
   Box,
@@ -48,7 +48,7 @@ const COLLECTION = 'articles';
 const articlesRef = collection(db, COLLECTION);
 
 const ArticleListPage = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [articles, setArticles] = useState<Article[]>([]);
   useEffect(() => {
@@ -72,22 +72,22 @@ const ArticleListPage = () => {
     };
     // articlesRefをdependanciesに加えるとループする
     // eslint-disable-next-line
-  }, [history]);
+  }, [navigate]);
 
   const onEdit = (articleID: string) => {
-    history.push(`/article/${articleID}/edit`);
+    navigate(`/article/${articleID}/edit`);
   };
   const onClickSentences = (articleID: string) => {
-    history.push(`/article/${articleID}`);
+    navigate(`/article/${articleID}`);
   };
   const onClickSentenceParse = (articleID: string) => {
-    history.push(`/article/${articleID}/parse`);
+    navigate(`/article/${articleID}/parse`);
   };
   const onClickVoice = (articleID: string) => {
-    history.push(`/article/${articleID}/voice`);
+    navigate(`/article/${articleID}/voice`);
   };
   const onClickAssignment = (articleID: string) => {
-    history.push(`/article/${articleID}/assignment`);
+    navigate(`/article/${articleID}/assignment`);
   };
   const onToggleShowAccents = async (article: Article) => {
     const newArticle: Article = {
@@ -125,7 +125,7 @@ const ArticleListPage = () => {
   };
 
   return (
-    <TableLayout title='作文一覧' onCreate={() => history.push('/article')}>
+    <TableLayout title='作文一覧' onCreate={() => navigate('/article')}>
       <Table>
         <TableBody>
           {articles.map((article) => (

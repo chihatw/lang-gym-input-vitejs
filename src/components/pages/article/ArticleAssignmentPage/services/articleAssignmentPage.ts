@@ -1,6 +1,6 @@
 import { getDownloadURL } from '@firebase/storage';
 import { useCallback, useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { CreateAssignment } from '../../../../../entities/Assignment';
 import {
   AssignmentSentence,
@@ -22,7 +22,7 @@ import { deleteFile, uploadFile } from '../../../../../repositories/file';
 import { getSentences } from '../../../../../repositories/sentence';
 
 export const useArticleAssignmentPage = (id: string) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [initializing, setInitializing] = useState(true);
   const [title, setTitle] = useState('');
   const [uid, setUid] = useState('');
@@ -81,11 +81,11 @@ export const useArticleAssignmentPage = (id: string) => {
           assignmentSentences.map((s) => s.id)
         );
         if (success) {
-          history.push('/article/list');
+          navigate('/article/list');
         }
       }
     }
-  }, [downloadURL, history, assignmentSentences, assignmentID]);
+  }, [downloadURL, navigate, assignmentSentences, assignmentID]);
 
   const onUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -115,7 +115,7 @@ export const useArticleAssignmentPage = (id: string) => {
         );
         const { success } = await createAssignmentSentenes(assignmentSentences);
         if (success) {
-          history.push(`/article/${id}/assignment/uid/${uid}/voice`);
+          navigate(`/article/${id}/assignment/uid/${uid}/voice`);
         }
       }
     }

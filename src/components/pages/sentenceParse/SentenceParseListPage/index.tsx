@@ -1,5 +1,5 @@
 import React from 'react';
-import { Redirect, useRouteMatch } from 'react-router';
+import { Navigate, useMatch } from 'react-router-dom';
 import {
   SentenceParseListPageContext,
   useSentenceParseListPage,
@@ -9,7 +9,7 @@ import { Container } from '@mui/material';
 import TableLayoutHeader from '../../../organisms/TableLayoutHeader';
 
 const SentenceParseListPage = () => {
-  const match = useRouteMatch<{ id: string }>();
+  const match = useMatch('/article/:id/parse');
   const {
     marks,
     onCopy,
@@ -22,7 +22,7 @@ const SentenceParseListPage = () => {
     explanationStr,
     setExplanationStr,
     sentenceParseNews,
-  } = useSentenceParseListPage(match.params.id);
+  } = useSentenceParseListPage(match?.params.id || '');
   if (initializing) {
     return <></>;
   } else {
@@ -57,7 +57,7 @@ const SentenceParseListPage = () => {
         </SentenceParseListPageContext.Provider>
       );
     } else {
-      return <Redirect to='/article/list' />;
+      return <Navigate to='/article/list' />;
     }
   }
 };

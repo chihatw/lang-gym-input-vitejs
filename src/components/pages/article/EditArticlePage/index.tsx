@@ -1,12 +1,12 @@
 import React from 'react';
-import { useRouteMatch } from 'react-router';
+import { useMatch } from 'react-router-dom';
 
 import TableLayout from '../../../templates/TableLayout';
 import ArticleForm from '../../../organisms/ArticleForm';
 import { useEditArticlePage } from './services/editArticlePage';
 
 const EditArticlePage = () => {
-  const match = useRouteMatch<{ id: string }>();
+  const match = useMatch('/article/:id/edit');
   const {
     uid,
     date,
@@ -17,7 +17,7 @@ const EditArticlePage = () => {
     onChangeUid,
     switchItems,
     textFieldItems,
-  } = useEditArticlePage(match.params.id);
+  } = useEditArticlePage(match?.params.id || '');
   return (
     <TableLayout title={`${title} - 編集`} backURL='/article/list'>
       <ArticleForm

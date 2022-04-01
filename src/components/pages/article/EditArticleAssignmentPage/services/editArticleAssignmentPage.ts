@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   buildAccents,
   buildAccentString,
@@ -19,7 +19,7 @@ export const useEditArticleAssignmentPage = (
   uid: string,
   line: number
 ) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [initializing, setInitializing] = useState(true);
   const [title, setTitle] = useState('');
   const [sentence, setSentence] = useState<Sentence | null>(null);
@@ -96,7 +96,7 @@ export const useEditArticleAssignmentPage = (
     };
     const { success } = await updateAssignmentSentence(assignmentSentence);
     if (success) {
-      history.push(`/article/${id}/assignment?uid=${uid}`);
+      navigate(`/article/${id}/assignment?uid=${uid}`);
     }
   };
 

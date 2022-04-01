@@ -1,13 +1,13 @@
 import React from 'react';
-import { Redirect, useRouteMatch } from 'react-router';
+import { Navigate, useMatch } from 'react-router-dom';
 import { useArticleSentence } from '../../article/EditArticleSentencePage/services/articleSentence';
 import SentenceParseForm from './components/SentenceParseForm';
 import TableLayout from '../../../templates/TableLayout';
 
 const EditSentenceParsePage = () => {
-  const match = useRouteMatch<{ id: string }>();
+  const match = useMatch('/sentence/:id/parse');
   const { initializing, article, sentence } = useArticleSentence(
-    match.params.id
+    match?.params.id || ''
   );
   if (initializing) {
     return <></>;
@@ -23,7 +23,7 @@ const EditSentenceParsePage = () => {
         </TableLayout>
       );
     } else {
-      return <Redirect to={`/article/list`} />;
+      return <Navigate to={`/article/list`} />;
     }
   }
 };

@@ -1,11 +1,11 @@
 import React from 'react';
-import { useRouteMatch } from 'react-router-dom';
+import { useMatch } from 'react-router-dom';
 import { useOndokuAssignmentPage } from './services/ondokuAssignmentPage';
 import OndokuAssignment from './components/OndokuAssignment';
 import TableLayout from '../../../templates/TableLayout';
 
 const OndokuAssignmentPage = () => {
-  const match = useRouteMatch<{ id: string }>();
+  const match = useMatch('/ondoku/:id/assignment');
   const {
     initializing,
     ondoku,
@@ -16,7 +16,7 @@ const OndokuAssignmentPage = () => {
     assignmentSentences,
     onDelete,
     onUpload,
-  } = useOndokuAssignmentPage(match.params.id);
+  } = useOndokuAssignmentPage(match?.params.id || '');
   if (initializing) {
     return <></>;
   } else {

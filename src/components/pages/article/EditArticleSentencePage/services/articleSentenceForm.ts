@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import {
   buildAccents,
   buildAccentString,
@@ -12,7 +12,7 @@ export const useArticleSentenceForm = (
   articleID: string,
   sentence: Sentence
 ) => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [japanese, setJapanese] = useState(sentence.japanese);
   const [original, setOriginal] = useState(sentence.original);
@@ -59,7 +59,7 @@ export const useArticleSentenceForm = (
     };
     const { success } = await updateSentence(newSentence);
     if (success) {
-      history.push(`/article/${articleID}`);
+      navigate(`/article/${articleID}`);
     }
   };
   const items: {

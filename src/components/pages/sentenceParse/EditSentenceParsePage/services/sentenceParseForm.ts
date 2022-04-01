@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { Article } from '../../../../../entities/Article';
 import { Sentence } from '../../../../../entities/Sentence';
 
@@ -20,7 +20,7 @@ import {
 import { getUniqueStr } from '../../../../../services/getUniqueStr';
 
 export const useSentenceParseForm = (article: Article, sentence: Sentence) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const sentenceID = getUniqueStr();
   const [sentenceParseNew, setSentenceParseNew] =
     useState<SentenceParseNew | null>(null);
@@ -74,7 +74,7 @@ export const useSentenceParseForm = (article: Article, sentence: Sentence) => {
       };
       const { success } = await updateSentenceParseNew(_updateSentenceParse);
       if (success) {
-        history.push(`/article/${article.id}/parse`);
+        navigate(`/article/${article.id}/parse`);
       }
     } else {
       const newSentenceParse: CreateSentenceParseNew = {
@@ -91,7 +91,7 @@ export const useSentenceParseForm = (article: Article, sentence: Sentence) => {
       };
       const { success } = await createSentenceParseNew(newSentenceParse);
       if (success) {
-        history.push(`/article/${article.id}/parse`);
+        navigate(`/article/${article.id}/parse`);
       }
     }
   };

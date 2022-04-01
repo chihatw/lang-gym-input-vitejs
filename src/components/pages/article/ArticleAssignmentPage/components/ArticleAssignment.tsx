@@ -3,7 +3,7 @@ import React from 'react';
 import Speaker from '@bit/chihatw.lang-gym.speaker';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import { Button, Card, IconButton } from '@mui/material';
-import { useHistory, useRouteMatch } from 'react-router';
+import { useNavigate, useMatch } from 'react-router-dom';
 import accentsForPitchesArray from 'accents-for-pitches-array';
 
 import { Sentence } from '../../../../../entities/Sentence';
@@ -16,8 +16,8 @@ const ArticleAssignment: React.FC<{
   onDelete: () => void;
   onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }> = ({ assignmentSentences, sentences, downloadURL, onDelete, onUpload }) => {
-  const history = useHistory();
-  const match = useRouteMatch<{ id: string }>();
+  const navigate = useNavigate();
+  const match = useMatch('/article/:id/assignment');
   return (
     <div>
       {!!sentences.length &&
@@ -61,8 +61,8 @@ const ArticleAssignment: React.FC<{
                       />
                       <IconButton
                         onClick={() =>
-                          history.push(
-                            `/article/${match.params.id}/assignment/uid/${assignmentSentence.uid}/line/${assignmentSentence.line}`
+                          navigate(
+                            `/article/${match?.params.id}/assignment/uid/${assignmentSentence.uid}/line/${assignmentSentence.line}`
                           )
                         }
                       >

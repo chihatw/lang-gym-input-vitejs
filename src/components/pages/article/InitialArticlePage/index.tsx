@@ -1,12 +1,12 @@
 import React from 'react';
-import { useRouteMatch } from 'react-router';
+import { useMatch } from 'react-router-dom';
 import { useInitialArticlePage } from './services/initialArticlePage';
 import TableLayout from '../../../templates/TableLayout';
 import ArticleSentenceInitialForm from './components/ArticleSentenceInitialForm';
 const InitialArticlePage = () => {
-  const match = useRouteMatch<{ id: string }>();
+  const match = useMatch('/article/:id/initial');
   const { title, initializing, ...props } = useInitialArticlePage(
-    match.params.id
+    match?.params.id || ''
   );
   if (initializing) {
     return <></>;

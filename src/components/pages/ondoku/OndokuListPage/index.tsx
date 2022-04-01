@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useOndokuListPage } from './services/ondokuListPage';
 import OndokuTable from './components/OndokuTable';
 import TableLayout from '../../../templates/TableLayout';
@@ -15,9 +15,9 @@ const OndokuListPage = () => {
     onShowSentences,
     onShowAssignment,
   } = useOndokuListPage(6);
-  const history = useHistory();
+  const navigate = useNavigate();
   return (
-    <TableLayout title='音読一覧' onCreate={() => history.push('/ondoku')}>
+    <TableLayout title='音読一覧' onCreate={() => navigate('/ondoku')}>
       <OndokuTable
         ondokus={ondokus}
         onEdit={onEdit}

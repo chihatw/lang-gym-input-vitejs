@@ -1,13 +1,13 @@
 import React from 'react';
-import { useRouteMatch } from 'react-router-dom';
+import { useMatch } from 'react-router-dom';
 import { useEditOndokuSentencePage } from './services/editOndokuSentencePage';
 import OndokuSentenceForm from './components/OndokuSentenceForm';
 import TableLayout from '../../../templates/TableLayout';
 
 const EditOndokuSentencePage = () => {
-  const match = useRouteMatch<{ id: string }>();
+  const match = useMatch('/ondoku/sentence/:id');
   const { title, ondokuID, ...props } = useEditOndokuSentencePage(
-    match.params.id
+    match?.params.id || ''
   );
   return (
     <TableLayout title={title} backURL={`/ondoku/${ondokuID}`}>

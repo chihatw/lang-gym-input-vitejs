@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { AssignmentSentence } from '../../../../../entities/AssignmentSentence';
 import { Mark } from '../../../../../entities/Mark';
 import {
@@ -16,7 +16,7 @@ import { getOndoku } from '../../../../../repositories/ondoku';
 import { getOndokuSentences } from '../../../../../repositories/ondokuSentence';
 
 export const useEditOndokuAssignmentVoicePage = (id: string, uid: string) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [initializing, setInitializing] = useState(true);
   const [sentences, setSentences] = useState<string[]>([]);
@@ -85,7 +85,7 @@ export const useEditOndokuAssignmentVoicePage = (id: string, uid: string) => {
             originalSentences.map((s) => s.id)
           );
           if (success) {
-            history.push('/ondoku/list');
+            navigate('/ondoku/list');
           }
         }
       }
@@ -106,7 +106,7 @@ export const useEditOndokuAssignmentVoicePage = (id: string, uid: string) => {
     );
     const { success } = await updateAssignmentSentences(sentences);
     if (success) {
-      history.push(`/ondoku/${id}/assignment/?uid=${uid}`);
+      navigate(`/ondoku/${id}/assignment/?uid=${uid}`);
     }
   };
 

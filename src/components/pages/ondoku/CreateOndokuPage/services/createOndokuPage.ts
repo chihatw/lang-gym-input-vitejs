@@ -1,12 +1,12 @@
 import dayjs from 'dayjs';
 import { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { CreateOndoku } from '../../../../../entities/Ondoku';
 import { createOndoku } from '../../../../../repositories/ondoku';
 
 export const useCreateOndokuPage = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [date, setDate] = useState<Date>(new Date());
   const [isShowAccents, setIsShowAccents] = useState(false);
   const [title, setTitle] = useState('');
@@ -51,7 +51,7 @@ export const useCreateOndokuPage = () => {
     };
     const { success, ondokuID } = await createOndoku(newOndoku);
     if (success) {
-      history.push(`/ondoku/${ondokuID}`);
+      navigate(`/ondoku/${ondokuID}`);
     }
   };
   return {

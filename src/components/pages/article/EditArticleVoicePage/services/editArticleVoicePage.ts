@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Article } from '../../../../../entities/Article';
 import { Mark } from '../../../../../entities/Mark';
 import { Sentence } from '../../../../../entities/Sentence';
@@ -12,7 +12,7 @@ import {
 } from '../../../../../repositories/sentence';
 
 export const useEditArticleVoicePage = (id: string) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [downloadURL, setDownloadURL] = useState('');
   const [initializing, setInitializing] = useState(true);
@@ -66,7 +66,7 @@ export const useEditArticleVoicePage = (id: string) => {
           const article: Article = { ...originalArticle!, downloadURL: '' };
           const { success } = await updateArticle(article);
           if (success) {
-            history.push('/article/list');
+            navigate('/article/list');
           }
         }
       }
@@ -85,7 +85,7 @@ export const useEditArticleVoicePage = (id: string) => {
     }));
     const { success } = await updateSentences(sentences);
     if (success) {
-      history.push(`article/${id}`);
+      navigate(`article/${id}`);
     }
   };
 

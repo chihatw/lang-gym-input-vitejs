@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 import { User } from '../../../../../entities/User';
@@ -8,7 +8,7 @@ import { getUsers } from '../../../../../repositories/user';
 import { getArticle, updateArticle } from '../../../../../repositories/article';
 
 export const useEditArticlePage = (id: string) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [date, setDate] = useState<Date>(new Date());
   const [isShowAccents, setIsShowAccents] = useState(false);
   const [isShowParse, setIsShowParse] = useState(false);
@@ -139,7 +139,7 @@ export const useEditArticlePage = (id: string) => {
     };
     const { success } = await updateArticle(article);
     if (success) {
-      history.push('/article/list');
+      navigate('/article/list');
     }
   };
   return {

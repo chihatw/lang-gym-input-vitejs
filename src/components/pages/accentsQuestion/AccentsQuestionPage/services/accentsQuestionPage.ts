@@ -17,10 +17,10 @@ import {
 } from '../../../../../repositories/questionSet';
 import { getUsers } from '../../../../../repositories/user';
 import { Question } from '../../../../../entities/Question';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export const useAccentsQuestionPage = (id: string) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [initializing, setInitializing] = useState(true);
   const [title, setTitle] = useState('');
   const [uid, setUid] = useState('');
@@ -163,7 +163,7 @@ export const useAccentsQuestionPage = (id: string) => {
       });
       const { success } = await updateQuestions(questions);
       if (success) {
-        history.push(`/accentsQuestion/list`);
+        navigate(`/accentsQuestion/list`);
       }
     }
   };

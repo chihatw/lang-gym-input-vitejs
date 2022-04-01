@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { buildAccents } from '../../../../../entities/Accent';
 import { CreateOndokuSentence } from '../../../../../entities/OndokuSentence';
 import { getOndoku } from '../../../../../repositories/ondoku';
 import { createOndokuSentences } from '../../../../../repositories/ondokuSentence';
 
 export const useInitialOndokuPage = (id: string) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [japanese, setJapanese] = useState('');
   const [accentString, setAccentString] = useState('');
@@ -61,7 +61,7 @@ export const useInitialOndokuPage = (id: string) => {
   const onSubmit = async () => {
     const { success } = await createOndokuSentences(ondokuSentences);
     if (success) {
-      history.push(`/ondoku/list`);
+      navigate(`/ondoku/list`);
     }
   };
 

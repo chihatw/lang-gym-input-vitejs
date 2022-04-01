@@ -1,13 +1,13 @@
 import { getDownloadURL } from '@firebase/storage';
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { Article } from '../../../../../entities/Article';
 import { getArticle, updateArticle } from '../../../../../repositories/article';
 import { uploadFile } from '../../../../../repositories/file';
 import { getSentences } from '../../../../../repositories/sentence';
 
 export const useInitialArticleVoicePage = (id: string) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [initializing, setInitializing] = useState(true);
   const [article, setArticle] = useState<Article | null>(null);
@@ -41,7 +41,7 @@ export const useInitialArticleVoicePage = (id: string) => {
       };
       const { success } = await updateArticle(newArticle);
       if (success) {
-        history.push(`/article/${id}/voice`);
+        navigate(`/article/${id}/voice`);
       }
     }
   };

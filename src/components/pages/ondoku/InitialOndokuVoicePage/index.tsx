@@ -1,13 +1,13 @@
 import { Button } from '@mui/material';
 import React from 'react';
-import { Redirect, useRouteMatch } from 'react-router';
+import { Navigate, useMatch } from 'react-router-dom';
 import { useInitialOndokuVoicePage } from './services/initialOndokuVoicePage';
 import TableLayout from '../../../templates/TableLayout';
 
 const InitialOndokuVoicePage = () => {
-  const match = useRouteMatch<{ id: string }>();
+  const match = useMatch('/ondoku/:id/voice/initial');
   const { title, initializing, hasSentences, onUpload } =
-    useInitialOndokuVoicePage(match.params.id);
+    useInitialOndokuVoicePage(match?.params.id || '');
   if (initializing) {
     return <></>;
   } else {
@@ -26,7 +26,7 @@ const InitialOndokuVoicePage = () => {
         </TableLayout>
       );
     } else {
-      return <Redirect to={`/ondoku/${match.params.id}/initial`} />;
+      return <Navigate to={`/ondoku/${match?.params.id}/initial`} />;
     }
   }
 };

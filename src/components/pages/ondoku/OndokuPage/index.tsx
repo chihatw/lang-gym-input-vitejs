@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Redirect, useRouteMatch } from 'react-router';
+import { Navigate, useMatch } from 'react-router-dom';
 
 import TableLayout from '../../../templates/TableLayout';
 import { AppContext } from '../../../../services/app';
@@ -7,12 +7,12 @@ import { useOndokuPage } from './services/ondokuPage';
 import OndokuSentenceList from './components/OndokuSentenceList';
 
 const OndokuSentencesPage: React.FC = () => {
-  const match = useRouteMatch<{ id: string }>();
+  const match = useMatch('/ondoku/:id');
   const { title, onEdit, ondoku, initializing, ondokuSentences } =
-    useOndokuPage(match.params.id);
+    useOndokuPage(match?.params.id || '');
   const { onCreateRhythmsQuestion } = useContext(AppContext);
   if (!initializing && !ondokuSentences.length) {
-    return <Redirect to={`/ondoku/${match.params.id}/initial`} />;
+    return <Navigate to={`/ondoku/${match?.params.id}/initial`} />;
   }
   if (initializing) {
     return <div></div>;
