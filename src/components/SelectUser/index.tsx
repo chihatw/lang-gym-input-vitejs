@@ -1,7 +1,7 @@
 import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { User } from './entities/User';
+import { User } from '../../services/useUsers';
 import { useSelectUser } from './services/selectUser';
 
 /**

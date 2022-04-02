@@ -1,24 +1,28 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import AudioEdit from '@bit/chihatw.lang-gym.audio-edit'; // TODO 内部化
-import { Navigate, useMatch } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 import TableLayout from '../../../components/templates/TableLayout';
 import { useEditArticleVoicePage } from './services/editArticleVoicePage';
+import { AppContext } from '../../../services/app';
 
 const EditArticleVoicePage = () => {
-  const match = useMatch('/article/:id/voice');
-  const { title, initializing, ...props } = useEditArticleVoicePage(
-    match?.params.id || ''
-  );
-  if (initializing) {
+  const { article, isFetching } = useContext(AppContext);
+  const { ...props } = useEditArticleVoicePage({ id: article.id, article });
+  if (isFetching) {
     return <></>;
   } else {
-    if (!props.downloadURL) {
-      return <Navigate to={`/article/${match?.params.id}/voice/initial`} />;
+    if (!article.downloadURL) {
+      return <Navigate to={`/article/${article.id}/voice/initial`} />;
     } else {
       return (
-        <TableLayout title={`${title} - 録音`} backURL={`/article/list`}>
-          <AudioEdit {...props} />
+        <TableLayout
+          title={`${article.title} - 録音`}
+          backURL={`/article/list`}
+        >
+          {!!props.sentences.length && (
+            <AudioEdit {...props} downloadURL={article.downloadURL} />
+          )}
         </TableLayout>
       );
     }

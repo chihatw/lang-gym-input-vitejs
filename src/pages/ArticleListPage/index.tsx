@@ -50,6 +50,7 @@ const ArticleListPage = () => {
   };
 
   const openPage = ({ path, article }: { path: string; article: Article }) => {
+    console.log('!');
     setIsFetching(true);
     setArticleId(article.id);
     navigate(`/article/${path}`);

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import AppRoutes from './routes/AppRoutes';
 import { AppContext, useApp } from './services/app';
 import { useArticles } from './services/useArticles';
+import { useUsers } from './services/useUsers';
 import useAudioItems from './services/useAudioItems';
 
 const App = () => {
@@ -15,11 +16,12 @@ const App = () => {
     articleId,
     setIsFetching,
   });
-
+  const { users } = useUsers({ opened: true });
   return (
     <AppContext.Provider
       value={{
         user,
+        users,
         article,
         articles,
         audioItems,

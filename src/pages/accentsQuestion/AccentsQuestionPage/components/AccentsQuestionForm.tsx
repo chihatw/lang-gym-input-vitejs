@@ -11,8 +11,9 @@ import {
 import React from 'react';
 import JapaneseMonitor from './JapaneseMonitor';
 import AccentsMonitor from './AccentsMonitor';
-import { User } from '../../../../entities/User';
+
 import { Audio } from '../../../../entities/Audio';
+import { User } from '../../../../services/useUsers';
 
 const AccentsQuestionForm: React.FC<{
   title: string;

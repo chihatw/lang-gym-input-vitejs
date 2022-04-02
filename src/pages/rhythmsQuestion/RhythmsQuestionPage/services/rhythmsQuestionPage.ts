@@ -1,7 +1,7 @@
 import { useEffect, useState, createContext } from 'react';
 import { Audio } from '../../../../entities/Audio';
 import { QuestionSet } from '../../../../entities/QuestionSet';
-import { User } from '../../../../entities/User';
+
 import {
   deleteQuestions,
   getQuestion,
@@ -25,6 +25,7 @@ import {
   WordRhythm,
 } from '../../../../entities/Rhythm';
 import { QuestionGroup } from '../../../../entities/QuestionGroup';
+import { User } from '../../../../services/useUsers';
 
 export const RhythmsQuestionPageContext = createContext<{
   uid: string;

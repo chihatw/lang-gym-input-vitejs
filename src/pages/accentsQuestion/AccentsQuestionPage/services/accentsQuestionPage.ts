@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { buildAccents, buildAccentString } from '../../../../entities/Accent';
 import { Audio } from '../../../../entities/Audio';
 import { QuestionSet } from '../../../../entities/QuestionSet';
-import { User } from '../../../../entities/User';
+
 import {
   getQuestion,
   updateQuestions,
@@ -15,6 +15,7 @@ import {
 import { getUsers } from '../../../../repositories/user';
 import { Question } from '../../../../entities/Question';
 import { useNavigate } from 'react-router-dom';
+import { User } from '../../../../services/useUsers';
 
 export const useAccentsQuestionPage = (id: string) => {
   const navigate = useNavigate();

@@ -1,10 +1,5 @@
 import { DocumentData } from '@firebase/firestore';
-
-export type User = {
-  id: string;
-  createdAt: number;
-  displayname: string;
-};
+import { User } from '../services/useUsers';
 
 export const buildUser = (id: string, data: DocumentData) => {
   const user: User = {

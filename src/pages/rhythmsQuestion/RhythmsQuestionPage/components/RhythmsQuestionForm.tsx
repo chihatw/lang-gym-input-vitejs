@@ -8,8 +8,9 @@ import {
   TextField,
 } from '@mui/material';
 import React from 'react';
-import { User } from '../../../../entities/User';
+
 import { Audio } from '../../../../entities/Audio';
+import { User } from '../../../../services/useUsers';
 import RhythmsMonitor from './RhythmsMonitor';
 
 const RhythmsQuestionForm: React.FC<{

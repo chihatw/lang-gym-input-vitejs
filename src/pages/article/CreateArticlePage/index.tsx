@@ -1,34 +1,65 @@
-import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react';
 
-import TableLayout from '../../../components/templates/TableLayout';
-import ArticleForm from '../../../components/organisms/ArticleForm';
-import { useCreateArticlePage } from './services/createArticlePage';
+import { AppContext } from '../../../services/app';
+import {
+  Article,
+  INITIAL_ARTICLE,
+  useHandleArticles,
+} from '../../../services/useArticles';
+import CreateArticlePageComponent from './components/CreateArticlePageComponent';
 
 const CreateArticlePage = () => {
-  const {
-    uid,
-    date,
-    users,
-    title,
-    onSubmit,
-    onPickDate,
-    onChangeUid,
-    switchItems,
-    textFieldItems,
-  } = useCreateArticlePage();
+  const navigate = useNavigate();
+  const { users } = useContext(AppContext);
+  const { createArticle } = useHandleArticles();
+
+  const [uid, setUid] = useState('');
+  const [date, setDate] = useState<Date>(new Date());
+  const [title, setTitle] = useState('');
+
+  useEffect(() => {
+    if (!users.length) return;
+    setUid(users[0].id);
+  }, [users]);
+
+  const handlePickDate = (date: Date | null) => {
+    !!date && setDate(date);
+  };
+
+  const handleChangeTitle = (value: string) => {
+    setTitle(value);
+  };
+
+  const handleChangeUid = (uid: string) => {
+    setUid(uid);
+  };
+  const handleSubmit = async () => {
+    const { id, ...omitted } = INITIAL_ARTICLE;
+
+    const article: Omit<Article, 'id'> = {
+      ...omitted,
+      uid,
+      title,
+      createdAt: date.getTime(),
+      userDisplayname: users.filter((u) => u.id === uid)[0].displayname,
+    };
+    const { success, articleId } = await createArticle(article);
+    if (success) {
+      navigate(`/article/${articleId}/initial`);
+    }
+  };
   return (
-    <TableLayout title={`${title} - 新規`} backURL='/article/list'>
-      <ArticleForm
-        uid={uid}
-        date={date}
-        users={users}
-        onSubmit={onSubmit}
-        onPickDate={onPickDate}
-        onChangeUid={onChangeUid}
-        switchItems={switchItems}
-        textFieldItems={textFieldItems}
-      />
-    </TableLayout>
+    <CreateArticlePageComponent
+      uid={uid}
+      date={date}
+      title={title}
+      users={users}
+      handleSubmit={handleSubmit}
+      handlePickDate={handlePickDate}
+      handleChangeUid={handleChangeUid}
+      handleChangeTitle={handleChangeTitle}
+    />
   );
 };
 

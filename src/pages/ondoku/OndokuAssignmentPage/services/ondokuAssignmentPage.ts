@@ -9,7 +9,7 @@ import {
 } from '../../../../entities/AssignmentSentence';
 import { Ondoku } from '../../../../entities/Ondoku';
 import { OndokuSentence } from '../../../../entities/OndokuSentence';
-import { User } from '../../../../entities/User';
+
 import {
   createAssignment,
   deleteAssignment,
@@ -24,6 +24,7 @@ import { deleteFile, uploadFile } from '../../../../repositories/file';
 import { getOndoku } from '../../../../repositories/ondoku';
 import { getOndokuSentences } from '../../../../repositories/ondokuSentence';
 import { getUsers } from '../../../../repositories/user';
+import { User } from '../../../../services/useUsers';
 
 export const useOndokuAssignmentPage = (id: string) => {
   const navigate = useNavigate();

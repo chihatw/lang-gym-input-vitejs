@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { User } from '../entities/User';
+import { User } from '../../../services/useUsers';
 
 export const useSelectUser = (
   users: User[],

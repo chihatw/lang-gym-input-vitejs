@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AssignmentSentence } from '../../../../entities/AssignmentSentence';
 import { Mark } from '../../../../entities/Mark';
-import { getArticle } from '../../../../repositories/article';
 import {
   deleteAssignment,
   getAssignment,

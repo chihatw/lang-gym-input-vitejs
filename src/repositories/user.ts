@@ -26,7 +26,7 @@ export const getUser = async (id: string) => {
 
 export const getUsers = async (_limit: number) => {
   try {
-    console.log('get users');
+    console.log('get users!!');
     const q = query(usersRef, limit(_limit));
     const snapshot = await getDocs(q);
     const users = snapshot.docs.map((doc) => buildUser(doc.id, doc.data()));

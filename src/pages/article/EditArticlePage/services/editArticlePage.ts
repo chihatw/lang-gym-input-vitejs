@@ -2,10 +2,9 @@ import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
-import { User } from '../../../../entities/User';
-
 import { getUsers } from '../../../../repositories/user';
 import { Article, useHandleArticles } from '../../../../services/useArticles';
+import { User } from '../../../../services/useUsers';
 
 export const useEditArticlePage = ({ article }: { article: Article }) => {
   const { updateArticle } = useHandleArticles();

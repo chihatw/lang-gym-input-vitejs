@@ -12,42 +12,37 @@ import {
 } from '../../../../repositories/sentence';
 import { Article, useHandleArticles } from '../../../../services/useArticles';
 
-export const useEditArticleVoicePage = (id: string) => {
+export const useEditArticleVoicePage = ({
+  id,
+  article,
+}: {
+  id: string;
+  article: Article;
+}) => {
   const navigate = useNavigate();
   const { updateArticle } = useHandleArticles();
-  const [title, setTitle] = useState('');
-  const [downloadURL, setDownloadURL] = useState('');
-  const [initializing, setInitializing] = useState(true);
+
   const [marks, setMarks] = useState<Mark[]>([]);
   const [sentences, setSentences] = useState<string[]>([]);
-  const [originalArticle, setOriginalArticle] = useState<Article | null>(null);
   const [originalMarks, setOriginalMarks] = useState<Mark[]>([]);
   const [originalSentences, setOriginalSentences] = useState<Sentence[]>([]);
   const [hasChange, setHasChange] = useState(false);
 
   useEffect(() => {
+    if (!article.id) return;
     const fetchData = async () => {
-      const article = await getArticle(id);
-      if (!!article) {
-        setTitle(article.title);
-        setDownloadURL(article.downloadURL);
-        setOriginalArticle(article);
-        const articleSentences = await getSentences(id);
-        if (articleSentences) {
-          setMarks(
-            articleSentences.map((s) => ({ start: s.start, end: s.end }))
-          );
-          setSentences(articleSentences.map((s) => s.japanese));
-          setOriginalMarks(
-            articleSentences.map((s) => ({ start: s.start, end: s.end }))
-          );
-          setOriginalSentences(articleSentences);
-        }
+      const articleSentences = await getSentences(id);
+      if (articleSentences) {
+        setMarks(articleSentences.map((s) => ({ start: s.start, end: s.end })));
+        setSentences(articleSentences.map((s) => s.japanese));
+        setOriginalMarks(
+          articleSentences.map((s) => ({ start: s.start, end: s.end }))
+        );
+        setOriginalSentences(articleSentences);
       }
-      setInitializing(false);
     };
     fetchData();
-  }, [id]);
+  }, [article.id]);
 
   useEffect(() => {
     setHasChange(JSON.stringify(marks) !== JSON.stringify(originalMarks));
@@ -55,7 +50,9 @@ export const useEditArticleVoicePage = (id: string) => {
 
   const onDeleteAudio = async () => {
     if (window.confirm('audioファイルを削除しますか')) {
-      const path = decodeURIComponent(downloadURL.split('/')[7].split('?')[0]);
+      const path = decodeURIComponent(
+        article.downloadURL.split('/')[7].split('?')[0]
+      );
       const { success } = await deleteFile(path);
       if (success) {
         const sentences: Sentence[] = originalSentences.map((s) => ({
@@ -65,8 +62,8 @@ export const useEditArticleVoicePage = (id: string) => {
         }));
         const { success } = await updateSentences(sentences);
         if (success) {
-          const article: Article = { ...originalArticle!, downloadURL: '' };
-          const { success } = await updateArticle(article);
+          const newArticle: Article = { ...article, downloadURL: '' };
+          const { success } = await updateArticle(newArticle);
           if (success) {
             navigate('/article/list');
           }
@@ -92,14 +89,11 @@ export const useEditArticleVoicePage = (id: string) => {
   };
 
   return {
-    title,
-    initializing,
-    downloadURL,
     marks,
+    hasChange,
     sentences,
+    onSubmit,
     onDeleteAudio,
     onChangeMarks,
-    hasChange,
-    onSubmit,
   };
 };

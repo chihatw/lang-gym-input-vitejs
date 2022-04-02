@@ -7,11 +7,11 @@ import accentsForPitchesArray from 'accents-for-pitches-array';
 import { Button, Card, IconButton } from '@mui/material';
 import { useNavigate, useMatch } from 'react-router-dom';
 
-import { User } from '../../../../entities/User';
 import { Accent } from '../../../../entities/Accent';
 import { OndokuSentence } from '../../../../entities/OndokuSentence';
 import { AssignmentSentence } from '../../../../entities/AssignmentSentence';
 import SelectUser from '../../../../components/SelectUser';
+import { User } from '../../../../services/useUsers';
 
 const OndokuAssignment: React.FC<{
   users: User[];

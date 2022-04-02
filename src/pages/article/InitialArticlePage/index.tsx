@@ -3,6 +3,7 @@ import { useMatch } from 'react-router-dom';
 import { useInitialArticlePage } from './services/initialArticlePage';
 import TableLayout from '../../../components/templates/TableLayout';
 import ArticleSentenceInitialForm from './components/ArticleSentenceInitialForm';
+// create ArticlePage の後
 const InitialArticlePage = () => {
   const match = useMatch('/article/:id/initial');
   const { title, initializing, ...props } = useInitialArticlePage(

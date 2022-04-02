@@ -15,8 +15,6 @@ export const uploadFile = async (
   console.log('upload file');
   return uploadBytes(storageRef, file, metadata)
     .then((snapshot) => {
-      // debug snapshot の中身確認
-      console.log(snapshot);
       return { success: true, snapshot };
     })
     .catch((error) => {

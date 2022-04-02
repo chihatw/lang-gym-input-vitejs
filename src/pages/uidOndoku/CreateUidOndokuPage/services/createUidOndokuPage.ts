@@ -2,11 +2,12 @@ import { doc } from '@firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CreateUidOndoku } from '../../../../entities/UidOndoku';
-import { User } from '../../../../entities/User';
+
 import { db } from '../../../../repositories/firebase';
 import { getOndoku } from '../../../../repositories/ondoku';
 import { createUidOndoku } from '../../../../repositories/uidOndoku';
 import { getUsers } from '../../../../repositories/user';
+import { User } from '../../../../services/useUsers';
 
 const COLLECTION = 'ondokus';
 

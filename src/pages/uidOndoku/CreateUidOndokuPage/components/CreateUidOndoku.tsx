@@ -7,7 +7,7 @@ import {
   Button,
 } from '@mui/material';
 import React from 'react';
-import { User } from '../../../../entities/User';
+import { User } from '../../../../services/useUsers';
 
 const CreateUidOndoku: React.FC<{
   users: User[];

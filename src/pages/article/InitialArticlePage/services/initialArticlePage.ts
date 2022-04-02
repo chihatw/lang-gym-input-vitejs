@@ -18,7 +18,7 @@ export const useInitialArticlePage = (id: string) => {
   const [chinese, setChinese] = useState('');
   const [sentences, setSentences] = useState<CreateSentence[]>([]);
   const [isValid, setIsValid] = useState(false);
-
+  console.log('%chello', 'color:purple');
   useEffect(() => {
     const fetchData = async () => {
       const article = await getArticle(id);

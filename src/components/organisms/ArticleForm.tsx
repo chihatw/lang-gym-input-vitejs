@@ -11,7 +11,7 @@ import {
   FormControl,
   FormControlLabel,
 } from '@mui/material';
-import { User } from '../../entities/User';
+import { User } from '../../services/useUsers';
 
 const ArticleForm = ({
   uid,

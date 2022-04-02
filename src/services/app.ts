@@ -17,9 +17,11 @@ import {
   updateQuestionGroup,
 } from '../repositories/questionGroup';
 import { Article, INITIAL_ARTICLE } from './useArticles';
+import { User } from './useUsers';
 
 export const AppContext = createContext<{
   user: _User | null;
+  users: User[];
   article: Article;
   articles: Article[];
   audioItems: AudioItem[];
@@ -43,6 +45,7 @@ export const AppContext = createContext<{
   }) => Promise<void>;
 }>({
   user: null,
+  users: [],
   article: INITIAL_ARTICLE,
   articles: [],
   audioItems: [],
