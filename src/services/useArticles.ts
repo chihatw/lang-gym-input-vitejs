@@ -74,7 +74,7 @@ export const useArticles = ({
         unsub = onSnapshot(
           doc(db, COLLECTION, articleId),
           (doc) => {
-            console.log('snap shot article');
+            console.log(`snap shot article: ${articleId}`);
             if (doc.exists()) {
               const article = buildArticle(doc);
               finishFetchData(article);

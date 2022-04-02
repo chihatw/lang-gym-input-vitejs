@@ -11,7 +11,7 @@ import CreateArticlePageComponent from './components/CreateArticlePageComponent'
 
 const CreateArticlePage = () => {
   const navigate = useNavigate();
-  const { users } = useContext(AppContext);
+  const { users, setArticleId, setIsFetching } = useContext(AppContext);
   const { createArticle } = useHandleArticles();
 
   const [uid, setUid] = useState('');
@@ -46,7 +46,9 @@ const CreateArticlePage = () => {
     };
     const { success, articleId } = await createArticle(article);
     if (success) {
-      navigate(`/article/${articleId}/initial`);
+      setIsFetching(true);
+      setArticleId(articleId!);
+      navigate(`/article/${articleId!}/initial`);
     }
   };
   return (
