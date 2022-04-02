@@ -1,108 +1,31 @@
-import {
-  onSnapshot,
-  collection,
-  query,
-  orderBy,
-  limit,
-} from '@firebase/firestore';
+import React, { useContext } from 'react';
 
-import dayjs from 'dayjs';
-import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Table,
-  TableRow,
-  TableCell,
-  TableBody,
-  IconButton,
-} from '@mui/material';
-import {
-  Mic,
-  Edit,
-  Person,
-  Delete,
-  Subject,
-  FlashOn,
-  FlashOff,
-  SettingsOutlined,
-  VisibilityOutlined,
-  VisibilityOffOutlined,
-} from '@mui/icons-material';
-
-import { db } from '../../../repositories/firebase';
-import TableLayout from '../../templates/TableLayout';
-import { Article } from '../../../entities/Article';
+import { AppContext } from '../../../services/app';
 import { deleteFile } from '../../../repositories/file';
-import { buildArticle } from '../../../entities/Article';
 import { deleteSentences } from '../../../repositories/sentence';
-import { deleteArticle, updateArticle } from '../../../repositories/article';
-
-const LIMIT = 6;
+import { Article, useHandleArticles } from '../../../services/useArticles';
+import ArticleListPageComponent from './components/ArticleListPageComponent';
 
 // TODO article に hasRecButton を追加
-// OPTIMIZE firebase 9.0, データベースとのやりとりをAppに上げる
-
-const COLLECTION = 'articles';
-
-const articlesRef = collection(db, COLLECTION);
 
 const ArticleListPage = () => {
-  const navigate = useNavigate();
+  const { articles } = useContext(AppContext);
+  const { updateArticle, deleteArticle } = useHandleArticles();
 
-  const [articles, setArticles] = useState<Article[]>([]);
-  useEffect(() => {
-    const q = query(articlesRef, orderBy('createdAt', 'desc'), limit(LIMIT));
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        console.log('snapshot article');
-        const articles = snapshot.docs.map((doc) =>
-          buildArticle(doc.id, doc.data())
-        );
-        setArticles(articles);
-      },
-      (e) => {
-        console.warn(e);
-      }
-    );
-
-    return () => {
-      unsubscribe();
-    };
-    // articlesRefをdependanciesに加えるとループする
-    // eslint-disable-next-line
-  }, [navigate]);
-
-  const onEdit = (articleID: string) => {
-    navigate(`/article/${articleID}/edit`);
-  };
-  const onClickSentences = (articleID: string) => {
-    navigate(`/article/${articleID}`);
-  };
-  const onClickSentenceParse = (articleID: string) => {
-    navigate(`/article/${articleID}/parse`);
-  };
-  const onClickVoice = (articleID: string) => {
-    navigate(`/article/${articleID}/voice`);
-  };
-  const onClickAssignment = (articleID: string) => {
-    navigate(`/article/${articleID}/assignment`);
-  };
   const onToggleShowAccents = async (article: Article) => {
-    const newArticle: Article = {
+    await updateArticle({
       ...article,
       isShowAccents: !article.isShowAccents,
-    };
-    await updateArticle(newArticle);
+    });
   };
+
   const onToggleShowParse = async (article: Article) => {
-    const newArticle: Article = {
+    await updateArticle({
       ...article,
       isShowParse: !article.isShowParse,
-    };
-    await updateArticle(newArticle);
+    });
   };
+
   const onDelete = async ({
     id,
     title,
@@ -124,111 +47,20 @@ const ArticleListPage = () => {
     }
   };
 
+  const links = [
+    { label: '戻る', pathname: '/' },
+    { label: '新規作成', pathname: '/article' },
+  ];
+
   return (
-    <TableLayout title='作文一覧' onCreate={() => navigate('/article')}>
-      <Table>
-        <TableBody>
-          {articles.map((article) => (
-            <TableRow key={article.id}>
-              <UserNameCell article={article} />
-              <TitleDateCell article={article} />
-              <IconButtonCell
-                icon={<Edit />}
-                onClick={() => onEdit(article.id)}
-              />
-              <IconButtonCell
-                icon={
-                  article.isShowAccents ? (
-                    <VisibilityOutlined />
-                  ) : (
-                    <VisibilityOffOutlined />
-                  )
-                }
-                onClick={() => onToggleShowAccents(article)}
-              />
-              <IconButtonCell
-                icon={<Subject />}
-                onClick={() => {
-                  onClickSentences(article.id);
-                }}
-              />
-              <IconButtonCell
-                icon={<SettingsOutlined />}
-                onClick={() => onClickSentenceParse(article.id)}
-              />
-              <IconButtonCell
-                icon={article.isShowParse ? <FlashOn /> : <FlashOff />}
-                onClick={() => onToggleShowParse(article)}
-              />
-              <IconButtonCell
-                icon={<Mic />}
-                onClick={() => onClickVoice(article.id)}
-              />
-              <IconButtonCell
-                icon={<Person />}
-                onClick={() => onClickAssignment(article.id)}
-                disabled={!article.downloadURL}
-              />
-              <IconButtonCell
-                icon={<Delete />}
-                onClick={() => onDelete(article)}
-              />
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableLayout>
+    <ArticleListPageComponent
+      links={links}
+      articles={articles}
+      handleClickDelete={onDelete}
+      handleClickShowAccents={onToggleShowAccents}
+      handleClickShowSentenceParses={onToggleShowParse}
+    />
   );
 };
 
 export default ArticleListPage;
-
-const UserNameCell: React.FC<{ article: Article }> = ({ article }) => {
-  return (
-    <TableCell padding='none'>
-      <Box fontSize={14} whiteSpace='nowrap'>
-        {article.userDisplayname}
-      </Box>
-    </TableCell>
-  );
-};
-
-const TitleDateCell: React.FC<{ article: Article }> = ({ article }) => {
-  return (
-    <TableCell>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          fontSize: 14,
-        }}
-      >
-        <div
-          style={{
-            width: 120,
-            overflow: 'hidden',
-            whiteSpace: 'nowrap',
-            textOverflow: 'ellipsis',
-          }}
-        >
-          {article.title}
-        </div>
-        <div>{dayjs(article.createdAt).format('YYYY/M/D')}</div>
-      </div>
-    </TableCell>
-  );
-};
-
-const IconButtonCell: React.FC<{
-  onClick: () => void;
-  icon: React.ReactElement;
-  disabled?: boolean;
-}> = ({ onClick, icon, disabled }) => {
-  return (
-    <TableCell padding='none'>
-      <IconButton size='small' onClick={onClick} disabled={disabled}>
-        {icon}
-      </IconButton>
-    </TableCell>
-  );
-};

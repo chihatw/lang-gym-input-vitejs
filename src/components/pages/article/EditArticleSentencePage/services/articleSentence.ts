@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Article } from '../../../../../entities/Article';
 import { Sentence } from '../../../../../entities/Sentence';
 import { getArticle } from '../../../../../repositories/article';
 import { getSentence } from '../../../../../repositories/sentence';
+import { Article } from '../../../../../services/useArticles';
 
 export const useArticleSentence = (id: string) => {
   const [initializing, setInitializing] = useState(true);

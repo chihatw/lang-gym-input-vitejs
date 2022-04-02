@@ -1,8 +1,9 @@
 import { createContext, useEffect, useState } from 'react';
-import { Article } from '../../../../../entities/Article';
+
 import { Sentence } from '../../../../../entities/Sentence';
 import { getArticle } from '../../../../../repositories/article';
 import { getSentences } from '../../../../../repositories/sentence';
+import { Article } from '../../../../../services/useArticles';
 
 export const ArticlePaneContext = createContext<{
   article: Article | null;

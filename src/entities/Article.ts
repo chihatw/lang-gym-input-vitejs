@@ -1,17 +1,5 @@
 import { DocumentData } from '@firebase/firestore';
-
-export type Article = {
-  id: string;
-  createdAt: number;
-  isShowAccents: boolean;
-  title: string;
-  uid: string;
-  userDisplayname: string;
-  downloadURL: string;
-  embedID: string;
-  isShowParse: boolean;
-  marks: string[];
-};
+import { Article } from '../services/useArticles';
 
 export type CreateArticle = Omit<Article, 'id'>;
 

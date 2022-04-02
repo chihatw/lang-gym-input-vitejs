@@ -13,7 +13,8 @@ import {
   deleteDoc,
 } from '@firebase/firestore';
 import { db } from './firebase';
-import { Article, buildArticle, CreateArticle } from '../entities/Article';
+import { buildArticle, CreateArticle } from '../entities/Article';
+import { Article } from '../services/useArticles';
 
 const COLLECTION = 'articles';
 

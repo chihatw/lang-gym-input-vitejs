@@ -1,10 +1,14 @@
 import { createContext, useEffect, useState } from 'react';
-import { Article } from '../../../../../entities/Article';
+
 import { Sentence } from '../../../../../entities/Sentence';
 import { SentenceParseNew } from '../../../../../entities/SentenceParseNew';
-import { getArticle, updateArticle } from '../../../../../repositories/article';
+import { getArticle } from '../../../../../repositories/article';
 import { getSentences } from '../../../../../repositories/sentence';
 import { getSentenceParseNews } from '../../../../../repositories/sentenceParseNew';
+import {
+  Article,
+  useHandleArticles,
+} from '../../../../../services/useArticles';
 
 export const SentenceParseListPageContext = createContext<{
   marks: string[];
@@ -33,6 +37,7 @@ export const SentenceParseListPageContext = createContext<{
 });
 
 export const useSentenceParseListPage = (id: string) => {
+  const { updateArticle } = useHandleArticles();
   const [article, setArticle] = useState<Article | null>(null);
   const [sentences, setSentences] = useState<Sentence[]>([]);
   const [initializing, setInitializing] = useState(true);

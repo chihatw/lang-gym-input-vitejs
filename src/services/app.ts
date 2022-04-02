@@ -1,24 +1,26 @@
 import { User as _User } from 'firebase/auth';
-
 import { createContext } from 'react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Accent } from '../entities/Accent';
-import { CreateQuestion } from '../entities/Question';
-import { CreateQuestionGroup, QuestionGroup } from '../entities/QuestionGroup';
-import { CreateQuestionSet } from '../entities/QuestionSet';
-import { getMoraString, buildSentenceRhythm } from '../entities/Rhythm';
+
 import { auth } from '../repositories/firebase';
+import { Accent } from '../entities/Accent';
+import { AudioItem } from './useAudioItems';
+import { CreateQuestion } from '../entities/Question';
 import { createQuestions } from '../repositories/question';
+import { createQuestionSet } from '../repositories/questionSet';
+import { CreateQuestionSet } from '../entities/QuestionSet';
+import { CreateQuestionGroup, QuestionGroup } from '../entities/QuestionGroup';
+import { getMoraString, buildSentenceRhythm } from '../entities/Rhythm';
 import {
   createQuestionGroup,
   updateQuestionGroup,
 } from '../repositories/questionGroup';
-import { createQuestionSet } from '../repositories/questionSet';
-import { AudioItem } from './useAudioItems';
+import { Article } from './useArticles';
 
 export const AppContext = createContext<{
   user: _User | null;
+  articles: Article[];
   audioItems: AudioItem[];
   initializing: boolean;
   deleteAudioItem: (value: string) => void;
@@ -37,6 +39,7 @@ export const AppContext = createContext<{
   }) => Promise<void>;
 }>({
   user: null,
+  articles: [],
   audioItems: [],
   initializing: true,
   deleteAudioItem: () => {},

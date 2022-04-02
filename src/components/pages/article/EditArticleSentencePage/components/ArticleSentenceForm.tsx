@@ -4,10 +4,10 @@ import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import { Button, TextField } from '@mui/material';
 import accentsForPitchesArray from 'accents-for-pitches-array';
 
-import { Article } from '../../../../../entities/Article';
 import { Sentence } from '../../../../../entities/Sentence';
 import { buildAccents } from '../../../../../entities/Accent';
 import { useArticleSentenceForm } from '../services/articleSentenceForm';
+import { Article } from '../../../../../services/useArticles';
 const ArticleSentenceForm: React.FC<{
   article: Article;
   sentence: Sentence;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Article } from '../../../../../entities/Article';
+
 import { Sentence } from '../../../../../entities/Sentence';
 
 import {
@@ -18,6 +18,7 @@ import {
   updateSentenceParseNew,
 } from '../../../../../repositories/sentenceParseNew';
 import { getUniqueStr } from '../../../../../services/getUniqueStr';
+import { Article } from '../../../../../services/useArticles';
 
 export const useSentenceParseForm = (article: Article, sentence: Sentence) => {
   const navigate = useNavigate();

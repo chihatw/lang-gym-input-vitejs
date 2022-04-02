@@ -3,11 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 import { User } from '../../../../../entities/User';
-import { Article } from '../../../../../entities/Article';
+
 import { getUsers } from '../../../../../repositories/user';
-import { getArticle, updateArticle } from '../../../../../repositories/article';
+import { getArticle } from '../../../../../repositories/article';
+import {
+  Article,
+  useHandleArticles,
+} from '../../../../../services/useArticles';
 
 export const useEditArticlePage = (id: string) => {
+  const { updateArticle } = useHandleArticles();
   const navigate = useNavigate();
   const [date, setDate] = useState<Date>(new Date());
   const [isShowAccents, setIsShowAccents] = useState(false);

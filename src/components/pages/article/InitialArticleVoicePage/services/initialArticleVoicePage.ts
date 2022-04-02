@@ -1,13 +1,18 @@
 import { getDownloadURL } from '@firebase/storage';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Article } from '../../../../../entities/Article';
-import { getArticle, updateArticle } from '../../../../../repositories/article';
+
+import { getArticle } from '../../../../../repositories/article';
 import { uploadFile } from '../../../../../repositories/file';
 import { getSentences } from '../../../../../repositories/sentence';
+import {
+  Article,
+  useHandleArticles,
+} from '../../../../../services/useArticles';
 
 export const useInitialArticleVoicePage = (id: string) => {
   const navigate = useNavigate();
+  const { updateArticle } = useHandleArticles();
   const [title, setTitle] = useState('');
   const [initializing, setInitializing] = useState(true);
   const [article, setArticle] = useState<Article | null>(null);

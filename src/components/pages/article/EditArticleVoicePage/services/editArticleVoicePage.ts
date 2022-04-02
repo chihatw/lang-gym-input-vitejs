@@ -1,18 +1,23 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Article } from '../../../../../entities/Article';
+
 import { Mark } from '../../../../../entities/Mark';
 import { Sentence } from '../../../../../entities/Sentence';
-import { getArticle, updateArticle } from '../../../../../repositories/article';
+import { getArticle } from '../../../../../repositories/article';
 
 import { deleteFile } from '../../../../../repositories/file';
 import {
   getSentences,
   updateSentences,
 } from '../../../../../repositories/sentence';
+import {
+  Article,
+  useHandleArticles,
+} from '../../../../../services/useArticles';
 
 export const useEditArticleVoicePage = (id: string) => {
   const navigate = useNavigate();
+  const { updateArticle } = useHandleArticles();
   const [title, setTitle] = useState('');
   const [downloadURL, setDownloadURL] = useState('');
   const [initializing, setInitializing] = useState(true);
