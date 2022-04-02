@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { buildAccents, buildAccentString } from '../../../../entities/Accent';
 import { AssignmentSentence } from '../../../../entities/AssignmentSentence';
 import { Sentence } from '../../../../entities/Sentence';
-import { getArticle } from '../../../../repositories/article';
 import { getAssignment } from '../../../../repositories/assignment';
 import {
   getAssignmentSentence,
@@ -17,8 +16,7 @@ export const useEditArticleAssignmentPage = (
   line: number
 ) => {
   const navigate = useNavigate();
-  const [initializing, setInitializing] = useState(true);
-  const [title, setTitle] = useState('');
+
   const [sentence, setSentence] = useState<Sentence | null>(null);
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(0);
@@ -26,15 +24,6 @@ export const useEditArticleAssignmentPage = (
   const [downloadURL, setDownloadURL] = useState('');
   const [originalAssignmentSentence, setOriginalAssignmentSentence] =
     useState<AssignmentSentence | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const article = await getArticle(id);
-      !!article && setTitle(article.title);
-      setInitializing(false);
-    };
-    fetchData();
-  }, [id]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -98,8 +87,6 @@ export const useEditArticleAssignmentPage = (
   };
 
   return {
-    initializing,
-    title,
     sentence,
     start,
     onChangeStart,

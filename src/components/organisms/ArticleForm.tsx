@@ -36,8 +36,6 @@ const ArticleForm = ({
   textFieldItems: {
     label: string;
     value: string;
-    multiline: boolean;
-    rows: number;
     onChange: (text: string) => void;
   }[];
   onSubmit: () => void;
@@ -100,8 +98,6 @@ const ArticleForm = ({
           fullWidth
           label={item.label}
           value={item.value}
-          multiline={item.multiline}
-          rows={item.rows}
           onChange={(e) => item.onChange(e.target.value)}
         />
         {!!textFieldItems[index + 1] && <div style={{ height: 16 }} />}

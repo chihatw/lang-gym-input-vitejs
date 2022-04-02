@@ -14,11 +14,18 @@ import {
 } from '../../../../repositories/assignmentSentence';
 import { deleteFile } from '../../../../repositories/file';
 import { getSentences } from '../../../../repositories/sentence';
+import { Article } from '../../../../services/useArticles';
 
-export const useEditArticleAssignmentVoicePage = (id: string, uid: string) => {
+export const useEditArticleAssignmentVoicePage = ({
+  id,
+  uid,
+  article,
+}: {
+  id: string;
+  uid: string;
+  article: Article;
+}) => {
   const navigate = useNavigate();
-  const [title, setTitle] = useState('');
-  const [initializing, setInitializing] = useState(true);
   const [sentences, setSentences] = useState<string[]>([]);
   const [downloadURL, setDownloadURL] = useState('');
   const [assignmentID, setAssignmentID] = useState('');
@@ -32,19 +39,15 @@ export const useEditArticleAssignmentVoicePage = (id: string, uid: string) => {
   const [hasChange, setHasChange] = useState(false);
 
   useEffect(() => {
+    if (!article.id) return;
     const fetchData = async () => {
-      const article = await getArticle(id);
-      if (!!article) {
-        setTitle(article.title);
-        const ondokuSentences = await getSentences(article.id);
-        if (!!ondokuSentences) {
-          setSentences(ondokuSentences.map((s) => s.japanese));
-        }
+      const ondokuSentences = await getSentences(article.id);
+      if (!!ondokuSentences) {
+        setSentences(ondokuSentences.map((s) => s.japanese));
       }
-      setInitializing(false);
     };
     fetchData();
-  }, [id]);
+  }, [article]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -111,8 +114,6 @@ export const useEditArticleAssignmentVoicePage = (id: string, uid: string) => {
   };
 
   return {
-    title,
-    initializing,
     sentences,
     uid,
     downloadURL,

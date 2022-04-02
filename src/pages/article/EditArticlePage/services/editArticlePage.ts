@@ -5,40 +5,33 @@ import { useEffect, useState } from 'react';
 import { User } from '../../../../entities/User';
 
 import { getUsers } from '../../../../repositories/user';
-import { getArticle } from '../../../../repositories/article';
 import { Article, useHandleArticles } from '../../../../services/useArticles';
 
-export const useEditArticlePage = (id: string) => {
+export const useEditArticlePage = ({ article }: { article: Article }) => {
   const { updateArticle } = useHandleArticles();
   const navigate = useNavigate();
-  const [date, setDate] = useState<Date>(new Date());
-  const [isShowAccents, setIsShowAccents] = useState(false);
-  const [isShowParse, setIsShowParse] = useState(false);
-  const [embedID, setEmbedID] = useState('');
-  const [marksStr, setMarksStr] = useState('0');
-  const [title, setTitle] = useState('');
-  const [downloadURL, setDownloadURL] = useState('');
-  const [users, setUsers] = useState<User[]>([]);
   const [uid, setUid] = useState('');
-  const [originalArticle, setOriginalArticle] = useState<Article | null>(null);
+  const [date, setDate] = useState<Date>(new Date());
+  const [users, setUsers] = useState<User[]>([]);
+  const [title, setTitle] = useState('');
+  const [embedID, setEmbedID] = useState('');
+  const [isShowParse, setIsShowParse] = useState(false);
+  const [isShowAccents, setIsShowAccents] = useState(false);
+
+  // フォームの初期値設定
+  useEffect(() => {
+    if (!article.id) return;
+    setUid(article.uid);
+    setDate(new Date(article.createdAt));
+    setTitle(article.title);
+    setEmbedID(article.embedID);
+    setIsShowParse(article.isShowParse);
+    setIsShowAccents(article.isShowAccents);
+  }, [article]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const article = await getArticle(id);
-      if (!!article) {
-        setUid(article.uid);
-        setDate(new Date(article.createdAt));
-        setIsShowAccents(article.isShowAccents);
-        setIsShowParse(article.isShowParse);
-        setTitle(article.title);
-        setDownloadURL(article.downloadURL);
-        setMarksStr(JSON.stringify(article.marks));
-        setEmbedID(article.embedID);
-        setOriginalArticle(article);
-      }
-
       const users = await getUsers(5);
-
       !!users && setUsers(users);
       if (!!users) {
         setUsers(users);
@@ -48,7 +41,7 @@ export const useEditArticlePage = (id: string) => {
       }
     };
     fetchData();
-  }, [id]);
+  }, [article]);
 
   const switchItems: {
     label: string;
@@ -74,37 +67,17 @@ export const useEditArticlePage = (id: string) => {
   const textFieldItems: {
     label: string;
     value: string;
-    multiline: boolean;
-    rows: number;
     onChange: (text: string) => void;
   }[] = [
     {
       label: 'title',
       value: title,
-      multiline: false,
-      rows: 1,
       onChange: (text: string) => onChangeTitle(text),
     },
     {
       label: 'embedID',
       value: embedID,
-      multiline: false,
-      rows: 1,
       onChange: (text: string) => setEmbedID(text),
-    },
-    {
-      label: 'marks',
-      value: marksStr,
-      multiline: false,
-      rows: 1,
-      onChange: (text: string) => setMarksStr(text),
-    },
-    {
-      label: 'downloadURL',
-      value: downloadURL,
-      multiline: true,
-      rows: 5,
-      onChange: (text: string) => onChangeDownloadURL(text),
     },
   ];
 
@@ -114,32 +87,22 @@ export const useEditArticlePage = (id: string) => {
   const onChangeTitle = (title: string) => {
     setTitle(title);
   };
-  const onChangeDownloadURL = (url: string) => {
-    setDownloadURL(url);
-  };
   const onChangeUid = (uid: string) => {
     setUid(uid);
   };
 
   const onSubmit = async () => {
-    const parsedJSON = JSON.parse(marksStr);
-    const marks: string[] = Array.isArray(parsedJSON)
-      ? parsedJSON.map((i) => String(i))
-      : [];
-
-    const article: Article = {
-      ...originalArticle!,
-      createdAt: dayjs(date).valueOf(),
-      downloadURL,
-      isShowAccents,
-      isShowParse,
-      embedID,
-      title,
+    const newArticle: Article = {
+      ...article,
       uid,
-      marks,
+      title,
+      embedID,
+      createdAt: dayjs(date).valueOf(),
+      isShowParse,
+      isShowAccents,
       userDisplayname: users.filter((u) => u.id === uid)[0].displayname,
     };
-    const { success } = await updateArticle(article);
+    const { success } = await updateArticle(newArticle);
     if (success) {
       navigate('/article/list');
     }

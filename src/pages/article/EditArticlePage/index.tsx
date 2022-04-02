@@ -1,25 +1,25 @@
-import React from 'react';
-import { useMatch } from 'react-router-dom';
+import React, { useContext } from 'react';
 
 import TableLayout from '../../../components/templates/TableLayout';
 import ArticleForm from '../../../components/organisms/ArticleForm';
 import { useEditArticlePage } from './services/editArticlePage';
+import { AppContext } from '../../../services/app';
 
 const EditArticlePage = () => {
-  const match = useMatch('/article/:id/edit');
+  const { article } = useContext(AppContext);
   const {
     uid,
     date,
     users,
-    title,
     onSubmit,
     onPickDate,
     onChangeUid,
     switchItems,
     textFieldItems,
-  } = useEditArticlePage(match?.params.id || '');
+  } = useEditArticlePage({ article });
+
   return (
-    <TableLayout title={`${title} - 編集`} backURL='/article/list'>
+    <TableLayout title={`${article.title} - 編集`} backURL='/article/list'>
       <ArticleForm
         uid={uid}
         date={date}
