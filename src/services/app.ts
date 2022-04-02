@@ -16,13 +16,17 @@ import {
   createQuestionGroup,
   updateQuestionGroup,
 } from '../repositories/questionGroup';
-import { Article } from './useArticles';
+import { Article, INITIAL_ARTICLE } from './useArticles';
 
 export const AppContext = createContext<{
   user: _User | null;
+  article: Article;
   articles: Article[];
   audioItems: AudioItem[];
+  isFetching: boolean;
   initializing: boolean;
+  setArticleId: (value: string) => void;
+  setIsFetching: (value: boolean) => void;
   deleteAudioItem: (value: string) => void;
   onCreateRhythmsQuestion: ({
     title,
@@ -39,9 +43,13 @@ export const AppContext = createContext<{
   }) => Promise<void>;
 }>({
   user: null,
+  article: INITIAL_ARTICLE,
   articles: [],
   audioItems: [],
+  isFetching: false,
   initializing: true,
+  setArticleId: () => {},
+  setIsFetching: () => {},
   deleteAudioItem: () => {},
   onCreateRhythmsQuestion: async () => {},
 });

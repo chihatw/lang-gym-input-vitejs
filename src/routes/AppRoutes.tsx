@@ -262,14 +262,7 @@ const AppRoutes = () => {
             </PrivateRoute>
           }
         />
-        <Route
-          path=':id/assignment'
-          element={
-            <PrivateRoute>
-              <ArticleAssignmentPage />
-            </PrivateRoute>
-          }
-        />
+        <Route path=':id/assignment' element={<ArticleAssignmentPage />} />
         <Route
           path=':id'
           element={

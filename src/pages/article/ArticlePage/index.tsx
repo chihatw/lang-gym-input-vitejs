@@ -1,18 +1,21 @@
-import React from 'react';
-import { Navigate, useMatch } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
+import React, { useContext } from 'react';
 import { ArticlePaneContext, useArticlePage } from './services/articlePage';
-import ArticleSentenceList from './components/ArticleSentenceList';
+
 import TableLayout from '../../../components/templates/TableLayout';
+import { AppContext } from '../../../services/app';
+import ArticleSentenceList from './components/ArticleSentenceList';
 
 const ArticlePage = () => {
-  const match = useMatch('/article/:id');
-  const { initializing, article, sentences } = useArticlePage(
-    match?.params.id || ''
-  );
-  if (initializing) {
+  const { article, isFetching } = useContext(AppContext);
+
+  const { sentences } = useArticlePage(article.id);
+
+  // データ取得中
+  if (isFetching) {
     return <></>;
   } else {
-    if (!!article && !!sentences.length) {
+    if (!!article.id) {
       return (
         <ArticlePaneContext.Provider value={{ article, sentences }}>
           <TableLayout title={article.title} backURL={`/article/list`}>
@@ -20,8 +23,10 @@ const ArticlePage = () => {
           </TableLayout>
         </ArticlePaneContext.Provider>
       );
-    } else {
-      return <Navigate to={`/article/${match?.params.id}/initial`} />;
+    }
+    // article が 初期値
+    else {
+      return <Navigate to={'/article/list'} />;
     }
   }
 };

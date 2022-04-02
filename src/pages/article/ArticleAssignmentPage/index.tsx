@@ -1,29 +1,26 @@
-import React from 'react';
-import { useMatch } from 'react-router-dom';
+import React, { useContext } from 'react';
 import { useArticleAssignmentPage } from './services/articleAssignmentPage';
 import ArticleAssignment from './components/ArticleAssignment';
 import TableLayout from '../../../components/templates/TableLayout';
+import { AppContext } from '../../../services/app';
 
 const ArticleAssignmentPage = () => {
-  const match = useMatch('/article/:id/assignment');
-  const {
-    initializing,
-    title,
-    sentences,
-    downloadURL,
-    assignmentSentences,
-    onDelete,
-    onUpload,
-  } = useArticleAssignmentPage(match?.params.id || '');
-  if (initializing) {
+  const { article, isFetching } = useContext(AppContext);
+  const { sentences, assignmentSentences, downloadURL, onDelete, onUpload } =
+    useArticleAssignmentPage();
+  if (isFetching) {
     return <></>;
   } else {
     return (
-      <TableLayout title={`${title} - 提出アクセント`} backURL='/article/list'>
+      <TableLayout
+        title={`${article.title} - 提出アクセント`}
+        backURL='/article/list'
+      >
         <ArticleAssignment
+          articleId={article.id}
           sentences={sentences}
-          assignmentSentences={assignmentSentences}
           downloadURL={downloadURL}
+          assignmentSentences={assignmentSentences}
           onDelete={onDelete}
           onUpload={onUpload}
         />

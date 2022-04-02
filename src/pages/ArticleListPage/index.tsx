@@ -5,28 +5,30 @@ import { deleteFile } from '../../repositories/file';
 import { deleteSentences } from '../../repositories/sentence';
 import { Article, useHandleArticles } from '../../services/useArticles';
 import ArticleListPageComponent from './components/ArticleListPageComponent';
+import { useNavigate } from 'react-router-dom';
 
 // TODO article に hasRecButton を追加
 
 const ArticleListPage = () => {
-  const { articles } = useContext(AppContext);
+  const navigate = useNavigate();
+  const { articles, setArticleId, setIsFetching } = useContext(AppContext);
   const { updateArticle, deleteArticle } = useHandleArticles();
 
-  const onToggleShowAccents = async (article: Article) => {
+  const handleClickShowAccents = async (article: Article) => {
     await updateArticle({
       ...article,
       isShowAccents: !article.isShowAccents,
     });
   };
 
-  const onToggleShowParse = async (article: Article) => {
+  const handleClickShowParses = async (article: Article) => {
     await updateArticle({
       ...article,
       isShowParse: !article.isShowParse,
     });
   };
 
-  const onDelete = async ({
+  const handleClickDelete = async ({
     id,
     title,
     downloadURL,
@@ -47,6 +49,12 @@ const ArticleListPage = () => {
     }
   };
 
+  const openPage = ({ path, article }: { path: string; article: Article }) => {
+    setIsFetching(true);
+    setArticleId(article.id);
+    navigate(`/article/${path}`);
+  };
+
   const links = [
     { label: '戻る', pathname: '/' },
     { label: '新規作成', pathname: '/article' },
@@ -56,9 +64,10 @@ const ArticleListPage = () => {
     <ArticleListPageComponent
       links={links}
       articles={articles}
-      handleClickDelete={onDelete}
-      handleClickShowAccents={onToggleShowAccents}
-      handleClickShowSentenceParses={onToggleShowParse}
+      openPage={openPage}
+      handleClickDelete={handleClickDelete}
+      handleClickShowAccents={handleClickShowAccents}
+      handleClickShowParses={handleClickShowParses}
     />
   );
 };

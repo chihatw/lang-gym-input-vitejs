@@ -8,15 +8,17 @@ import TablePageHeader from '../../../components/ui/TablePageHeader';
 const ArticleListPageComponent = ({
   links,
   articles,
+  openPage,
   handleClickDelete,
+  handleClickShowParses,
   handleClickShowAccents,
-  handleClickShowSentenceParses,
 }: {
   links: { label: string; pathname: string }[];
   articles: Article[];
+  openPage: ({ path, article }: { path: string; article: Article }) => void;
   handleClickDelete: (article: Article) => void;
+  handleClickShowParses: (article: Article) => void;
   handleClickShowAccents: (article: Article) => void;
-  handleClickShowSentenceParses: (article: Article) => void;
 }) => (
   <Container maxWidth={'sm'} sx={{ paddingTop: 2 }}>
     <div style={{ display: 'grid', rowGap: 16 }}>
@@ -28,10 +30,26 @@ const ArticleListPageComponent = ({
               key={index}
               article={article}
               handleClickDelete={() => handleClickDelete(article)}
-              handleClickShowAccents={() => handleClickShowAccents(article)}
-              handleClickShowSentenceParses={() =>
-                handleClickShowSentenceParses(article)
+              handleClickShowParses={() => handleClickShowParses(article)}
+              openArticlePage={() =>
+                openPage({ article, path: `${article.id}` })
               }
+              openArticleEditPage={() =>
+                openPage({ article, path: `${article.id}/edit` })
+              }
+              openParsePage={() =>
+                openPage({ article, path: `${article.id}/parse` })
+              }
+              openVoicePage={() =>
+                openPage({ article, path: `${article.id}/voice` })
+              }
+              openAssignmentPage={() =>
+                openPage({
+                  article,
+                  path: `${article.id}/assignment`,
+                })
+              }
+              handleClickShowAccents={() => handleClickShowAccents(article)}
             />
           ))}
         </TableBody>

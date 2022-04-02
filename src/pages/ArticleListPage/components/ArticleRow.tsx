@@ -14,20 +14,29 @@ import {
 import { TableRow, TableCell } from '@mui/material';
 
 import { Article } from '../../../services/useArticles';
-import LinkIconCell from '../../../components/ui/LinkIconCell';
 import TitleDateCell from './TitleDateCell';
 import IconButtonCell from './IconButtonCell';
 
 const ArticleRow = ({
   article,
+  openParsePage,
+  openVoicePage,
+  openArticlePage,
   handleClickDelete,
+  openAssignmentPage,
+  openArticleEditPage,
+  handleClickShowParses,
   handleClickShowAccents,
-  handleClickShowSentenceParses,
 }: {
   article: Article;
+  openParsePage: () => void;
+  openVoicePage: () => void;
+  openArticlePage: () => void;
   handleClickDelete: () => void;
+  openAssignmentPage: () => void;
+  openArticleEditPage: () => void;
+  handleClickShowParses: () => void;
   handleClickShowAccents: () => void;
-  handleClickShowSentenceParses: () => void;
 }) => {
   return (
     <TableRow>
@@ -35,7 +44,7 @@ const ArticleRow = ({
         {article.userDisplayname}
       </TableCell>
       <TitleDateCell title={article.title} createdAt={article.createdAt} />
-      <LinkIconCell icon={<Edit />} pathname={`/article/${article.id}/edit`} />
+      <IconButtonCell icon={<Edit />} onClick={openArticleEditPage} />
       <IconButtonCell
         icon={
           article.isShowAccents ? (
@@ -46,20 +55,17 @@ const ArticleRow = ({
         }
         onClick={handleClickShowAccents}
       />
-      <LinkIconCell icon={<Subject />} pathname={`/article/${article.id}`} />
-      <LinkIconCell
-        icon={<SettingsOutlined />}
-        pathname={`/article/${article.id}/parse`}
-      />
+      <IconButtonCell icon={<Subject />} onClick={openArticlePage} />
+      <IconButtonCell icon={<SettingsOutlined />} onClick={openParsePage} />
       <IconButtonCell
         icon={article.isShowParse ? <FlashOn /> : <FlashOff />}
-        onClick={handleClickShowSentenceParses}
+        onClick={handleClickShowParses}
       />
-      <LinkIconCell icon={<Mic />} pathname={`/article/${article.id}/voice`} />
-      <LinkIconCell
+      <IconButtonCell icon={<Mic />} onClick={openVoicePage} />
+      <IconButtonCell
         icon={<Person />}
         disabled={!article.downloadURL}
-        pathname={`/article/${article.id}/assignment`}
+        onClick={openAssignmentPage}
       />
       <IconButtonCell icon={<Delete />} onClick={handleClickDelete} />
     </TableRow>

@@ -1,44 +1,24 @@
 import { createContext, useEffect, useState } from 'react';
 
-import { Sentence } from '../../../../entities/Sentence';
-import { getArticle } from '../../../../repositories/article';
-import { getSentences } from '../../../../repositories/sentence';
 import { Article } from '../../../../services/useArticles';
+import { Sentence } from '../../../../entities/Sentence';
+import { getSentences } from '../../../../repositories/sentence';
 
 export const ArticlePaneContext = createContext<{
   article: Article | null;
   sentences: Sentence[];
 }>({ article: null, sentences: [] });
 
-export const useArticlePage = (id: string) => {
-  const [article, setArticle] = useState<Article | null>(null);
+export const useArticlePage = (articleId: string) => {
   const [sentences, setSentences] = useState<Sentence[]>([]);
-  const [initializing, setInitializing] = useState(true);
-
   useEffect(() => {
-    if (!id) return;
+    if (!articleId) return;
     const fetchData = async () => {
-      const article = await getArticle(id);
-      if (!!article) {
-        setArticle(article);
-      }
-    };
-    fetchData();
-  }, [id]);
-
-  useEffect(() => {
-    if (!article) return;
-    const fetchData = async () => {
-      const sentences = await getSentences(article.id);
+      const sentences = await getSentences(articleId);
       !!sentences && setSentences(sentences);
-      setInitializing(false);
     };
     fetchData();
-  }, [article, id]);
+  }, [articleId]);
 
-  return {
-    article,
-    sentences,
-    initializing,
-  };
+  return { sentences };
 };

@@ -1,5 +1,5 @@
 import { getDownloadURL } from '@firebase/storage';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CreateAssignment } from '../../../../entities/Assignment';
 import {
@@ -7,7 +7,6 @@ import {
   CreateAssignmentSentence,
 } from '../../../../entities/AssignmentSentence';
 import { Sentence } from '../../../../entities/Sentence';
-import { getArticle } from '../../../../repositories/article';
 import {
   createAssignment,
   deleteAssignment,
@@ -20,56 +19,48 @@ import {
 } from '../../../../repositories/assignmentSentence';
 import { deleteFile, uploadFile } from '../../../../repositories/file';
 import { getSentences } from '../../../../repositories/sentence';
+import { AppContext } from '../../../../services/app';
 
-export const useArticleAssignmentPage = (id: string) => {
+export const useArticleAssignmentPage = () => {
   const navigate = useNavigate();
-  const [initializing, setInitializing] = useState(true);
-  const [title, setTitle] = useState('');
-  const [uid, setUid] = useState('');
+  const { article } = useContext(AppContext);
   const [sentences, setSentences] = useState<Sentence[]>([]);
   const [downloadURL, setDownloadURL] = useState('');
   const [assignmentID, setAssignmentID] = useState('');
   const [assignmentSentences, setAssignmentSentences] = useState<
     AssignmentSentence[]
   >([]);
-  useEffect(() => {
-    const fetchData = async () => {
-      const article = await getArticle(id);
-      if (!!article) {
-        setTitle(article.title);
-        setUid(article.uid);
-      }
-      setInitializing(false);
-    };
-    fetchData();
-  }, [id]);
 
   useEffect(() => {
+    if (!article.id) return;
     const fetchData = async () => {
-      const sentences = await getSentences(id);
+      const sentences = await getSentences(article.id);
       !!sentences && setSentences(sentences);
     };
     fetchData();
-  }, [id]);
+  }, [article.id]);
 
   useEffect(() => {
-    if (!uid) return;
+    if (!article.id) return;
     const fetchData = async () => {
-      const assignment = await getAssignment({ uid, articleID: id });
+      const assignment = await getAssignment({
+        uid: article.uid,
+        articleID: article.id,
+      });
       if (!!assignment) {
         setDownloadURL(assignment.downloadURL);
         setAssignmentID(assignment.id);
       }
       const assignmentSentences = await getAssignmentSentences({
-        uid,
-        articleID: id,
+        uid: article.uid,
+        articleID: article.id,
       });
       if (!!assignmentSentences) {
         setAssignmentSentences(assignmentSentences);
       }
     };
     fetchData();
-  }, [uid, id]);
+  }, [article]);
 
   const onDelete = useCallback(async () => {
     const path = decodeURIComponent(downloadURL.split('/')[7].split('?')[0]);
@@ -95,8 +86,8 @@ export const useArticleAssignmentPage = (id: string) => {
       const url = await getDownloadURL(snapshot.ref);
       const assignment: CreateAssignment = {
         ondoku: '',
-        article: id,
-        uid,
+        article: article.id,
+        uid: article.id,
         downloadURL: url,
       };
       const { success } = await createAssignment(assignment);
@@ -104,8 +95,8 @@ export const useArticleAssignmentPage = (id: string) => {
         const assignmentSentences: CreateAssignmentSentence[] = sentences.map(
           (s) => ({
             ondoku: '',
-            uid: uid,
-            article: id,
+            uid: article.uid,
+            article: article.id,
             accents: s.accents,
             end: 0,
             start: 0,
@@ -115,17 +106,18 @@ export const useArticleAssignmentPage = (id: string) => {
         );
         const { success } = await createAssignmentSentenes(assignmentSentences);
         if (success) {
-          navigate(`/article/${id}/assignment/uid/${uid}/voice`);
+          // TODO これ url パラメータで渡す必要ある？
+          navigate(
+            `/article/${article.id}/assignment/uid/${article.uid}/voice`
+          );
         }
       }
     }
   };
   return {
-    initializing,
-    title,
-    assignmentSentences,
     sentences,
     downloadURL,
+    assignmentSentences,
     onDelete,
     onUpload,
   };
