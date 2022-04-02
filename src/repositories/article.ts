@@ -13,7 +13,7 @@ import {
   deleteDoc,
 } from '@firebase/firestore';
 import { db } from './firebase';
-import { buildArticle, CreateArticle } from '../entities/Article';
+import { buildArticle } from '../entities/Article';
 import { Article } from '../services/useArticles';
 
 const COLLECTION = 'articles';
@@ -29,48 +29,6 @@ export const getArticle = async (id: string) => {
   } catch (e) {
     console.warn(e);
     return null;
-  }
-};
-
-export const getArticles = async (
-  uid: string,
-  _limit: number,
-  _startAfter?: number
-) => {
-  try {
-    let q = query(
-      articlesRef,
-      where('uid', '==', uid),
-      orderBy('createdAt', 'desc'),
-      limit(_limit)
-    );
-
-    console.log('get articles');
-
-    if (!!startAfter) {
-      q = query(q, startAfter(_startAfter));
-    }
-
-    const snapshot = await getDocs(q);
-
-    const articles = snapshot.docs.map((doc) =>
-      buildArticle(doc.id, doc.data())
-    );
-    return articles;
-  } catch (e) {
-    console.warn(e);
-    return null;
-  }
-};
-
-export const createArticle = async (article: CreateArticle) => {
-  try {
-    console.log('create article');
-    const docRef = await addDoc(articlesRef, article);
-    return { success: true, articleID: docRef.id };
-  } catch (e) {
-    console.warn(e);
-    return { success: false };
   }
 };
 

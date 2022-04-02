@@ -1,8 +1,6 @@
 import { DocumentData } from '@firebase/firestore';
 import { Article } from '../services/useArticles';
 
-export type CreateArticle = Omit<Article, 'id'>;
-
 export const buildArticle = (id: string, data: DocumentData) => {
   const article: Article = {
     id,

@@ -2,6 +2,7 @@ import {
   doc,
   limit,
   query,
+  addDoc,
   orderBy,
   updateDoc,
   deleteDoc,
@@ -40,13 +41,13 @@ export const INITIAL_ARTICLE: Article = {
 
 const LIMIT = 6;
 const COLLECTION = 'articles';
-const articlesRef = collection(db, COLLECTION);
+const colRef = collection(db, COLLECTION);
 
 export const useArticles = ({ opened }: { opened: boolean }) => {
   const [articles, setArticles] = useState<Article[]>([]);
   useEffect(() => {
     if (!opened) return;
-    const q = query(articlesRef, orderBy('createdAt', 'desc'), limit(LIMIT));
+    const q = query(colRef, orderBy('createdAt', 'desc'), limit(LIMIT));
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
@@ -68,6 +69,22 @@ export const useArticles = ({ opened }: { opened: boolean }) => {
 };
 
 export const useHandleArticles = () => {
+  const createArticle = async (
+    article: Omit<Article, 'id'>
+  ): Promise<{
+    success: boolean;
+    articleId?: string;
+  }> => {
+    return await addDoc(colRef, article)
+      .then((doc) => {
+        return { success: true, articleId: doc.id };
+      })
+      .catch((e) => {
+        console.warn(e);
+        return { success: false };
+      });
+  };
+
   const updateArticle = async (
     article: Article
   ): Promise<{ success: boolean }> => {
@@ -87,7 +104,7 @@ export const useHandleArticles = () => {
     deleteDoc(doc(db, COLLECTION, id));
   };
 
-  return { updateArticle, deleteArticle };
+  return { updateArticle, deleteArticle, createArticle };
 };
 
 const buildArticle = (doc: DocumentData) => {
