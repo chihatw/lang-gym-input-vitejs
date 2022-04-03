@@ -1,40 +1,47 @@
 import React from 'react';
 import { Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 
+import TableLayout from '../../../../components/templates/TableLayout';
+import { Article } from '../../../../services/useArticles';
 import { Sentence } from '../../../../entities/Sentence';
 import AssignmentCard from './AssignmentCard';
 import { AssignmentSentence } from '../../../../entities/AssignmentSentence';
 
-const ArticleAssignment: React.FC<{
-  articleId: string;
-  sentences: Sentence[];
-  downloadURL: string;
-  assignmentSentences: AssignmentSentence[];
-  onDelete: () => void;
-  onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}> = ({
-  articleId,
+const ArticleAssignmentPageComponent = ({
+  article,
   sentences,
   downloadURL,
   assignmentSentences,
-  onDelete,
   onUpload,
-}) => {
-  const navigate = useNavigate();
-  return (
+  onDelete,
+  handleClickCard,
+}: {
+  article: Article;
+  sentences: Sentence[];
+  downloadURL: string;
+  assignmentSentences: AssignmentSentence[];
+  onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onDelete: () => void;
+  handleClickCard: (value: AssignmentSentence) => void;
+}) => (
+  <TableLayout
+    title={`${article.title} - 提出アクセント`}
+    backURL='/article/list'
+  >
     <div style={{ display: 'grid', rowGap: 16 }}>
       {!!sentences.length &&
         assignmentSentences.map((assignmentSentence, index) => (
           <AssignmentCard
+            key={index}
             index={index}
             downloadURL={downloadURL}
             sentence={sentences[index]}
             assignmentSentence={assignmentSentence}
-            handleClick={() =>
-              navigate(
-                `/article/${articleId}/assignment/uid/${assignmentSentence.uid}/line/${assignmentSentence.line}`
-              )
+            handleClick={
+              () => handleClickCard(assignmentSentence)
+              // navigate(
+              //   `/article/${article.id}/assignment/uid/${assignmentSentence.uid}/line/${assignmentSentence.line}`
+              // )
             }
           />
         ))}
@@ -64,7 +71,7 @@ const ArticleAssignment: React.FC<{
         </Button>
       )}
     </div>
-  );
-};
+  </TableLayout>
+);
 
-export default ArticleAssignment;
+export default ArticleAssignmentPageComponent;

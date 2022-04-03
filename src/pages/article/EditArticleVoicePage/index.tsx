@@ -8,7 +8,7 @@ import { AppContext } from '../../../services/app';
 
 const EditArticleVoicePage = () => {
   const { article, isFetching } = useContext(AppContext);
-  const { ...props } = useEditArticleVoicePage({ id: article.id, article });
+  const { ...props } = useEditArticleVoicePage({ article });
   if (isFetching) {
     return <></>;
   } else {

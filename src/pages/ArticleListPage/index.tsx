@@ -50,7 +50,7 @@ const ArticleListPage = () => {
   };
 
   const openPage = ({ path, article }: { path: string; article: Article }) => {
-    console.log('!');
+    console.log(`%copenpage`, 'color:purple');
     setIsFetching(true);
     setArticleId(article.id);
     navigate(`/article/${path}`);

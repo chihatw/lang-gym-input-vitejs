@@ -10,6 +10,7 @@ import { SentenceParseListPageContext } from '../services/sentenceParseListPage'
 import { css } from '@emotion/css';
 import { YoutubeEmbeded } from '@chihatw/lang-gym-h.ui.youtube-embeded';
 
+// TODO will delete
 const SentenceParseList = () => {
   const navigate = useNavigate();
   const { sentenceParseNews, article, sentences, onCopy } = useContext(

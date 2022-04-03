@@ -1,19 +1,22 @@
-import React from 'react';
-import { Navigate, useMatch } from 'react-router-dom';
-import { useInitialArticleVoicePage } from './services/initialArticleVoicePage';
-import TableLayout from '../../../components/templates/TableLayout';
 import { Button } from '@mui/material';
+import { Navigate } from 'react-router-dom';
+import React, { useContext } from 'react';
+
+import TableLayout from '../../../components/templates/TableLayout';
+import { AppContext } from '../../../services/app';
+import { useInitialArticleVoicePage } from './services/initialArticleVoicePage';
 
 const InitialArticleVoicePage = () => {
-  const match = useMatch('/article/:id/voice/initial');
-  const { title, initializing, hasSentences, onUpload } =
-    useInitialArticleVoicePage(match?.params.id || '');
-  if (initializing) {
+  const { article, isFetching } = useContext(AppContext);
+  const { hasSentences, onUpload } = useInitialArticleVoicePage({
+    article,
+  });
+  if (isFetching) {
     return <></>;
   } else {
     if (hasSentences) {
       return (
-        <TableLayout title={title} backURL='/article/list'>
+        <TableLayout title={article.title} backURL='/article/list'>
           <Button variant='contained' component='label'>
             アップロード
             <input
@@ -26,7 +29,7 @@ const InitialArticleVoicePage = () => {
         </TableLayout>
       );
     } else {
-      return <Navigate to={`/article/${match?.params.id}/initial`} />;
+      return <Navigate to={`/article/${article.id}/initial`} />;
     }
   }
 };

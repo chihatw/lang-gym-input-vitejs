@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 
 import { Mark } from '../../../../entities/Mark';
 import { Sentence } from '../../../../entities/Sentence';
-import { getArticle } from '../../../../repositories/article';
 
 import { deleteFile } from '../../../../repositories/file';
 import {
@@ -12,13 +11,7 @@ import {
 } from '../../../../repositories/sentence';
 import { Article, useHandleArticles } from '../../../../services/useArticles';
 
-export const useEditArticleVoicePage = ({
-  id,
-  article,
-}: {
-  id: string;
-  article: Article;
-}) => {
+export const useEditArticleVoicePage = ({ article }: { article: Article }) => {
   const navigate = useNavigate();
   const { updateArticle } = useHandleArticles();
 
@@ -31,7 +24,7 @@ export const useEditArticleVoicePage = ({
   useEffect(() => {
     if (!article.id) return;
     const fetchData = async () => {
-      const articleSentences = await getSentences(id);
+      const articleSentences = await getSentences(article.id);
       if (articleSentences) {
         setMarks(articleSentences.map((s) => ({ start: s.start, end: s.end })));
         setSentences(articleSentences.map((s) => s.japanese));
@@ -84,7 +77,7 @@ export const useEditArticleVoicePage = ({
     }));
     const { success } = await updateSentences(sentences);
     if (success) {
-      navigate(`article/${id}`);
+      navigate(`article/${article.id}`);
     }
   };
 
