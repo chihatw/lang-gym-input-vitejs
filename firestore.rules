@@ -25,14 +25,14 @@ service cloud.firestore {
     function isValidArticle(data){
       return  data.size() == 9
         && 'createdAt' in data && data.createdAt is number
+        && 'downloadURL' in data && data.downloadURL is string
+        && 'embedID' in data && data.embedID is string
         && 'isShowAccents' in data && data.isShowAccents is bool
+        && 'isShowParse' in data && data.isShowParse is bool
+        && 'marks' in data && data.marks is list
         && 'title' in data && data.title is string
         && 'uid' in data && data.uid is string
         && 'userDisplayname' in data && data.userDisplayname is string
-        && 'downloadURL' in data && data.downloadURL is string
-        && 'embedID' in data && data.embedID is string
-        && 'isShowParse' in data && data.isShowParse is bool
-        && 'marks' in data && data.marks is list
     }
 
     match /articles/{article} {
