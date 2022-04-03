@@ -1,0 +1,312 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isValidAssignmentSentence(data){
+      return  data.size() == 8
+        && 'article' in data && data.article is string
+        && 'accents' in data && data.accents is list
+        && 'end' in data && data.end is number
+        && 'line' in data && data.line is number
+        && 'ondoku' in data && data.ondoku is string
+        && 'start' in data && data.start is number
+        && 'uid' in data && data.uid is string
+        && 'mistakes' in data && data.mistakes is list
+    }
+
+    match /aSentences/{aSentence} {
+   	  allow read: if request.auth != null
+      allow create,update: if request.auth != null
+      	&& isValidAssignmentSentence(request.resource.data)
+      allow delete: if request.auth != null
+      	&& request.auth.token.email == 'chiha.tw@gmail.com'
+    }
+
+    function isValidArticle(data){
+      return  data.size() == 9
+        && 'createdAt' in data && data.createdAt is number
+        && 'isShowAccents' in data && data.isShowAccents is bool
+        && 'title' in data && data.title is string
+        && 'uid' in data && data.uid is string
+        && 'userDisplayname' in data && data.userDisplayname is string
+        && 'downloadURL' in data && data.downloadURL is string
+        && 'embedID' in data && data.embedID is string
+        && 'isShowParse' in data && data.isShowParse is bool
+        && 'marks' in data && data.marks is list
+    }
+
+    match /articles/{article} {
+   	  allow read: if request.auth != null
+      allow create,update: if request.auth != null
+      	&& isValidArticle(request.resource.data)
+      allow delete: if request.auth != null
+      	&& request.auth.token.email == 'chiha.tw@gmail.com'
+    }
+
+    function isValidAssignment(data){
+      return  data.size() == 4
+        && 'article' in data && data.article is string
+        && 'downloadURL' in data && data.downloadURL is string
+        && 'ondoku' in data && data.ondoku is string
+        && 'uid' in data && data.uid is string
+    }
+
+    match /assignments/{assignment} {
+   	  allow read: if request.auth != null
+      allow create,update: if request.auth != null
+      	&& isValidAssignment(request.resource.data)
+      allow delete: if request.auth != null
+      	&& request.auth.token.email == 'chiha.tw@gmail.com'
+    }
+
+    function isValidOndokuSentence(data){
+      return  data.size() == 7
+        && 'accents' in data && data.accents is list
+        && 'createdAt' in data && data.createdAt is number
+        && 'end' in data && data.end is number
+        && 'japanese' in data && data.japanese is string
+        && 'line' in data && data.line is number
+        && 'ondoku' in data && data.ondoku is string
+        && 'start' in data && data.start is number
+    }
+
+    match /oSentences/{oSentence} {
+   	  allow read: if request.auth != null
+      allow create,update: if request.auth != null
+      	&& isValidOndokuSentence(request.resource.data)
+      allow delete: if request.auth != null
+      	&& request.auth.token.email == 'chiha.tw@gmail.com'
+    }
+
+    function isValidOndoku(data){
+      return  data.size() == 4
+        && 'createdAt' in data && data.createdAt is number
+        && 'isShowAccents' in data && data.isShowAccents is bool
+        && 'title' in data && data.title is string
+        && 'downloadURL' in data && data.downloadURL is string
+    }
+
+    match /ondokus/{ondoku} {
+   	  allow read: if request.auth != null
+      allow create,update: if request.auth != null
+      	&& isValidOndoku(request.resource.data)
+      allow delete: if request.auth != null
+      	&& request.auth.token.email == 'chiha.tw@gmail.com'
+    }
+
+    function isValidQuestionGroup(data){
+      return  data.size() == 7
+        && 'createdAt' in data && data.createdAt is number
+        && 'example' in data && data.example is string
+        && 'explanation' in data && data.explanation is string
+        && 'feedback' in data && data.feedback is string
+        && 'hasFreeAnswers' in data && data.hasFreeAnswers is bool
+        && 'questions' in data && data.questions is list
+        && 'tags' in data && data.tags is map 
+    }
+
+    match /questionGroups/{questionGroup} {
+   	  allow read: if request.auth != null
+      allow create,update: if request.auth != null
+      	&& isValidQuestionGroup(request.resource.data)
+      allow delete: if request.auth != null
+      	&& request.auth.token.email == 'chiha.tw@gmail.com'
+    }
+
+    function isValidQuestionSetScore(data){
+      return  data.size() == 6
+        && 'answers' in data && data.answers is map
+        && 'isChecking' in data && data.isChecking is bool
+        && 'createdAt' in data && data.createdAt is number
+        && 'questionSet' in data && data.questionSet is string
+        && 'score' in data && data.score is number
+        && 'uid' in data && data.uid is string
+    }
+
+    match /questionSetScores/{questionSetScore} {
+   	  allow read: if request.auth != null
+      allow create,update: if request.auth != null
+      	&& isValidQuestionSetScore(request.resource.data)
+      allow delete: if request.auth != null
+      	&& request.auth.token.email == 'chiha.tw@gmail.com'
+    }
+
+    function isValidQuestionSet(data){
+      return  data.size() == 10
+        && 'answered' in data && data.answered is bool
+        && 'createdAt' in data && data.createdAt is number
+        && 'hasFreeAnswers' in data && data.hasFreeAnswers is bool
+        && 'questionGroups' in data && data.questionGroups is list
+        && 'questionCount' in data && data.questionCount is number
+        && 'title' in data && data.title is string
+        && 'type' in data && data.type is string
+        && 'uid' in data && data.uid is string
+        && 'unlockedAt' in data && data.unlockedAt is number
+        && 'userDisplayname' in data && data.userDisplayname is string
+    }
+
+    match /questionSets/{questionSet} {
+   	  allow read: if request.auth != null
+      allow create,update: if request.auth != null
+      	&& isValidQuestionSet(request.resource.data)
+      allow delete: if request.auth != null
+      	&& request.auth.token.email == 'chiha.tw@gmail.com'
+    }
+
+    function isValidQuestion(data){
+      return  data.size() == 11
+        && 'answerExample' in data && data.answerExample is string
+        && 'answers' in data && data.answers is list
+        && 'choices' in data && data.choices is list
+        && 'createdAt' in data && data.createdAt is number
+        && 'feedback' in data && data.feedback is string
+        && 'memo' in data && data.memo is string
+        && 'note' in data && data.note is string
+        && 'question' in data && data.question is string
+        && 'questionGroup' in data && data.questionGroup is string
+        && 'tags' in data && data.tags is map
+        && 'type' in data && data.type is string
+        
+    }
+
+    match /questions/{question} {
+   	  allow read: if request.auth != null
+      allow create,update: if request.auth != null
+      	&& isValidQuestion(request.resource.data)
+      allow delete: if request.auth != null
+      	&& request.auth.token.email == 'chiha.tw@gmail.com'
+    }
+
+    function isValidSentence(data){
+      return  data.size() == 13
+        && 'accents' in data && data.accents is list
+        && 'article' in data && data.article is string
+        && 'chinese' in data && data.chinese is string
+        && 'createdAt' in data && data.createdAt is number
+        && 'end' in data && data.end is number
+        && 'japanese' in data && data.japanese is string
+        && 'kana' in data && data.kana is string
+        && 'line' in data && data.line is number
+        && 'original' in data && data.original is string
+        && 'start' in data && data.start is number
+        && 'tags' in data && data.tags is map
+        && 'title' in data && data.title is string
+        && 'uid' in data && data.uid is string
+    }
+
+    match /sentences/{sentence} {
+   	  allow read: if request.auth != null
+      allow create,update: if request.auth != null
+      	&& isValidSentence(request.resource.data) 
+      allow delete: if request.auth != null
+      	&& request.auth.token.email == 'chiha.tw@gmail.com'
+    }
+
+    function isValidUidOndoku(data){
+      return  data.size() == 3
+        && 'createdAt' in data && data.createdAt is number
+        && 'ondoku' in data && data.ondoku is path
+        && 'uid' in data && data.uid is string
+    }
+
+    match /uidOndokus/{uidOndoku} {
+   	  allow read: if request.auth != null
+      allow create,update: if request.auth != null
+      	&& isValidUidOndoku(request.resource.data)
+      allow delete: if request.auth != null
+      	&& request.auth.token.email == 'chiha.tw@gmail.com'
+    }
+
+    function isValidUser(data){
+      return  data.size() == 2
+        && 'createdAt' in data && data.createdAt is number
+        && 'displayname' in data && data.displayname is string
+    }
+
+    match /users/{user} {
+   	  allow read: if request.auth != null
+      allow create,update: if request.auth != null
+      	&& isValidUser(request.resource.data)
+      allow delete: if request.auth != null
+      	&& request.auth.token.email == 'chiha.tw@gmail.com'
+    } 
+
+    function isValidSentenceParse(data){
+      return  data.size() == 6
+        && 'line' in data && data.line is number
+        && 'article' in data && data.article is string
+        && 'sentence' in data && data.sentence is string
+        && 'sentenceJSONs' in data && data.sentenceJSONs is string
+        && 'sentenceArrays' in data && data.sentenceArrays is string
+        && 'invisibilitiesArray' in data && data.invisibilitiesArray is string
+    }
+
+    match /sentenceParses/{sentenceParse} {
+      allow read: if request.auth != null
+      allow create,update: if request.auth != null
+        && isValidSentenceParse(request.resource.data)
+      allow delete: if request.auth != null
+      	&& request.auth.token.email == 'chiha.tw@gmail.com'
+    }
+
+    function isValidSentenceParseNew(data){
+      return  data.size() == 10
+        && 'line' in data && data.line is number
+        && 'article' in data && data.article is string
+        && 'sentence' in data && data.sentence is string
+        && 'units' in data && data.units is string
+        && 'words' in data && data.words is string
+        && 'branches' in data && data.branches is string
+        && 'sentences' in data && data.sentences is string
+        && 'sentenceArrays' in data && data.sentenceArrays is string
+        && 'branchInvisibilities' in data && data.branchInvisibilities is string
+        && 'commentInvisibilities' in data && data.commentInvisibilities is string
+    }
+
+    match /sentenceParseNews/{sentenceParseNew} {
+      allow read: if request.auth != null
+      allow create,update: if request.auth != null
+        && isValidSentenceParseNew(request.resource.data)
+      allow delete: if request.auth != null
+      	&& request.auth.token.email == 'chiha.tw@gmail.com'
+    }
+
+    function isValidWorkout(data){
+      return  data.size() == 6
+        && 'beatCount' in data && data.beatCount is number
+        && 'createdAt' in data && data.createdAt is number
+        && 'createdAtStr' in data && data.createdAtStr is string
+        && 'dateId' in data && data.dateId is string
+        && 'label' in data && data.label is string
+        && 'uid' in data && data.uid is string
+    }
+
+    match /workouts/{workout} {
+      allow read: if request.auth != null
+      allow create,update: if request.auth != null
+        && isValidWorkout(request.resource.data)
+      allow delete: if request.auth != null
+      	&& request.auth.token.email == 'chiha.tw@gmail.com'
+    }
+
+    function isValidAudioItem(data){
+      return  data.size() == 8
+        && 'id' in data && data.id is string
+        && 'bpm' in data && data.bpm is number
+        && 'uid' in data && data.uid is string
+        && 'dateId' in data && data.dateId is string
+        && 'dataURI' in data && data.dataURI is string
+        && 'workoutId' in data && data.workoutId is string
+        && 'isPerfect' in data && data.isPerfect is bool
+        && 'isDeleted' in data && data.isDeleted is bool
+    }
+
+    match /audioItems/{audioItem} {
+      allow read: if request.auth != null
+      allow create,update: if request.auth != null
+        && isValidAudioItem(request.resource.data)
+      allow delete: if request.auth != null
+      	&& request.auth.token.email == 'chiha.tw@gmail.com'
+    }
+  }
+}
