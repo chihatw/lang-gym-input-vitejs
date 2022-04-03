@@ -10,6 +10,8 @@ import {
   SettingsOutlined,
   VisibilityOutlined,
   VisibilityOffOutlined,
+  MicNone,
+  MicOff,
 } from '@mui/icons-material';
 import { TableRow, TableCell } from '@mui/material';
 
@@ -27,6 +29,7 @@ const ArticleRow = ({
   openArticleEditPage,
   handleClickShowParses,
   handleClickShowAccents,
+  handleClickShowRecButton,
 }: {
   article: Article;
   openParsePage: () => void;
@@ -37,6 +40,7 @@ const ArticleRow = ({
   openArticleEditPage: () => void;
   handleClickShowParses: () => void;
   handleClickShowAccents: () => void;
+  handleClickShowRecButton: () => void;
 }) => {
   return (
     <TableRow>
@@ -62,6 +66,10 @@ const ArticleRow = ({
         onClick={handleClickShowParses}
       />
       <IconButtonCell icon={<Mic />} onClick={openVoicePage} />
+      <IconButtonCell
+        icon={article.hasRecButton ? <MicNone /> : <MicOff />}
+        onClick={handleClickShowRecButton}
+      />
       <IconButtonCell
         icon={<Person />}
         disabled={!article.downloadURL}

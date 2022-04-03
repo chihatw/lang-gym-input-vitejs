@@ -12,6 +12,7 @@ const ArticleListPageComponent = ({
   handleClickDelete,
   handleClickShowParses,
   handleClickShowAccents,
+  handleClickShowRecButton,
 }: {
   links: { label: string; pathname: string }[];
   articles: Article[];
@@ -19,6 +20,7 @@ const ArticleListPageComponent = ({
   handleClickDelete: (article: Article) => void;
   handleClickShowParses: (article: Article) => void;
   handleClickShowAccents: (article: Article) => void;
+  handleClickShowRecButton: (article: Article) => void;
 }) => (
   <Container maxWidth={'sm'} sx={{ paddingTop: 2 }}>
     <div style={{ display: 'grid', rowGap: 16 }}>
@@ -50,6 +52,7 @@ const ArticleListPageComponent = ({
                 })
               }
               handleClickShowAccents={() => handleClickShowAccents(article)}
+              handleClickShowRecButton={() => handleClickShowRecButton(article)}
             />
           ))}
         </TableBody>

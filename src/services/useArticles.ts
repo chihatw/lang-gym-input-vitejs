@@ -23,6 +23,7 @@ export type Article = {
   createdAt: number;
   downloadURL: string;
   isShowParse: boolean;
+  hasRecButton: boolean;
   isShowAccents: boolean;
   userDisplayname: string;
 };
@@ -36,6 +37,7 @@ export const INITIAL_ARTICLE: Article = {
   createdAt: 0,
   downloadURL: '',
   isShowParse: false,
+  hasRecButton: false,
   isShowAccents: false,
   userDisplayname: '',
 };
@@ -44,6 +46,9 @@ const LIMIT = 6;
 const COLLECTION = 'articles';
 const colRef = collection(db, COLLECTION);
 
+/**
+ * アプリ全体で使用
+ */
 export const useArticles = ({
   opened,
   articleId,
@@ -101,6 +106,7 @@ export const useArticles = ({
       q,
       (snapshot) => {
         console.log('snapshot article');
+
         const articles = snapshot.docs.map((doc) => buildArticle(doc));
         setArticles(articles);
       },
@@ -116,8 +122,11 @@ export const useArticles = ({
   return { article, articles };
 };
 
+/**
+ * 単発のデータ操作用
+ */
 export const useHandleArticles = () => {
-  const createArticle = async (
+  const addArticle = async (
     article: Omit<Article, 'id'>
   ): Promise<{
     success: boolean;
@@ -152,21 +161,34 @@ export const useHandleArticles = () => {
     deleteDoc(doc(db, COLLECTION, id));
   };
 
-  return { updateArticle, deleteArticle, createArticle };
+  return { updateArticle, deleteArticle, addArticle };
 };
 
 const buildArticle = (doc: DocumentData) => {
+  const {
+    uid,
+    marks,
+    title,
+    embedID,
+    createdAt,
+    isShowParse,
+    downloadURL,
+    hasRecButton,
+    isShowAccents,
+    userDisplayname,
+  } = doc.data();
   const article: Article = {
     id: doc.id,
-    uid: doc.data().uid,
-    title: doc.data().title,
-    embedID: doc.data().embedID,
-    createdAt: doc.data().createdAt,
-    isShowParse: doc.data().isShowParse,
-    downloadURL: doc.data().downloadURL,
-    isShowAccents: doc.data().isShowAccents,
-    userDisplayname: doc.data().userDisplayname,
-    marks: doc.data().marks,
+    uid: uid || '',
+    marks: marks || [],
+    title: title || '',
+    embedID: embedID || '',
+    createdAt: createdAt || 0,
+    isShowParse: isShowParse || false,
+    downloadURL: downloadURL || '',
+    hasRecButton: hasRecButton || false,
+    isShowAccents: isShowAccents || false,
+    userDisplayname: userDisplayname || '',
   };
   return article;
 };

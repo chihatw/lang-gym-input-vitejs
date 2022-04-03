@@ -7,24 +7,29 @@ import { Article, useHandleArticles } from '../../services/useArticles';
 import ArticleListPageComponent from './components/ArticleListPageComponent';
 import { useNavigate } from 'react-router-dom';
 
-// TODO article に hasRecButton を追加
-
 const ArticleListPage = () => {
   const navigate = useNavigate();
   const { articles, setArticleId, setIsFetching } = useContext(AppContext);
   const { updateArticle, deleteArticle } = useHandleArticles();
 
-  const handleClickShowAccents = async (article: Article) => {
-    await updateArticle({
+  const handleClickShowAccents = (article: Article) => {
+    updateArticle({
       ...article,
       isShowAccents: !article.isShowAccents,
     });
   };
 
-  const handleClickShowParses = async (article: Article) => {
-    await updateArticle({
+  const handleClickShowParses = (article: Article) => {
+    updateArticle({
       ...article,
       isShowParse: !article.isShowParse,
+    });
+  };
+
+  const handleClickShowRecButton = (article: Article) => {
+    updateArticle({
+      ...article,
+      hasRecButton: !article.hasRecButton,
     });
   };
 
@@ -69,6 +74,7 @@ const ArticleListPage = () => {
       handleClickDelete={handleClickDelete}
       handleClickShowAccents={handleClickShowAccents}
       handleClickShowParses={handleClickShowParses}
+      handleClickShowRecButton={handleClickShowRecButton}
     />
   );
 };

@@ -6,6 +6,7 @@ import { useSelectUser } from './services/selectUser';
 
 /**
  * このコンポーネントは上位に\<BrowserRouter\>コンポーネントが必要
+ * OndokuAssignment.tsx のみで使用中
  */
 
 const SelectUser: React.FC<{

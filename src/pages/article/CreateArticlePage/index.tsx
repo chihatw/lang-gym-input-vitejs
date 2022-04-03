@@ -12,7 +12,7 @@ import CreateArticlePageComponent from './components/CreateArticlePageComponent'
 const CreateArticlePage = () => {
   const navigate = useNavigate();
   const { users, setArticleId, setIsFetching } = useContext(AppContext);
-  const { createArticle } = useHandleArticles();
+  const { addArticle } = useHandleArticles();
 
   const [uid, setUid] = useState('');
   const [date, setDate] = useState<Date>(new Date());
@@ -44,7 +44,7 @@ const CreateArticlePage = () => {
       createdAt: date.getTime(),
       userDisplayname: users.filter((u) => u.id === uid)[0].displayname,
     };
-    const { success, articleId } = await createArticle(article);
+    const { success, articleId } = await addArticle(article);
     if (success) {
       setIsFetching(true);
       setArticleId(articleId!);
