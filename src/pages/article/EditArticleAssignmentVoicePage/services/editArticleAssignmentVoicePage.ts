@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { INITIAL_ASSIGNMENT } from '../../../../entities/Assignment';
 import { AssignmentSentence } from '../../../../entities/AssignmentSentence';
 import { Mark } from '../../../../entities/Mark';
 import {
@@ -27,6 +28,7 @@ export const useEditArticleAssignmentVoicePage = ({
   const navigate = useNavigate();
   const [sentences, setSentences] = useState<string[]>([]);
   const [downloadURL, setDownloadURL] = useState('');
+  const [assignment, setAssignment] = useState(INITIAL_ASSIGNMENT);
   const [assignmentID, setAssignmentID] = useState('');
   const [marks, setMarks] = useState<Mark[]>(
     sentences.map((s) => ({ start: 0, end: 0 }))
@@ -50,7 +52,9 @@ export const useEditArticleAssignmentVoicePage = ({
 
   useEffect(() => {
     const fetchData = async () => {
+      console.log({ id, uid });
       const assignment = await getAssignment({ articleID: id, uid });
+      console.log({ assignment });
       setDownloadURL(!!assignment ? assignment.downloadURL : '');
       if (!!assignment) {
         setAssignmentID(assignment.id);

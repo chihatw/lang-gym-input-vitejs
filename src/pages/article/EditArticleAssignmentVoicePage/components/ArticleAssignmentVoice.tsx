@@ -1,23 +1,39 @@
-import AudioEdit from '@bit/chihatw.lang-gym.audio-edit'; // TODO 内部化
-import { Grid } from '@mui/material';
 import React from 'react';
+import { Grid } from '@mui/material';
+import AudioEdit from '@bit/chihatw.lang-gym.audio-edit'; // TODO 内部化
+
 import { Mark } from '../../../../entities/Mark';
 
-const ArticleAssignmentVoice: React.FC<{
-  sentences: string[];
-  uid: string;
-  downloadURL: string;
+const ArticleAssignmentVoice = ({
+  marks,
+  sentences,
+  hasChange,
+  downloadURL,
+  onSubmit,
+  onDeleteAudio,
+  onChangeMarks,
+}: {
   marks: Mark[];
+  sentences: string[];
+  hasChange: boolean;
+  downloadURL: string;
+  onSubmit: () => void;
   onDeleteAudio: () => void;
   onChangeMarks: (marks: Mark[]) => void;
-  hasChange: boolean;
-  onSubmit: () => void;
-}> = ({ sentences, ...props }) => {
+}) => {
   return (
     <Grid container direction='column' spacing={2}>
-      {!!props.downloadURL && (
+      {!!downloadURL && (
         <Grid item>
-          <AudioEdit {...props} sentences={sentences} />
+          <AudioEdit
+            marks={marks}
+            sentences={sentences}
+            hasChange={hasChange}
+            downloadURL={downloadURL}
+            onSubmit={onSubmit}
+            onDeleteAudio={onDeleteAudio}
+            onChangeMarks={onChangeMarks}
+          />
         </Grid>
       )}
     </Grid>

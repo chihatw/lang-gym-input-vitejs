@@ -37,12 +37,7 @@ const ArticleAssignmentPageComponent = ({
             downloadURL={downloadURL}
             sentence={sentences[index]}
             assignmentSentence={assignmentSentence}
-            handleClick={
-              () => handleClickCard(assignmentSentence)
-              // navigate(
-              //   `/article/${article.id}/assignment/uid/${assignmentSentence.uid}/line/${assignmentSentence.line}`
-              // )
-            }
+            handleClick={() => handleClickCard(assignmentSentence)}
           />
         ))}
       {!downloadURL ? (

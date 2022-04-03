@@ -1,17 +1,15 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 
-import { useMatch } from 'react-router-dom';
 import { useEditArticleAssignmentVoicePage } from './services/editArticleAssignmentVoicePage';
 import ArticleAssignmentVoice from './components/ArticleAssignmentVoice';
 import TableLayout from '../../../components/templates/TableLayout';
 import { AppContext } from '../../../services/app';
 
 const EditArticleAssignmentVoicePage = () => {
-  const match = useMatch('/article/:id/assignment/uid/:uid/voice/');
   const { article, isFetching } = useContext(AppContext);
   const { sentences, ...props } = useEditArticleAssignmentVoicePage({
     id: article.id,
-    uid: match?.params.uid || '',
+    uid: article.uid,
     article,
   });
   if (isFetching) {

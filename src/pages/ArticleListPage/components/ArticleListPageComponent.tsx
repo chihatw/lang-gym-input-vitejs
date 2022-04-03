@@ -53,6 +53,12 @@ const ArticleListPageComponent = ({
               }
               handleClickShowAccents={() => handleClickShowAccents(article)}
               handleClickShowRecButton={() => handleClickShowRecButton(article)}
+              openEditAssignmentVoicePage={() =>
+                openPage({
+                  article,
+                  path: `${article.id}/assignment/uid/${article.uid}/voice`,
+                })
+              }
             />
           ))}
         </TableBody>
