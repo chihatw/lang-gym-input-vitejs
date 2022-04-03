@@ -1,3 +1,5 @@
+### 1.0.6
+- add vercel.json
 ### 1.0.5
 - bugfix: article assignment
 ### 1.0.4
