@@ -2,7 +2,7 @@ import Delete from '@mui/icons-material/Delete';
 import Stop from '@mui/icons-material/Stop';
 import PlayArrow from '@mui/icons-material/PlayArrow';
 import { TableRow, TableCell, IconButton } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Player } from '../classes/Player';
 import { AudioItem } from '../../../services/useAudioItems';
 
@@ -11,15 +11,19 @@ const userNames: { [key: string]: string } = {
 };
 
 const AudioItemRow = ({
-  player,
   audioItem,
   deleteRow,
 }: {
-  player: Player;
   audioItem: AudioItem;
   deleteRow: () => void;
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
+
+  const player = useMemo(
+    () => new Player({ audioContext: new AudioContext() }),
+    []
+  );
+
   player.dataURI = audioItem.dataURI;
   player.handleOnEnd = () => setIsPlaying(false);
 
@@ -27,6 +31,7 @@ const AudioItemRow = ({
     if (isPlaying) {
       player.stop();
     } else {
+      console.log(audioItem.id);
       player.play();
     }
     setIsPlaying(!isPlaying);

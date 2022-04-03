@@ -7,10 +7,6 @@ import AudioItemRow from './components/AudioItemRow';
 
 const AudioItemsPage = () => {
   const { audioItems, deleteAudioItem } = useContext(AppContext);
-  const player = useMemo(
-    () => new Player({ audioContext: new AudioContext() }),
-    []
-  );
   return (
     <Container maxWidth='sm'>
       <div style={{ height: 20 }} />
@@ -19,7 +15,6 @@ const AudioItemsPage = () => {
           {audioItems.map((audioItem, index) => (
             <AudioItemRow
               key={index}
-              player={player}
               audioItem={audioItem}
               deleteRow={() => deleteAudioItem(audioItem.id)}
             />

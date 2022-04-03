@@ -1,3 +1,5 @@
+### 1.0.4
+- dataURI 毎に player 作成
 ### 1.0.3
 - bugfix: EditArticleVoicePage
 ### 1.0.2
