@@ -9,7 +9,8 @@ import { useNavigate } from 'react-router-dom';
 
 const ArticleListPage = () => {
   const navigate = useNavigate();
-  const { articles, setArticleId, setIsFetching } = useContext(AppContext);
+  const { article, articles, setArticleId, setIsFetching } =
+    useContext(AppContext);
   const { updateArticle, deleteArticle } = useHandleArticles();
 
   const handleClickShowAccents = (article: Article) => {
@@ -54,10 +55,17 @@ const ArticleListPage = () => {
     }
   };
 
-  const openPage = ({ path, article }: { path: string; article: Article }) => {
-    console.log(`%copenpage`, 'color:purple');
-    setIsFetching(true);
-    setArticleId(article.id);
+  const openPage = ({
+    path,
+    article: _article,
+  }: {
+    path: string;
+    article: Article;
+  }) => {
+    if (article.id !== _article.id) {
+      setIsFetching(true);
+      setArticleId(_article.id);
+    }
     navigate(`/article/${path}`);
   };
 

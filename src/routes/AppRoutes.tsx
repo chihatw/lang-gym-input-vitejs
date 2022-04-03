@@ -1,8 +1,7 @@
 import React, { useContext } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 
-import useAudioItems from '../services/useAudioItems';
-import { useApp, AppContext } from '../services/app';
+import { AppContext } from '../services/app';
 
 import TopPage from '../pages/TopPage';
 import SignInPage from '../pages/SignInPage';
@@ -33,7 +32,6 @@ import EditArticleAssignmentVoicePage from '../pages/article/EditArticleAssignme
 import EditArticlePage from '../pages/article/EditArticlePage';
 import EditArticleVoicePage from '../pages/article/EditArticleVoicePage';
 import InitialArticlePage from '../pages/article/InitialArticlePage';
-import InitialArticleVoicePage from '../pages/article/InitialArticleVoicePage';
 import ArticleInputPage from '../pages/ArticleInputPage';
 import EditArticleSentencePage from '../pages/article/EditArticleSentencePage';
 import EditSentenceParsePage from '../pages/sentenceParse/EditSentenceParsePage';
@@ -41,9 +39,6 @@ import CreateUidOndokuPage from '../pages/uidOndoku/CreateUidOndokuPage';
 import UidOndokuListPage from '../pages/uidOndoku/UidOndokuListPage';
 
 const AppRoutes = () => {
-  const { initializing, user, onCreateRhythmsQuestion } = useApp();
-
-  const { audioItems, deleteAudioItem } = useAudioItems();
   return (
     <Routes>
       <Route
@@ -211,14 +206,6 @@ const AppRoutes = () => {
           element={
             <PrivateRoute>
               <InitialArticlePage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path=':id/voice/initial'
-          element={
-            <PrivateRoute>
-              <InitialArticleVoicePage />
             </PrivateRoute>
           }
         />
