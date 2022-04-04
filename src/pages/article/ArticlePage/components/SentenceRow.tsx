@@ -1,11 +1,10 @@
 import React from 'react';
-import Speaker from '@bit/chihatw.lang-gym.speaker';
-import { Card, IconButton } from '@mui/material';
+import { Card } from '@mui/material';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import accentesForPitchesArray from 'accents-for-pitches-array';
-import { Edit, SettingsOutlined } from '@mui/icons-material';
 
 import { Sentence } from '../../../../entities/Sentence';
+import EditSentencePane from './EditSentencePane';
 
 const SentenceRow = ({
   sentence,
@@ -20,7 +19,15 @@ const SentenceRow = ({
 }) => {
   return (
     <Card>
-      <div style={{ padding: 16, fontSize: 12, color: '#555' }}>
+      <div
+        style={{
+          color: '#555',
+          rowGap: 16,
+          padding: 16,
+          display: 'grid',
+          fontSize: 12,
+        }}
+      >
         <div style={{ display: 'grid', rowGap: 4 }}>
           <div style={{ userSelect: 'none' }}>{`${sentence.line + 1}. ${
             sentence.japanese
@@ -31,30 +38,12 @@ const SentenceRow = ({
             pitchesArray={accentesForPitchesArray(sentence.accents)}
           />
         </div>
-        <div style={{ height: 16 }} />
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-          }}
-        >
-          {!!downloadURL && sentence.end - sentence.start > 0 && (
-            <Speaker
-              end={sentence.end}
-              start={sentence.start}
-              downloadURL={downloadURL}
-            />
-          )}
-
-          <IconButton size='small' onClick={openEditParsePage}>
-            <SettingsOutlined />
-          </IconButton>
-
-          <IconButton size='small' onClick={openEditPage}>
-            <Edit />
-          </IconButton>
-        </div>
+        <EditSentencePane
+          sentence={sentence}
+          downloadURL={downloadURL}
+          openEditPage={openEditPage}
+          openEditParsePage={openEditParsePage}
+        />
       </div>
     </Card>
   );

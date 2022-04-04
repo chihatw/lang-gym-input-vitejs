@@ -1,11 +1,10 @@
 import { Navigate, useNavigate } from 'react-router-dom';
 import React, { useContext, useEffect, useState } from 'react';
 
-import TableLayout from '../../../components/templates/TableLayout';
 import { Sentence } from '../../../entities/Sentence';
 import { AppContext } from '../../../services/app';
 import { getSentences } from '../../../repositories/sentence';
-import ArticleSentenceList from './components/ArticleSentenceList';
+import ArticlePageComponent from './components/ArticlePageComponent';
 import { useHandleQuestions } from '../../../services/useQuestions';
 import { useHandleQuestionSets } from '../../../services/useQuestionSets';
 import {
@@ -98,7 +97,7 @@ const ArticlePage = () => {
     path: string;
     sentence: Sentence;
   }) => {
-    // TODO sentenceId の設定？
+    // TODO useSentences作成時に sentenceId の設定
     navigate(`/sentence/${path}`);
   };
 
@@ -108,15 +107,13 @@ const ArticlePage = () => {
   } else {
     if (!!article.id) {
       return (
-        <TableLayout title={article.title} backURL={`/article/list`}>
-          <ArticleSentenceList
-            article={article}
-            sentences={sentences}
-            openPage={openPage}
-            onCreateAccentsQuestion={onCreateAccentsQuestion}
-            onCreateRhythmsQuestion={onCreateRhythmsQuestion}
-          />
-        </TableLayout>
+        <ArticlePageComponent
+          article={article}
+          openPage={openPage}
+          sentences={sentences}
+          onCreateAccentsQuestion={onCreateAccentsQuestion}
+          onCreateRhythmsQuestion={onCreateRhythmsQuestion}
+        />
       );
     }
     // article が 初期値
