@@ -9,7 +9,6 @@ import {
   FlashOn,
   MicNone,
   FlashOff,
-  ContentCut,
   SettingsOutlined,
   VisibilityOutlined,
   VisibilityOffOutlined,
@@ -31,7 +30,6 @@ const ArticleRow = ({
   handleClickShowParses,
   handleClickShowAccents,
   handleClickShowRecButton,
-  openEditAssignmentVoicePage,
 }: {
   article: Article;
   openParsePage: () => void;
@@ -43,7 +41,6 @@ const ArticleRow = ({
   handleClickShowParses: () => void;
   handleClickShowAccents: () => void;
   handleClickShowRecButton: () => void;
-  openEditAssignmentVoicePage: () => void;
 }) => {
   return (
     <TableRow>
@@ -77,10 +74,6 @@ const ArticleRow = ({
         icon={<Person />}
         disabled={!article.downloadURL}
         onClick={openAssignmentPage}
-      />
-      <IconButtonCell
-        icon={<ContentCut />}
-        onClick={openEditAssignmentVoicePage}
       />
       <IconButtonCell icon={<Delete />} onClick={handleClickDelete} />
     </TableRow>
