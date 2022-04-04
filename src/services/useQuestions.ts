@@ -1,6 +1,6 @@
 // https://firebase.google.com/docs/firestore/manage-data/add-data#web-version-9_7
 import { doc, collection, writeBatch } from '@firebase/firestore';
-import { Accent } from '../entities/Accent';
+import { Accent, buildAccentString } from '../entities/Accent';
 import { buildSentenceRhythm, getMoraString } from '../entities/Rhythm';
 
 import { Tags } from '../entities/Tags';
@@ -39,8 +39,42 @@ export type Question = {
 const COLLECTION = 'questions';
 const colRef = collection(db, COLLECTION);
 
-export const useQuestions = () => {};
+export const useQuestions = () => {
+  // ...
+};
 export const useHandleQuestions = () => {
+  const createAccentsQuestions = async ({
+    sentences,
+    questionGroupId,
+  }: {
+    sentences: {
+      japanese: string;
+      accents: Accent[];
+    }[];
+    questionGroupId: string;
+  }): Promise<string[]> => {
+    const questions = sentences2AccentsQuestions({
+      sentences,
+      questionGroupId,
+    });
+    const docIds: string[] = [];
+    const batch = writeBatch(db);
+    questions.forEach((question) => {
+      const docRef = doc(colRef);
+      docIds.push(docRef.id);
+      batch.set(docRef, question);
+    });
+    console.log('create accents questions');
+    return await batch
+      .commit()
+      .then(() => {
+        return docIds;
+      })
+      .catch((e) => {
+        console.warn(e);
+        return [];
+      });
+  };
   const createRhythmQuestions = async ({
     sentences,
     downloadURL,
@@ -54,7 +88,7 @@ export const useHandleQuestions = () => {
     downloadURL: string;
     questinGroupId: string;
   }): Promise<string[]> => {
-    const questions = sentences2RhythmQuestion({
+    const questions = sentences2RhythmQuestions({
       sentences,
       downloadURL,
       questinGroupId,
@@ -76,10 +110,10 @@ export const useHandleQuestions = () => {
         return [];
       });
   };
-  return { createRhythmQuestions };
+  return { createRhythmQuestions, createAccentsQuestions };
 };
 
-const sentences2RhythmQuestion = ({
+const sentences2RhythmQuestions = ({
   sentences,
   downloadURL,
   questinGroupId,
@@ -94,22 +128,47 @@ const sentences2RhythmQuestion = ({
 }): Omit<Question, 'id'>[] => {
   return sentences.map(({ accents, end, start }, index) => {
     const moraString = getMoraString(accents);
+    const { id, ...omitted } = INITIAL_QUESTION;
     return {
-      answerExample: '',
+      ...omitted,
       answers: [moraString],
-      choices: [],
       createdAt: new Date().getTime() + index,
-      feedback: '',
-      memo: '',
-      note: '',
       question: JSON.stringify({
         audio: { end, start, downloadURL },
         japanese: '',
         syllableUnits: buildSentenceRhythm(moraString),
       }),
       questionGroup: questinGroupId,
-      tags: {},
       type: 'articleRhythms',
     };
+  });
+};
+
+const sentences2AccentsQuestions = ({
+  sentences,
+  questionGroupId,
+}: {
+  sentences: {
+    japanese: string;
+    accents: Accent[];
+  }[];
+  questionGroupId: string;
+}): Omit<Question, 'id'>[] => {
+  return sentences.map(({ japanese, accents }, index) => {
+    const { id, ...omitted } = INITIAL_QUESTION;
+    const question: Omit<Question, 'id'> = {
+      ...omitted,
+      answers: [buildAccentString(accents)],
+      createdAt: new Date().getTime() + index,
+      question: JSON.stringify({
+        japanese,
+        disableds: [],
+        audio: { start: 0, end: 0, downloadURL: '' },
+        accents,
+      }),
+      questionGroup: questionGroupId,
+      type: 'articleAccents',
+    };
+    return question;
   });
 };

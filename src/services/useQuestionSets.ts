@@ -1,6 +1,8 @@
 import { addDoc, collection } from '@firebase/firestore';
-import { Accent } from '../entities/Accent';
+
 import { db } from '../repositories/firebase';
+import { Accent } from '../entities/Accent';
+import { Sentence } from '../entities/Sentence';
 
 export type QuestionSet = {
   id: string;
@@ -33,8 +35,48 @@ export const INITIAL_QUESTION_SET: QuestionSet = {
 const COLLECTION = 'questionSets';
 const colRef = collection(db, COLLECTION);
 
-export const useQuestionSets = () => {};
+export const useQuestionSets = () => {
+  // ...
+};
 export const useHandleQuestionSets = () => {
+  const createAccentsQuestionSet = async ({
+    title,
+    sentences,
+    questionGroupId,
+  }: {
+    title: string;
+    sentences: Sentence[];
+    questionGroupId: string;
+  }): Promise<string> => {
+    let questionCount = 0;
+    sentences.forEach((sentence) => {
+      const accents = sentence.accents;
+      questionCount += accents.length;
+    });
+
+    const { id, ...omitted } = INITIAL_QUESTION_SET;
+
+    const questionSet: Omit<QuestionSet, 'id'> = {
+      ...omitted,
+      uid: import.meta.env.VITE_ADMIN_UID,
+      type: 'articleAccents',
+      title: `${title} - アクセント`,
+      createdAt: Date.now(),
+      unlockedAt: Date.now(),
+      questionCount,
+      questionGroups: [questionGroupId],
+      userDisplayname: '原田',
+    };
+    console.log('create question set');
+    return await addDoc(colRef, questionSet)
+      .then((doc) => {
+        return doc.id;
+      })
+      .catch((e) => {
+        console.warn(e);
+        return '';
+      });
+  };
   const createRhythmQuestionSet = async ({
     title,
     accentsArray,
@@ -43,7 +85,7 @@ export const useHandleQuestionSets = () => {
     title: string;
     accentsArray: Accent[][];
     questionGroupId: string;
-  }): Promise<{ questionSetID: string }> => {
+  }): Promise<string> => {
     let questionCount = 0;
     accentsArray.forEach((accents) => {
       questionCount += accents.length;
@@ -63,12 +105,12 @@ export const useHandleQuestionSets = () => {
     console.log('create question set');
     return await addDoc(colRef, questionSet)
       .then((doc) => {
-        return { questionSetID: doc.id };
+        return doc.id;
       })
       .catch((e) => {
         console.warn(e);
-        return { questionSetID: '' };
+        return '';
       });
   };
-  return { createRhythmQuestionSet };
+  return { createRhythmQuestionSet, createAccentsQuestionSet };
 };

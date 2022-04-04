@@ -1,11 +1,4 @@
-import {
-  doc,
-  collection,
-  getDoc,
-  getDocs,
-  updateDoc,
-  addDoc,
-} from '@firebase/firestore';
+import { doc, collection, updateDoc, addDoc } from '@firebase/firestore';
 import { Tags } from '../entities/Tags';
 import { db } from '../repositories/firebase';
 
@@ -20,7 +13,7 @@ export type QuestionGroup = {
   hasFreeAnswers: boolean;
 };
 
-const INITIAL_QUESTION_GROUP: QuestionGroup = {
+export const INITIAL_QUESTION_GROUP: QuestionGroup = {
   id: '',
   tags: {},
   example: '',
@@ -45,10 +38,12 @@ export const useHandleQuestionGroups = () => {
       const { id, ...omitted } = questionGroup;
       console.log('create question group');
       return addDoc(colRef, { ...omitted })
-        .then((doc) => ({
-          ...questionGroup,
-          id: doc.id,
-        }))
+        .then((doc) => {
+          return {
+            ...questionGroup,
+            id: doc.id,
+          };
+        })
         .catch((e) => {
           console.warn(e);
           return null;
