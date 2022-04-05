@@ -26,7 +26,6 @@ const WaveCanvas = ({
     if (!context) return;
     context.clearRect(0, 0, canvas.width, canvas.height);
     peaks.forEach((peak, xPos) => {
-      console.log({ currentTimePos });
       if (xPos === Math.round(currentTimePos)) {
         context.fillStyle = 'green';
         context!.fillRect(xPos, 0, 1, height);
@@ -47,7 +46,11 @@ const WaveCanvas = ({
       }
     });
   }, [peaks, height, sentenceLines, currentTimePos]);
-  return <canvas ref={canvasRef} />;
+  return (
+    <div style={{ border: '1px solid #eee' }}>
+      <canvas ref={canvasRef} style={{ verticalAlign: 'bottom' }} />
+    </div>
+  );
 };
 
 export default WaveCanvas;

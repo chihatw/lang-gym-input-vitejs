@@ -1,62 +1,82 @@
 import { useNavigate } from 'react-router-dom';
 import { getDownloadURL } from 'firebase/storage';
 import React, {
-  useCallback,
-  useContext,
-  useEffect,
   useMemo,
   useState,
+  useEffect,
+  useContext,
+  useCallback,
 } from 'react';
 
 import { Mark } from '../../../entities/Mark';
 import { Sentence } from '../../../entities/Sentence';
 import { AppContext } from '../../../services/app';
+import { buildMarks } from '../../../services/buildMarks';
+import { buildPeaks } from '../../../services/buildPeaks';
+import { updateSentences } from '../../../repositories/sentence';
+import { buildSentenceLines } from '../../../services/buildSentenceLines';
 import { deleteFile, uploadFile } from '../../../repositories/file';
 import EditArticleVoicePageComponent from './components/EditArticleVoicePageComponent';
 import { Article, useHandleArticles } from '../../../services/useArticles';
-import { updateSentences } from '../../../repositories/sentence';
-import { buildMarks } from '../../../services/buildMarks';
-import { buildSentenceLines } from '../../../services/buildSentenceLines';
-import { buildPeaks } from '../../../services/buildPeaks';
 
 // TODO Article Page に 統合？
 
+const CANVAS_WIDTH = 580;
 const INITIAL_BLANK_DURATION = 700;
 
 const EditArticleVoicePage = () => {
   const navigate = useNavigate();
-  const { article, isFetching, sentences } = useContext(AppContext);
   const { updateArticle } = useHandleArticles();
+  const { article, isFetching, sentences } = useContext(AppContext);
 
   const audioContext = useMemo(() => new AudioContext(), []);
+
+  const [scale, setScale] = useState(5);
   const [marks, setMarks] = useState<Mark[]>([]);
-  const [scale, setScale] = useState(50);
   const [peaks, setPeaks] = useState<number[]>([]);
   const [duration, setDuration] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [channelData, setChannelData] = useState<Float32Array | null>(null);
+  const [currentTime, setCurrentTime] = useState(0);
   const [sentenceLines, setSentenceLines] = useState<
     { xPos: number; color: string }[]
   >([]);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(
     null
   );
-  const [currentTime, setCurrentTime] = useState(0);
 
+  /**
+   * sentences から marks 抽出
+   */
   useEffect(() => {
-    if (!article) return;
-    if (!sentences.length) return;
-    if (sentences[0].article !== article.id) {
-      console.log('no sentences yet ');
+    if (!article || !sentences.length || sentences[0].article !== article.id)
       return;
-    }
-    const marks = sentences.map((sentence) => ({
-      start: sentence.start,
-      end: sentence.end,
+    const marks = sentences.map(({ end, start }) => ({
+      end,
+      start,
     }));
-    setMarks(marks);
+    handleSetMarks({ marks, scale });
   }, [sentences, article]);
 
+  /**
+   * marks をセットするときに、sentenceLines もセットする
+   */
+  const handleSetMarks = useCallback(
+    ({ marks: _marks, scale: _scale }: { marks: Mark[]; scale: number }) => {
+      setMarks(_marks);
+      const _sentenceLines = buildSentenceLines({
+        marks: _marks,
+        scale: _scale,
+      });
+      setSentenceLines(_sentenceLines);
+    },
+    []
+  );
+
+  /**
+   * channelData をセットする時に、 scale, marks, peaks, duration もセットする
+   * marks は既存のものがあれば、それを再利用、なければ blankDuration から作成
+   */
   const handleSetChannelData = useCallback(
     ({
       marks: _marks,
@@ -67,13 +87,12 @@ const EditArticleVoicePage = () => {
     }) => {
       let _peaks: number[] = [];
       let _duration = 0;
-      let _sentenceLines: {
-        xPos: number;
-        color: string;
-      }[] = [];
       if (!!_channelData) {
+        const _scale =
+          (CANVAS_WIDTH * audioContext.sampleRate) / _channelData.length;
+        setScale(_scale);
         _peaks = buildPeaks({
-          scale,
+          scale: _scale,
           sampleRate: audioContext.sampleRate,
           channelData: _channelData,
         });
@@ -88,33 +107,28 @@ const EditArticleVoicePage = () => {
             blankDuration: INITIAL_BLANK_DURATION,
           });
         }
-        _sentenceLines = buildSentenceLines({ marks: _marks, scale });
+        handleSetMarks({ marks: _marks, scale: _scale });
       } else {
-        _marks = [];
+        handleSetMarks({ marks: [], scale });
       }
-      setMarks(_marks);
       setPeaks(_peaks);
       setDuration(_duration);
       setChannelData(_channelData);
-      setSentenceLines(_sentenceLines);
     },
-    [scale, audioContext]
+    [audioContext]
   );
 
-  useEffect(() => {
-    return () => {
-      handleSetChannelData({ marks, channelData });
-    };
-  }, []);
-
   /**
-   * article.downloadURL から channelData, duration の取得
+   * article.downloadURL から channelData を取得
    */
   useEffect(() => {
-    if (!article.downloadURL) return;
-    if (!sentences.length) return;
-    if (sentences[0].article !== article.id) return;
-    if (!!channelData) return;
+    if (
+      !article.downloadURL ||
+      !sentences.length ||
+      sentences[0].article !== article.id ||
+      !!channelData
+    )
+      return;
 
     const request = new XMLHttpRequest();
 
@@ -132,6 +146,24 @@ const EditArticleVoicePage = () => {
     };
     request.send();
   }, [article, sentences]);
+
+  const handlePlayMarkRow = (index: number) => {
+    let _audioElement = audioElement;
+    if (!_audioElement) {
+      console.log('get audio');
+      _audioElement = new Audio(article.downloadURL);
+      setAudioElement(_audioElement);
+    }
+    _audioElement.pause();
+    _audioElement.currentTime = marks[index].start;
+    _audioElement.ontimeupdate = () => {
+      setCurrentTime(_audioElement!.currentTime);
+      if (_audioElement!.currentTime > marks[index].end) {
+        _audioElement!.pause();
+      }
+    };
+    _audioElement.play();
+  };
 
   const onDeleteAudio = async () => {
     if (window.confirm('audioファイルを削除しますか')) {
@@ -157,17 +189,13 @@ const EditArticleVoicePage = () => {
     }
   };
 
-  const onChangeMarks = (marks: Mark[]) => {
-    setMarks(marks);
-  };
-
   const onSubmit = async () => {
-    const _sentences: Sentence[] = sentences.map((s, index) => ({
-      ...s,
+    const newSentences: Sentence[] = sentences.map((senetence, index) => ({
+      ...senetence,
       start: marks[index].start,
       end: marks[index].end,
     }));
-    const { success } = await updateSentences(_sentences);
+    const { success } = await updateSentences(newSentences);
     if (success) {
       navigate(`/article/${article.id}`);
     }
@@ -180,7 +208,7 @@ const EditArticleVoicePage = () => {
     if (!!success && !!snapshot) {
       const url = await getDownloadURL(snapshot.ref);
       const newArticle: Article = {
-        ...article!,
+        ...article,
         downloadURL: url,
       };
       updateArticle(newArticle);
@@ -194,10 +222,25 @@ const EditArticleVoicePage = () => {
       blankDuration,
       sampleRate: audioContext.sampleRate,
     });
-    setMarks(marks);
-    const sentenceLines = buildSentenceLines({ marks, scale });
-    console.log('set sentenceLines');
-    setSentenceLines(sentenceLines);
+    handleSetMarks({ marks, scale });
+  };
+
+  const handleChangeEnd = ({ index, end }: { index: number; end: number }) => {
+    const clonedMarks = [...marks];
+    clonedMarks[index] = { ...clonedMarks[index], end };
+    handleSetMarks({ marks: clonedMarks, scale });
+  };
+
+  const handleChangeStart = ({
+    index,
+    start,
+  }: {
+    index: number;
+    start: number;
+  }) => {
+    const clonedMarks = [...marks];
+    clonedMarks[index] = { ...clonedMarks[index], start };
+    handleSetMarks({ marks: clonedMarks, scale });
   };
 
   const handlePlay = () => {
@@ -233,18 +276,21 @@ const EditArticleVoicePage = () => {
       <EditArticleVoicePageComponent
         peaks={peaks}
         marks={marks}
+        labels={sentences.map((sentence) => sentence.japanese.slice(0, 20))}
         article={article}
         duration={duration}
-        sentences={sentences.map((sentence) => sentence.japanese)}
-        blankDuration={INITIAL_BLANK_DURATION}
+        isPlaying={isPlaying}
         currentTime={currentTime}
         sentenceLines={sentenceLines}
-        isPlaying={isPlaying}
+        blankDuration={INITIAL_BLANK_DURATION}
+        scale={scale}
         onUpload={onUpload}
         onSubmit={onSubmit}
-        onChangeMarks={onChangeMarks}
-        onDeleteAudio={onDeleteAudio}
         handlePlay={handlePlay}
+        onDeleteAudio={onDeleteAudio}
+        handleChangeEnd={handleChangeEnd}
+        handleChangeStart={handleChangeStart}
+        handlePlayMarkRow={handlePlayMarkRow}
         handleChangeBlankDuration={handleChangeBlankDuration}
       />
     );
