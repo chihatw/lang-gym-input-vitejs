@@ -1,9 +1,8 @@
 import { Navigate, useNavigate } from 'react-router-dom';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 
 import { Sentence } from '../../../entities/Sentence';
 import { AppContext } from '../../../services/app';
-import { getSentences } from '../../../repositories/sentence';
 import ArticlePageComponent from './components/ArticlePageComponent';
 import { useHandleQuestions } from '../../../services/useQuestions';
 import { useHandleQuestionSets } from '../../../services/useQuestionSets';
@@ -22,17 +21,7 @@ const ArticlePage = () => {
   const { createAccentsQuestionSet, createRhythmQuestionSet } =
     useHandleQuestionSets();
 
-  const { article, isFetching } = useContext(AppContext);
-  const [sentences, setSentences] = useState<Sentence[]>([]);
-
-  useEffect(() => {
-    if (!article.id) return;
-    const fetchData = async () => {
-      const sentences = await getSentences(article.id);
-      !!sentences && setSentences(sentences);
-    };
-    fetchData();
-  }, [article]);
+  const { article, isFetching, sentences } = useContext(AppContext);
 
   const onCreateAccentsQuestion = async () => {
     const questionGroup = await createInitialQuestionGroup();

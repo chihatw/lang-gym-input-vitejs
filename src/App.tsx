@@ -5,6 +5,7 @@ import { AppContext, useApp } from './services/app';
 import { useArticles } from './services/useArticles';
 import { useUsers } from './services/useUsers';
 import useAudioItems from './services/useAudioItems';
+import { useSentences } from './services/useSentences';
 
 const App = () => {
   const [articleId, setArticleId] = useState('');
@@ -17,6 +18,7 @@ const App = () => {
     setIsFetching,
   });
   const { users } = useUsers({ opened: true });
+  const { sentences } = useSentences({ articleId, sentenceId: '' });
   return (
     <AppContext.Provider
       value={{
@@ -24,6 +26,7 @@ const App = () => {
         users,
         article,
         articles,
+        sentences,
         audioItems,
         isFetching,
         initializing,

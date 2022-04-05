@@ -18,12 +18,14 @@ import {
 } from '../repositories/questionGroup';
 import { Article, INITIAL_ARTICLE } from './useArticles';
 import { User } from './useUsers';
+import { Sentence } from './useSentences';
 
 export const AppContext = createContext<{
   user: _User | null;
   users: User[];
   article: Article;
   articles: Article[];
+  sentences: Sentence[];
   audioItems: AudioItem[];
   isFetching: boolean;
   initializing: boolean;
@@ -48,6 +50,7 @@ export const AppContext = createContext<{
   users: [],
   article: INITIAL_ARTICLE,
   articles: [],
+  sentences: [],
   audioItems: [],
   isFetching: false,
   initializing: true,

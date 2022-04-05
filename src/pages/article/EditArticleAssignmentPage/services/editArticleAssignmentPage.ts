@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { buildAccents, buildAccentString } from '../../../../entities/Accent';
 import { AssignmentSentence } from '../../../../entities/AssignmentSentence';
@@ -8,7 +8,7 @@ import {
   getAssignmentSentence,
   updateAssignmentSentence,
 } from '../../../../repositories/assignmentSentence';
-import { getSentences } from '../../../../repositories/sentence';
+import { AppContext } from '../../../../services/app';
 
 export const useEditArticleAssignmentPage = (
   id: string,
@@ -17,23 +17,19 @@ export const useEditArticleAssignmentPage = (
 ) => {
   const navigate = useNavigate();
 
-  const [sentence, setSentence] = useState<Sentence | null>(null);
-  const [start, setStart] = useState(0);
+  const { sentences } = useContext(AppContext);
+
   const [end, setEnd] = useState(0);
-  const [accentString, setAccentString] = useState('');
+  const [start, setStart] = useState(0);
+  const [sentence, setSentence] = useState<Sentence | null>(null);
   const [downloadURL, setDownloadURL] = useState('');
+  const [accentString, setAccentString] = useState('');
   const [originalAssignmentSentence, setOriginalAssignmentSentence] =
     useState<AssignmentSentence | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const sentences = await getSentences(id);
-      if (!!sentences) {
-        setSentence(sentences.filter((s) => s.line === line)[0]);
-      }
-    };
-    fetchData();
-  }, [id, line]);
+    setSentence(sentences.filter((s) => s.line === line)[0]);
+  }, [sentences, id, line]);
 
   useEffect(() => {
     const fetchData = async () => {

@@ -3,12 +3,10 @@ import { getDownloadURL } from 'firebase/storage';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 import { AppContext } from '../../../services/app';
-import { Sentence } from '../../../entities/Sentence';
 import {
   AssignmentSentence,
   CreateAssignmentSentence,
 } from '../../../entities/AssignmentSentence';
-import { getSentences } from '../../../repositories/sentence';
 import {
   getAssignment,
   createAssignment,
@@ -27,9 +25,8 @@ import {
 import ArticleAssignmentPageComponent from './components/ArticleAssignmentPageComponent';
 
 const ArticleAssignmentPage = () => {
-  const { article, isFetching } = useContext(AppContext);
   const navigate = useNavigate();
-  const [sentences, setSentences] = useState<Sentence[]>([]);
+  const { article, isFetching, sentences } = useContext(AppContext);
   const [assignment, setAssignment] = useState(INITIAL_ASSIGNMENT);
   const [assignmentSentences, setAssignmentSentences] = useState<
     AssignmentSentence[]
@@ -38,21 +35,10 @@ const ArticleAssignmentPage = () => {
   useEffect(() => {
     if (!article.id) return;
     const fetchData = async () => {
-      const sentences = await getSentences(article.id);
-      !!sentences && setSentences(sentences);
-    };
-    fetchData();
-  }, [article.id]);
-
-  useEffect(() => {
-    if (!article.id) return;
-    const fetchData = async () => {
       const assignment = await getAssignment({
         uid: article.uid,
         articleID: article.id,
       });
-      // debug
-      console.log({ assignment });
       if (!!assignment) {
         setAssignment(assignment);
       }

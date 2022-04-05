@@ -12,6 +12,7 @@ import {
   SettingsOutlined,
   VisibilityOutlined,
   VisibilityOffOutlined,
+  Menu,
 } from '@mui/icons-material';
 import { TableRow, TableCell } from '@mui/material';
 
