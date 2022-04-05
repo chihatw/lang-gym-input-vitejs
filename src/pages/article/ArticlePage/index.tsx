@@ -23,7 +23,7 @@ const ArticlePage = () => {
 
   const { article, isFetching, sentences } = useContext(AppContext);
 
-  const onCreateAccentsQuestion = async () => {
+  const createAccentsQuestion = async () => {
     const questionGroup = await createInitialQuestionGroup();
 
     if (!!questionGroup) {
@@ -51,7 +51,7 @@ const ArticlePage = () => {
     }
   };
 
-  const onCreateRhythmsQuestion = async () => {
+  const createRhythmsQuestion = async () => {
     const questionGroup = await createInitialQuestionGroup();
     if (!!questionGroup) {
       const docIds = await createRhythmQuestions({
@@ -100,8 +100,8 @@ const ArticlePage = () => {
           article={article}
           openPage={openPage}
           sentences={sentences}
-          onCreateAccentsQuestion={onCreateAccentsQuestion}
-          onCreateRhythmsQuestion={onCreateRhythmsQuestion}
+          createAccentsQuestion={createAccentsQuestion}
+          createRhythmsQuestion={createRhythmsQuestion}
         />
       );
     }

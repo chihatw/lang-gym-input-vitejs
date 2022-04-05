@@ -48,7 +48,7 @@ const ArticleListPage = () => {
         const path = decodeURIComponent(
           downloadURL.split('/')[7].split('?')[0]
         );
-        await deleteFile(path);
+        deleteFile(path);
       }
       await deleteSentences(id);
       await deleteArticle(id);

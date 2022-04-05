@@ -47,6 +47,7 @@ const InitialArticlePage = () => {
     const lines = value.split('\n').filter((i) => i);
     setChineseArray(lines);
   };
+
   useEffect(() => {
     setIsValid(
       japaneseArray.length === accentsArray.length &&

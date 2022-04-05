@@ -32,7 +32,7 @@ export const AppContext = createContext<{
   setArticleId: (value: string) => void;
   setIsFetching: (value: boolean) => void;
   deleteAudioItem: (value: string) => void;
-  onCreateRhythmsQuestion: ({
+  createRhythmsQuestion: ({
     title,
     endArray,
     startArray,
@@ -57,7 +57,7 @@ export const AppContext = createContext<{
   setArticleId: () => {},
   setIsFetching: () => {},
   deleteAudioItem: () => {},
-  onCreateRhythmsQuestion: async () => {},
+  createRhythmsQuestion: async () => {},
 });
 
 export const useApp = () => {
@@ -73,7 +73,7 @@ export const useApp = () => {
     return () => unsubscribe();
   }, []);
 
-  const onCreateRhythmsQuestion = async ({
+  const createRhythmsQuestion = async ({
     title,
     endArray,
     startArray,
@@ -163,5 +163,5 @@ export const useApp = () => {
     }
   };
 
-  return { user, initializing, onCreateRhythmsQuestion };
+  return { user, initializing, createRhythmsQuestion };
 };

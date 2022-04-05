@@ -10,7 +10,7 @@ import { useSentences } from './services/useSentences';
 const App = () => {
   const [articleId, setArticleId] = useState('');
   const [isFetching, setIsFetching] = useState(false);
-  const { initializing, user, onCreateRhythmsQuestion } = useApp();
+  const { initializing, user, createRhythmsQuestion } = useApp();
   const { audioItems, deleteAudioItem } = useAudioItems();
   const { article, articles } = useArticles({
     opened: true,
@@ -33,7 +33,7 @@ const App = () => {
         setArticleId,
         setIsFetching,
         deleteAudioItem,
-        onCreateRhythmsQuestion,
+        createRhythmsQuestion,
       }}
     >
       <AppRoutes />

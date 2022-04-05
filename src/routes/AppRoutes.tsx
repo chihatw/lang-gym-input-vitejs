@@ -26,10 +26,9 @@ import SentenceParseListPage from '../pages/sentenceParse/SentenceParseListPage'
 import ArticleAssignmentPage from '../pages/article/ArticleAssignmentPage';
 import ArticleListPage from '../pages/ArticleListPage';
 import ArticlePage from '../pages/article/ArticlePage';
-import CreateArticlePage from '../pages/article/CreateArticlePage';
+import EditArticlePage from '../pages/article/EditArticlePage';
 import EditArticleAssignmentPage from '../pages/article/EditArticleAssignmentPage';
 import EditArticleAssignmentVoicePage from '../pages/article/EditArticleAssignmentVoicePage';
-import EditArticlePage from '../pages/article/EditArticlePage';
 import EditArticleVoicePage from '../pages/article/EditArticleVoicePage';
 import InitialArticlePage from '../pages/article/InitialArticlePage';
 import ArticleInputPage from '../pages/ArticleInputPage';
@@ -188,7 +187,7 @@ const AppRoutes = () => {
           path=''
           element={
             <PrivateRoute>
-              <CreateArticlePage />
+              <EditArticlePage />
             </PrivateRoute>
           }
         />
@@ -222,14 +221,6 @@ const AppRoutes = () => {
           element={
             <PrivateRoute>
               <SentenceParseListPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path=':id/edit'
-          element={
-            <PrivateRoute>
-              <EditArticlePage />
             </PrivateRoute>
           }
         />

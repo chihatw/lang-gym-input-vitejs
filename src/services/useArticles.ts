@@ -79,7 +79,7 @@ export const useArticles = ({
         unsub = onSnapshot(
           doc(db, COLLECTION, articleId),
           (doc) => {
-            console.log(`snap shot article: ${articleId}`);
+            console.log(`snap shot article: [${articleId}]`);
             if (doc.exists()) {
               const article = buildArticle(doc);
               finishFetchData(article);
@@ -97,7 +97,7 @@ export const useArticles = ({
     return () => {
       !!unsub && unsub();
     };
-  }, [articleId]);
+  }, [articleId, articles]);
 
   useEffect(() => {
     if (!opened) return;
@@ -105,8 +105,7 @@ export const useArticles = ({
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
-        console.log('snapshot article');
-
+        console.log('snapshot articles');
         const articles = snapshot.docs.map((doc) => buildArticle(doc));
         setArticles(articles);
       },

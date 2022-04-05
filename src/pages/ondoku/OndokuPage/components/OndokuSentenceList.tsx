@@ -12,8 +12,8 @@ const OndokuSentenceList: React.FC<{
   ondoku: Ondoku;
   onEdit: (ondokuSentence: OndokuSentence) => void;
   ondokuSentences: OndokuSentence[];
-  onCreateRhythmsQuestion: () => void;
-}> = ({ ondoku, onEdit, ondokuSentences, onCreateRhythmsQuestion }) => {
+  createRhythmsQuestion: () => void;
+}> = ({ ondoku, onEdit, ondokuSentences, createRhythmsQuestion }) => {
   return (
     <>
       <div>
@@ -61,7 +61,7 @@ const OndokuSentenceList: React.FC<{
           </div>
         ))}
 
-        <Button fullWidth variant='contained' onClick={onCreateRhythmsQuestion}>
+        <Button fullWidth variant='contained' onClick={createRhythmsQuestion}>
           リズム問題作成
         </Button>
       </div>

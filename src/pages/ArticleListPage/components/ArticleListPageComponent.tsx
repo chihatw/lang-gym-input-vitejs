@@ -36,9 +36,7 @@ const ArticleListPageComponent = ({
               openArticlePage={() =>
                 openPage({ article, path: `${article.id}` })
               }
-              openArticleEditPage={() =>
-                openPage({ article, path: `${article.id}/edit` })
-              }
+              openArticleEditPage={() => openPage({ article, path: `` })}
               openParsePage={() =>
                 openPage({ article, path: `${article.id}/parse` })
               }

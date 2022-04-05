@@ -10,7 +10,7 @@ const OndokuSentencesPage: React.FC = () => {
   const match = useMatch('/ondoku/:id');
   const { title, onEdit, ondoku, initializing, ondokuSentences } =
     useOndokuPage(match?.params.id || '');
-  const { onCreateRhythmsQuestion } = useContext(AppContext);
+  const { createRhythmsQuestion } = useContext(AppContext);
   if (!initializing && !ondokuSentences.length) {
     return <Navigate to={`/ondoku/${match?.params.id}/initial`} />;
   }
@@ -22,8 +22,8 @@ const OndokuSentencesPage: React.FC = () => {
         <TableLayout title={title} backURL={`/ondoku/list`}>
           <OndokuSentenceList
             ondokuSentences={ondokuSentences}
-            onCreateRhythmsQuestion={() =>
-              onCreateRhythmsQuestion({
+            createRhythmsQuestion={() =>
+              createRhythmsQuestion({
                 title: ondoku.title,
                 downloadURL: ondoku.downloadURL,
                 endArray: ondokuSentences.map((sentence) => sentence.end),
