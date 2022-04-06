@@ -1,11 +1,9 @@
 import React from 'react';
 import { Container } from '@mui/material';
-import { YoutubeEmbeded } from '@chihatw/lang-gym-h.ui.youtube-embeded';
 
 import SentenceRow from './SentenceRow';
 import { Article } from '../../../../services/useArticles';
 import { Sentence } from '../../../../entities/Sentence';
-import SetMarksForm from './SetMarksForm';
 import TableLayoutHeader from '../../../../components/organisms/TableLayoutHeader';
 import { SentenceParseNew } from '../../../../entities/SentenceParseNew';
 
@@ -46,8 +44,6 @@ const SentenceParseListPageComponent = ({
         ))}
         <div style={{ height: 400 }} />
       </div>
-      <div style={{ height: 24 }} />
-      <SetMarksForm />
     </div>
   </Container>
 );

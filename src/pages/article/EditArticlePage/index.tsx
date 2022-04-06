@@ -40,14 +40,15 @@ const EditArticlePage = () => {
   const [date, setDate] = useState<Date>(new Date());
   const [title, setTitle] = useState('');
   const [embedId, setEmbedId] = useState('');
+  const [articleMarksString, setArticleMarksString] = useState('hello');
 
   const [scale, setScale] = useState(5);
-  const [marks, setMarks] = useState<Mark[]>([]);
   const [peaks, setPeaks] = useState<number[]>([]);
   const [duration, setDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [channelData, setChannelData] = useState<Float32Array | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
+  const [sentenceAudioMarks, setSentenceAudioMarks] = useState<Mark[]>([]);
   const [sentenceLines, setSentenceLines] = useState<
     { xPos: number; color: string }[]
   >([]);
@@ -67,7 +68,21 @@ const EditArticlePage = () => {
     setDate(new Date(article.createdAt));
     setTitle(article.title);
     setEmbedId(article.embedID);
-  }, [article]);
+    if (!sentences) return;
+    const lines: string[] = [];
+    sentences.forEach(({ japanese }, index) => {
+      const items: string[] = [];
+      const mark = article.marks[index];
+      const initial = index === 0 ? '' : '0:00';
+      items.push(mark || initial);
+      const hasMore = japanese.length > 5 ? '…' : '';
+      items.push(japanese.slice(0, 5) + hasMore);
+      const line = items.join(' ');
+      lines.push(line);
+    });
+    const marksString = lines.join('\n');
+    setArticleMarksString(marksString);
+  }, [article, sentences]);
 
   /**
    * sentences から marks 抽出
@@ -79,7 +94,7 @@ const EditArticlePage = () => {
       end,
       start,
     }));
-    handleSetMarks({ marks, scale });
+    handleSetSentenceAudioMarks({ marks, scale });
   }, [sentences, article]);
 
   /**
@@ -114,9 +129,9 @@ const EditArticlePage = () => {
   /**
    * marks をセットするときに、sentenceLines もセットする
    */
-  const handleSetMarks = useCallback(
+  const handleSetSentenceAudioMarks = useCallback(
     ({ marks: _marks, scale: _scale }: { marks: Mark[]; scale: number }) => {
-      setMarks(_marks);
+      setSentenceAudioMarks(_marks);
       const _sentenceLines = buildSentenceLines({
         marks: _marks,
         scale: _scale,
@@ -160,9 +175,9 @@ const EditArticlePage = () => {
             blankDuration: INITIAL_BLANK_DURATION,
           });
         }
-        handleSetMarks({ marks: _marks, scale: _scale });
+        handleSetSentenceAudioMarks({ marks: _marks, scale: _scale });
       } else {
-        handleSetMarks({ marks: [], scale });
+        handleSetSentenceAudioMarks({ marks: [], scale });
       }
       setPeaks(_peaks);
       setDuration(_duration);
@@ -185,6 +200,9 @@ const EditArticlePage = () => {
   const handleChangeEmbedId = (value: string) => {
     setEmbedId(value);
   };
+  const handleChangeArticleMarksString = (value: string) => {
+    setArticleMarksString(value);
+  };
 
   const create = async () => {
     const { id, ...omitted } = INITIAL_ARTICLE;
@@ -204,10 +222,23 @@ const EditArticlePage = () => {
     }
   };
 
+  const buildArticleMarks = (value: string) => {
+    let articleMarks: string[] = [];
+    const lines = value.split('\n');
+    lines.forEach((line) => {
+      const items = line.split(' ');
+      articleMarks.push(items[0]);
+    });
+    return articleMarks;
+  };
+
   const update = async () => {
+    const articleMarks = buildArticleMarks(articleMarksString);
+
     const newArticle: Article = {
       ...article,
       uid,
+      marks: articleMarks,
       title,
       embedID: embedId,
       createdAt: date.getTime(),
@@ -235,10 +266,10 @@ const EditArticlePage = () => {
       setAudioElement(_audioElement);
     }
     _audioElement.pause();
-    _audioElement.currentTime = marks[index].start;
+    _audioElement.currentTime = sentenceAudioMarks[index].start;
     _audioElement.ontimeupdate = () => {
       setCurrentTime(_audioElement!.currentTime);
-      if (_audioElement!.currentTime > marks[index].end) {
+      if (_audioElement!.currentTime > sentenceAudioMarks[index].end) {
         _audioElement!.pause();
       }
     };
@@ -252,13 +283,13 @@ const EditArticlePage = () => {
       blankDuration,
       sampleRate: audioContext.sampleRate,
     });
-    handleSetMarks({ marks, scale });
+    handleSetSentenceAudioMarks({ marks, scale });
   };
 
   const handleChangeEnd = ({ index, end }: { index: number; end: number }) => {
-    const clonedMarks = [...marks];
+    const clonedMarks = [...sentenceAudioMarks];
     clonedMarks[index] = { ...clonedMarks[index], end };
-    handleSetMarks({ marks: clonedMarks, scale });
+    handleSetSentenceAudioMarks({ marks: clonedMarks, scale });
   };
 
   const handleChangeStart = ({
@@ -268,9 +299,9 @@ const EditArticlePage = () => {
     index: number;
     start: number;
   }) => {
-    const clonedMarks = [...marks];
+    const clonedMarks = [...sentenceAudioMarks];
     clonedMarks[index] = { ...clonedMarks[index], start };
-    handleSetMarks({ marks: clonedMarks, scale });
+    handleSetSentenceAudioMarks({ marks: clonedMarks, scale });
   };
 
   const handlePlay = () => {
@@ -334,11 +365,11 @@ const EditArticlePage = () => {
     }
   };
 
-  const updateMarks = async () => {
+  const updateSentenceAudioMarks = async () => {
     const newSentences: Sentence[] = sentences.map((senetence, index) => ({
       ...senetence,
-      start: marks[index].start,
-      end: marks[index].end,
+      start: sentenceAudioMarks[index].start,
+      end: sentenceAudioMarks[index].end,
     }));
     const { success } = await updateSentences(newSentences);
     if (success) {
@@ -358,18 +389,20 @@ const EditArticlePage = () => {
           users={users}
           embedId={embedId}
           articleId={article.id}
+          articleMarksString={articleMarksString}
           handlePickDate={handlePickDate}
           handleChangeUid={handleChangeUid}
           handleClickSubmit={handleClickSubmit}
           handleChangeTitle={handleChangeTitle}
           handleChangeEmbedId={handleChangeEmbedId}
+          handleChangeArticleMarksString={handleChangeArticleMarksString}
         />
         {!!article.id && (
           <>
             <Divider />
             <EditArticleVoicePageComponent
               peaks={peaks}
-              marks={marks}
+              marks={sentenceAudioMarks}
               labels={sentences.map((sentence) =>
                 sentence.japanese.slice(0, 20)
               )}
@@ -382,7 +415,7 @@ const EditArticlePage = () => {
               sentenceLines={sentenceLines}
               blankDuration={INITIAL_BLANK_DURATION}
               handlePlay={handlePlay}
-              updateMarks={updateMarks}
+              updateMarks={updateSentenceAudioMarks}
               handleChangeEnd={handleChangeEnd}
               handleUploadAudio={handleUploadAudio}
               handleDeleteAudio={handleDeleteAudio}

@@ -1,38 +1,23 @@
 import { Navigate, useNavigate } from 'react-router-dom';
 import React, { useContext, useEffect, useState } from 'react';
 
-import { Sentence } from '../../../entities/Sentence';
 import { AppContext } from '../../../services/app';
-import { getSentences } from '../../../repositories/sentence';
 import { SentenceParseNew } from '../../../entities/SentenceParseNew';
 import { getSentenceParseNews } from '../../../repositories/sentenceParseNew';
-import { Article, useHandleArticles } from '../../../services/useArticles';
+import { useHandleArticles } from '../../../services/useArticles';
 import SentenceParseListPageComponent from './components/SentenceParseListPageComponent';
 import { SentenceParseListPageContext } from './services/sentenceParseListPage';
 
 const SentenceParseListPage = () => {
   const navigate = useNavigate();
-  const { article, isFetching } = useContext(AppContext);
+  const { article, isFetching, sentences } = useContext(AppContext);
 
   const { updateArticle } = useHandleArticles();
 
-  const [sentences, setSentences] = useState<Sentence[]>([]);
   const [marks, setMarks] = useState<string[]>(article.marks);
-  const [explanationStr, setExplanationStr] = useState('');
   const [sentenceParseNews, setSentenceParseNews] = useState<{
     [id: string]: SentenceParseNew;
   }>({});
-
-  useEffect(() => {
-    if (!article.id) return;
-    const fetchData = async () => {
-      const sentences = await getSentences(article.id);
-      if (!!sentences) {
-        setSentences(sentences);
-      }
-    };
-    fetchData();
-  }, [article]);
 
   useEffect(() => {
     const newMarks: string[] = [];
@@ -51,19 +36,6 @@ const SentenceParseListPage = () => {
     fetchData();
   }, [article]);
 
-  const onBatch = () => {
-    const lines = explanationStr.split('\n').map((line) => line.split(' ')[0]);
-    lines.unshift('');
-    setMarks(lines);
-  };
-
-  const onSubmit = () => {
-    const newArticle: Article = {
-      ...article!,
-      marks,
-    };
-    updateArticle(newArticle);
-  };
   const onCopy = async (index: number) => {
     const sentence = sentences[index];
     const sentenceParseNew = sentenceParseNews[sentence.id];
@@ -112,13 +84,9 @@ const SentenceParseListPage = () => {
             marks,
             onCopy,
             article,
-            onBatch,
             setMarks,
-            onSubmit,
             sentences,
-            explanationStr,
             sentenceParseNews,
-            setExplanationStr,
           }}
         >
           <SentenceParseListPageComponent

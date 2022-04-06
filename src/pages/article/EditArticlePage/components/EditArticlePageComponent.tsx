@@ -22,11 +22,13 @@ const EditArticlePageComponent = ({
   users,
   embedId,
   articleId,
+  articleMarksString,
   handlePickDate,
   handleChangeUid,
   handleClickSubmit,
   handleChangeTitle,
   handleChangeEmbedId,
+  handleChangeArticleMarksString,
 }: {
   uid: string;
   date: Date;
@@ -34,11 +36,13 @@ const EditArticlePageComponent = ({
   title: string;
   embedId: string;
   articleId: string;
+  articleMarksString: string;
   handlePickDate: (value: Date | null) => void;
   handleChangeUid: (value: string) => void;
   handleClickSubmit: () => void;
   handleChangeTitle: (value: string) => void;
   handleChangeEmbedId: (value: string) => void;
+  handleChangeArticleMarksString: (value: string) => void;
 }) => {
   return (
     <Container maxWidth='sm' sx={{ paddingTop: 4 }}>
@@ -97,6 +101,14 @@ const EditArticlePageComponent = ({
             />
           </div>
         )}
+        <TextField
+          size='small'
+          label='marks'
+          value={articleMarksString}
+          variant='outlined'
+          onChange={(e) => handleChangeArticleMarksString(e.target.value)}
+          multiline
+        />
         <Button variant='contained' color='primary' onClick={handleClickSubmit}>
           送信
         </Button>
