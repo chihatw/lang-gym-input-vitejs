@@ -59,58 +59,33 @@ const EditAudioPane = ({
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(
-    null
-  );
+  const audioElement = useMemo(() => new Audio(downloadURL), []);
 
   useEffect(() => {
     return () => {
-      !!audioElement && audioElement.pause();
+      audioElement.pause();
     };
   }, [audioElement]);
 
   const handlePlay = () => {
-    let _audioElement = audioElement;
     let _isPlaying = isPlaying;
-    if (!_audioElement) {
-      console.log('get audio');
-      _audioElement = new Audio(downloadURL);
-      setAudioElement(_audioElement);
-    }
-    _audioElement.pause();
+
+    audioElement.pause();
     setIsPlaying(false);
 
     if (!_isPlaying) {
-      _audioElement.currentTime = currentTime;
-      _audioElement.ontimeupdate = () => {
-        setCurrentTime(_audioElement!.currentTime);
-        if (_audioElement!.currentTime > duration) {
-          _audioElement!.pause();
+      audioElement.currentTime = currentTime;
+      audioElement.ontimeupdate = () => {
+        setCurrentTime(audioElement!.currentTime);
+        if (audioElement.currentTime > duration) {
+          audioElement.pause();
           setIsPlaying(false);
           setCurrentTime(0);
         }
       };
-      _audioElement.play();
+      audioElement.play();
       setIsPlaying(true);
     }
-  };
-
-  const handlePlayMarkRow = (index: number) => {
-    let _audioElement = audioElement;
-    if (!_audioElement) {
-      console.log('get audio');
-      _audioElement = new Audio(downloadURL);
-      setAudioElement(_audioElement);
-    }
-    _audioElement.pause();
-    _audioElement.currentTime = marks[index].start;
-    _audioElement.ontimeupdate = () => {
-      setCurrentTime(_audioElement!.currentTime);
-      if (_audioElement!.currentTime > marks[index].end) {
-        _audioElement!.pause();
-      }
-    };
-    _audioElement.play();
   };
 
   return (
@@ -147,9 +122,10 @@ const EditAudioPane = ({
       <MarkTable
         marks={marks}
         labels={labels}
+        downloadURL={downloadURL}
+        setCurrentTime={setCurrentTime}
         handleChangeEnd={handleChangeEnd}
         handleChangeStart={handleChangeStart}
-        handlePlayMarkRow={handlePlayMarkRow}
       />
 
       <Button

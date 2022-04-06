@@ -1,24 +1,35 @@
-import { PlayArrow } from '@mui/icons-material';
-import React, { useEffect, useState } from 'react';
+import { Pause, PlayArrow } from '@mui/icons-material';
+import React, { useEffect, useMemo, useState } from 'react';
 import { IconButton, TableCell, TableRow, TextField } from '@mui/material';
 
 const MarkRow = ({
   label,
   superEnd,
   superStart,
-  handlePlayMarkRow,
+  downloadURL,
+  setCurrentTime,
   superHandleChangeEnd,
   superHandleChangeStart,
 }: {
   label: string;
   superEnd: number;
   superStart: number;
-  handlePlayMarkRow: () => void;
+  downloadURL: string;
+  setCurrentTime: (value: number) => void;
   superHandleChangeEnd: (value: number) => void;
   superHandleChangeStart: (value: number) => void;
 }) => {
   const [end, setEnd] = useState(0);
   const [start, setStart] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const audioElement = useMemo(() => new Audio(downloadURL), [downloadURL]);
+
+  useEffect(() => {
+    return () => {
+      audioElement.pause();
+    };
+  }, [audioElement]);
 
   useEffect(() => {
     setStart(superStart);
@@ -27,10 +38,6 @@ const MarkRow = ({
   useEffect(() => {
     setEnd(superEnd);
   }, [superEnd]);
-
-  const handlePlay = () => {
-    handlePlayMarkRow();
-  };
 
   const handleChangeEnd = (end: number) => {
     setEnd(end);
@@ -42,11 +49,28 @@ const MarkRow = ({
     superHandleChangeStart(start);
   };
 
+  const handleClickPlay = () => {
+    setIsPlaying(!isPlaying);
+    if (!isPlaying) {
+      audioElement.currentTime = start;
+      audioElement.ontimeupdate = () => {
+        setCurrentTime(audioElement.currentTime);
+        if (audioElement.currentTime > end) {
+          audioElement.pause();
+          setIsPlaying(false);
+        }
+      };
+      audioElement.play();
+    } else {
+      audioElement.pause();
+    }
+  };
+
   return (
     <TableRow>
       <TableCell padding='none'>
-        <IconButton color='primary' onClick={() => handlePlay()}>
-          <PlayArrow />
+        <IconButton color='primary' onClick={handleClickPlay}>
+          {isPlaying ? <Pause /> : <PlayArrow />}
         </IconButton>
       </TableCell>
       <TableCell>{label}</TableCell>

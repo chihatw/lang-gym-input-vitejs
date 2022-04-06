@@ -7,6 +7,8 @@ import { Mark } from '../../../../entities/Mark';
 const MarkTable: React.FC<{
   marks: Mark[];
   labels: string[];
+  downloadURL: string;
+  setCurrentTime: (value: number) => void;
   handleChangeEnd: ({ index, end }: { index: number; end: number }) => void;
   handleChangeStart: ({
     index,
@@ -15,12 +17,12 @@ const MarkTable: React.FC<{
     index: number;
     start: number;
   }) => void;
-  handlePlayMarkRow: (value: number) => void;
 }> = ({
   marks,
   labels,
+  downloadURL,
+  setCurrentTime,
   handleChangeEnd,
-  handlePlayMarkRow,
   handleChangeStart,
 }) => {
   return (
@@ -30,9 +32,10 @@ const MarkTable: React.FC<{
           <MarkRow
             key={index}
             label={label}
+            downloadURL={downloadURL}
             superEnd={marks[index]?.end || 0}
             superStart={marks[index]?.start || 0}
-            handlePlayMarkRow={() => handlePlayMarkRow(index)}
+            setCurrentTime={setCurrentTime}
             superHandleChangeEnd={(end: number) =>
               handleChangeEnd({ index, end })
             }
