@@ -92,4 +92,69 @@ export const useAssignmentSentences = ({ article }: { article: Article }) => {
   }, [article]);
   return { assignmentSentences };
 };
-export const useHandleAssignmentSentences = () => {};
+export const useHandleAssignmentSentences = () => {
+  const createAssignmentSentences = async (
+    assignmentSentences: Omit<AssignmentSentence, 'id'>[]
+  ): Promise<{
+    success: boolean;
+  }> => {
+    const batch = writeBatch(db);
+    assignmentSentences.forEach((aSentence) => {
+      const docRef = doc(colRef);
+      batch.set(docRef, aSentence);
+    });
+    console.log('create assignment sentences');
+    return await batch
+      .commit()
+      .then(() => {
+        return { success: true };
+      })
+      .catch((e) => {
+        console.warn(e);
+        return { success: false };
+      });
+  };
+  const updateAssignmentSentences = async (
+    assignmentSentences: AssignmentSentence[]
+  ): Promise<{ success: boolean }> => {
+    const batch = writeBatch(db);
+    assignmentSentences.forEach((assignmentSentence) => {
+      const { id, ...omitted } = assignmentSentence;
+      batch.update(doc(db, COLLECTION, id), { ...omitted });
+    });
+    console.log('update assignment sentences');
+    return await batch
+      .commit()
+      .then(() => {
+        return { success: true };
+      })
+      .catch((e) => {
+        console.warn(e);
+        return { success: false };
+      });
+  };
+  const deleteAssignmentSentences = async (
+    ids: string[]
+  ): Promise<{ success: boolean }> => {
+    const batch = writeBatch(db);
+
+    ids.forEach((id) => {
+      batch.delete(doc(db, COLLECTION, id));
+    });
+    console.log('delete assignment sentences');
+    return await batch
+      .commit()
+      .then(() => {
+        return { success: true };
+      })
+      .catch((e) => {
+        console.warn(e);
+        return { success: false };
+      });
+  };
+  return {
+    createAssignmentSentences,
+    updateAssignmentSentences,
+    deleteAssignmentSentences,
+  };
+};

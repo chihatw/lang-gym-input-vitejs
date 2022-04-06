@@ -1,9 +1,13 @@
 import {
+  doc,
   query,
+  where,
+  addDoc,
+  deleteDoc,
+  updateDoc,
   onSnapshot,
   collection,
   DocumentData,
-  where,
 } from '@firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Article } from './useArticles';
@@ -58,7 +62,51 @@ export const useAssignments = ({ article }: { article: Article }) => {
   }, [article]);
   return { assignment };
 };
-export const useHandleAssignments = () => {};
+export const useHandleAssignments = () => {
+  const createAssignment = async (
+    assignment: Omit<Assignment, 'id'>
+  ): Promise<{ success: boolean }> => {
+    console.log('create assignment');
+    return await addDoc(colRef, assignment)
+      .then(() => {
+        return { success: true };
+      })
+      .catch((e) => {
+        console.warn(e);
+        return { success: false };
+      });
+  };
+
+  const updateAssignment = async (
+    assignment: Assignment
+  ): Promise<{ success: boolean }> => {
+    const { id, ...omitted } = assignment;
+    console.log('update assignment');
+    return await updateDoc(doc(db, COLLECTION, id), { ...omitted })
+      .then(() => {
+        return { success: true };
+      })
+      .catch((e) => {
+        console.warn(e);
+        return { success: false };
+      });
+  };
+
+  const deleteAssignment = async (
+    assignmentId: string
+  ): Promise<{ success: boolean }> => {
+    return await deleteDoc(doc(db, COLLECTION, assignmentId))
+      .then(() => {
+        return { success: true };
+      })
+      .catch((e) => {
+        console.warn(e);
+        return { success: false };
+      });
+  };
+
+  return { createAssignment, updateAssignment, deleteAssignment };
+};
 
 const buildAssignment = (doc: DocumentData) => {
   const assignment: Assignment = {

@@ -7,26 +7,29 @@ import { CreateAssignmentSentence } from '../../../../entities/AssignmentSentenc
 import { Ondoku } from '../../../../entities/Ondoku';
 import { OndokuSentence } from '../../../../entities/OndokuSentence';
 
-import {
-  createAssignment,
-  deleteAssignment,
-  getAssignment,
-} from '../../../../repositories/assignment';
-import {
-  createAssignmentSentenes,
-  deleteAssignmentSentences,
-  getAssignmentSentences,
-} from '../../../../repositories/assignmentSentence';
+import { getAssignment } from '../../../../repositories/assignment';
+import { getAssignmentSentences } from '../../../../repositories/assignmentSentence';
 import { deleteFile, uploadFile } from '../../../../repositories/file';
 import { getOndoku } from '../../../../repositories/ondoku';
 import { getOndokuSentences } from '../../../../repositories/ondokuSentence';
 import { getUsers } from '../../../../repositories/user';
 import { User } from '../../../../services/useUsers';
-import { Assignment } from '../../../../services/useAssignments';
-import { AssignmentSentence } from '../../../../services/useAssignmentSentences';
+import {
+  Assignment,
+  useHandleAssignments,
+} from '../../../../services/useAssignments';
+import {
+  AssignmentSentence,
+  useHandleAssignmentSentences,
+} from '../../../../services/useAssignmentSentences';
 
 export const useOndokuAssignmentPage = (id: string) => {
   const navigate = useNavigate();
+
+  const { createAssignment, deleteAssignment } = useHandleAssignments();
+  const { createAssignmentSentences, deleteAssignmentSentences } =
+    useHandleAssignmentSentences();
+
   const [initializing, setInitializing] = useState(true);
   const [ondoku, setOndoku] = useState<Ondoku | null>(null);
   const [uid, setUid] = useState('');
@@ -124,7 +127,9 @@ export const useOndokuAssignmentPage = (id: string) => {
             mistakes: [],
           })
         );
-        const { success } = await createAssignmentSentenes(assignmentSentences);
+        const { success } = await createAssignmentSentences(
+          assignmentSentences
+        );
         if (success) {
           navigate(`/ondoku/${id}/assignment/uid/${uid}/voice`);
         }

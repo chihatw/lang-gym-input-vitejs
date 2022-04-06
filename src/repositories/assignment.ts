@@ -1,15 +1,5 @@
-import {
-  collection,
-  getDocs,
-  doc,
-  query,
-  where,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-} from '@firebase/firestore';
-import { buildAssignment, CreateAssignment } from '../entities/Assignment';
-import { Assignment } from '../services/useAssignments';
+import { collection, getDocs, query, where } from '@firebase/firestore';
+import { buildAssignment } from '../entities/Assignment';
 import { db } from './firebase';
 
 const COLLECTION = 'assignments';
@@ -38,39 +28,5 @@ export const getAssignment = async ({
   } catch (e) {
     console.warn(e);
     return null;
-  }
-};
-
-export const createAssignment = async (assignment: CreateAssignment) => {
-  try {
-    console.log('create assignment');
-    await addDoc(assignmentsRef, assignment);
-    return { success: true };
-  } catch (e) {
-    console.warn(e);
-    return { success: false };
-  }
-};
-
-export const updateAssignment = async (assignment: Assignment) => {
-  try {
-    const { id, ...omittedAssignment } = assignment;
-    console.log('update assignment');
-    await updateDoc(doc(db, COLLECTION, id), { ...omittedAssignment });
-    return { success: true };
-  } catch (e) {
-    console.warn(e);
-    return { success: false };
-  }
-};
-
-export const deleteAssignment = async (id: string) => {
-  try {
-    console.log('delete assignment');
-    await deleteDoc(doc(db, COLLECTION, id));
-    return { success: true };
-  } catch (e) {
-    console.warn(e);
-    return { success: false };
   }
 };

@@ -4,22 +4,22 @@ import React, { useCallback, useContext } from 'react';
 
 import { AppContext } from '../../../services/app';
 import { CreateAssignmentSentence } from '../../../entities/AssignmentSentence';
-import {
-  createAssignment,
-  deleteAssignment,
-} from '../../../repositories/assignment';
-import {
-  createAssignmentSentenes,
-  deleteAssignmentSentences,
-} from '../../../repositories/assignmentSentence';
+
 import { deleteFile, uploadFile } from '../../../repositories/file';
 import { CreateAssignment } from '../../../entities/Assignment';
 import ArticleAssignmentPageComponent from './components/ArticleAssignmentPageComponent';
-import { AssignmentSentence } from '../../../services/useAssignmentSentences';
+import {
+  AssignmentSentence,
+  useHandleAssignmentSentences,
+} from '../../../services/useAssignmentSentences';
+import { useHandleAssignments } from '../../../services/useAssignments';
 
 // ArticleList から
 const ArticleAssignmentPage = () => {
   const navigate = useNavigate();
+  const { createAssignment, deleteAssignment } = useHandleAssignments();
+  const { createAssignmentSentences, deleteAssignmentSentences } =
+    useHandleAssignmentSentences();
   const { article, isFetching, sentences, assignment, assignmentSentences } =
     useContext(AppContext);
 
@@ -68,7 +68,9 @@ const ArticleAssignmentPage = () => {
             mistakes: [],
           })
         );
-        const { success } = await createAssignmentSentenes(assignmentSentences);
+        const { success } = await createAssignmentSentences(
+          assignmentSentences
+        );
         if (success) {
           // TODO これ url パラメータで渡す必要ある？
           console.log({ article });

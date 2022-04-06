@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Check } from '@mui/icons-material';
 import { Button } from '@mui/material';
 
@@ -19,6 +19,7 @@ const EditAudioPane = ({
   labels,
   hasMarks,
   downloadURL,
+  isAssignment,
   blankDuration,
   updateMarks,
   handleChangeEnd,
@@ -32,6 +33,7 @@ const EditAudioPane = ({
   peaks: number[];
   hasMarks: boolean;
   downloadURL: string;
+  isAssignment?: boolean;
   blankDuration: number;
   updateMarks: () => void;
   handleChangeEnd: ({ index, end }: { index: number; end: number }) => void;
@@ -60,6 +62,12 @@ const EditAudioPane = ({
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(
     null
   );
+
+  useEffect(() => {
+    return () => {
+      !!audioElement && audioElement.pause();
+    };
+  }, [audioElement]);
 
   const handlePlay = () => {
     let _audioElement = audioElement;
@@ -128,8 +136,12 @@ const EditAudioPane = ({
         superHandleChangeValue={handleChangeBlankDuration}
       />
 
-      <Button variant='contained' onClick={handleDeleteAudio}>
-        delete audio file
+      <Button
+        color={isAssignment ? 'secondary' : 'primary'}
+        variant='contained'
+        onClick={handleDeleteAudio}
+      >
+        {isAssignment ? '提出音声削除' : '音声削除'}
       </Button>
 
       <MarkTable
@@ -140,8 +152,12 @@ const EditAudioPane = ({
         handlePlayMarkRow={handlePlayMarkRow}
       />
 
-      <Button variant='contained' onClick={updateMarks}>
-        送信
+      <Button
+        color={isAssignment ? 'secondary' : 'primary'}
+        variant='contained'
+        onClick={updateMarks}
+      >
+        {isAssignment ? '提出音声marks更新' : '音声marks更新'}
       </Button>
     </div>
   );

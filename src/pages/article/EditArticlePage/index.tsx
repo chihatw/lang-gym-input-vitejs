@@ -11,6 +11,7 @@ import {
   useHandleArticles,
 } from '../../../services/useArticles';
 import EditArticleVoicePane from './components/EditArticleVoicePane';
+import EditAssignmentVoicePane from './components/EditAssignmentVoicePane';
 
 const EditArticlePage = () => {
   const navigate = useNavigate();
@@ -156,6 +157,17 @@ const EditArticlePage = () => {
           <>
             <Divider />
             <EditArticleVoicePane article={article} sentences={sentences} />
+          </>
+        )}
+        {!!assignment.id && (
+          <>
+            <Divider />
+            <EditAssignmentVoicePane
+              article={article}
+              sentences={sentences}
+              assignment={assignment}
+              assignmentSentences={assignmentSentences}
+            />
           </>
         )}
       </div>

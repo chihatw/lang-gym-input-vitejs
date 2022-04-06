@@ -6,12 +6,8 @@ import {
   orderBy,
   updateDoc,
   collection,
-  writeBatch,
 } from '@firebase/firestore';
-import {
-  buildAssignmentSentence,
-  CreateAssignmentSentence,
-} from '../entities/AssignmentSentence';
+import { buildAssignmentSentence } from '../entities/AssignmentSentence';
 import { AssignmentSentence } from '../services/useAssignmentSentences';
 import { db } from './firebase';
 
@@ -77,24 +73,6 @@ export const getAssignmentSentences = async ({
   }
 };
 
-export const createAssignmentSentenes = async (
-  assignmentSentences: CreateAssignmentSentence[]
-) => {
-  const batch = writeBatch(db);
-  try {
-    assignmentSentences.forEach((aSentence) => {
-      const docRef = doc(assignmentSentencesRef);
-      batch.set(docRef, aSentence);
-    });
-    console.log('create assignment sentences');
-    await batch.commit();
-    return { success: true };
-  } catch (e) {
-    console.warn(e);
-    return { success: false };
-  }
-};
-
 export const updateAssignmentSentence = async (
   assignmentSentence: AssignmentSentence
 ) => {
@@ -102,40 +80,6 @@ export const updateAssignmentSentence = async (
     const { id, ...omittedAssignmentSentence } = assignmentSentence;
     console.log('update assignment sentence');
     await updateDoc(doc(db, COLLECTION, id), { ...omittedAssignmentSentence });
-    return { success: true };
-  } catch (e) {
-    console.warn(e);
-    return { success: false };
-  }
-};
-
-export const updateAssignmentSentences = async (
-  assignmentSentences: AssignmentSentence[]
-) => {
-  const batch = writeBatch(db);
-  try {
-    assignmentSentences.forEach((assignmentSentence) => {
-      const { id, ...omittedAssignmentSentence } = assignmentSentence;
-
-      batch.update(doc(db, COLLECTION, id), { ...omittedAssignmentSentence });
-    });
-    console.log('update assignment sentences');
-    await batch.commit();
-    return { success: true };
-  } catch (e) {
-    console.warn(e);
-    return { success: false };
-  }
-};
-
-export const deleteAssignmentSentences = async (ids: string[]) => {
-  const batch = writeBatch(db);
-  try {
-    ids.forEach((id) => {
-      batch.delete(doc(db, COLLECTION, id));
-    });
-    console.log('delete assignment sentences');
-    await batch.commit();
     return { success: true };
   } catch (e) {
     console.warn(e);

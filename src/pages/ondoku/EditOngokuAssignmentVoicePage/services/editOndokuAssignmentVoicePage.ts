@@ -5,19 +5,19 @@ import { Mark } from '../../../../entities/Mark';
 import { getOndoku } from '../../../../repositories/ondoku';
 import { deleteFile } from '../../../../repositories/file';
 import { getOndokuSentences } from '../../../../repositories/ondokuSentence';
-import { AssignmentSentence } from '../../../../services/useAssignmentSentences';
 import {
-  deleteAssignment,
-  getAssignment,
-} from '../../../../repositories/assignment';
-import {
-  deleteAssignmentSentences,
-  getAssignmentSentences,
-  updateAssignmentSentences,
-} from '../../../../repositories/assignmentSentence';
+  AssignmentSentence,
+  useHandleAssignmentSentences,
+} from '../../../../services/useAssignmentSentences';
+import { getAssignment } from '../../../../repositories/assignment';
+import { getAssignmentSentences } from '../../../../repositories/assignmentSentence';
+import { useHandleAssignments } from '../../../../services/useAssignments';
 
 export const useEditOndokuAssignmentVoicePage = (id: string, uid: string) => {
   const navigate = useNavigate();
+  const { deleteAssignment } = useHandleAssignments();
+  const { updateAssignmentSentences, deleteAssignmentSentences } =
+    useHandleAssignmentSentences();
   const [title, setTitle] = useState('');
   const [initializing, setInitializing] = useState(true);
   const [sentences, setSentences] = useState<string[]>([]);

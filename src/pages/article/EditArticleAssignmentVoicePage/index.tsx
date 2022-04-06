@@ -5,13 +5,13 @@ import { Mark } from '../../../entities/Mark';
 import TableLayout from '../../../components/templates/TableLayout';
 import { AppContext } from '../../../services/app';
 import { deleteFile } from '../../../repositories/file';
-import { deleteAssignment } from '../../../repositories/assignment';
-import { AssignmentSentence } from '../../../services/useAssignmentSentences';
-import ArticleAssignmentVoice from './components/ArticleAssignmentVoice';
+
 import {
-  deleteAssignmentSentences,
-  updateAssignmentSentences,
-} from '../../../repositories/assignmentSentence';
+  AssignmentSentence,
+  useHandleAssignmentSentences,
+} from '../../../services/useAssignmentSentences';
+import ArticleAssignmentVoice from './components/ArticleAssignmentVoice';
+import { useHandleAssignments } from '../../../services/useAssignments';
 
 // ArticleAssignmentPage で upload した後、ここに飛ばされる
 // TODO merge to Article Edit Page
@@ -21,6 +21,9 @@ const EditArticleAssignmentVoicePage = () => {
     useContext(AppContext);
 
   const navigate = useNavigate();
+  const { deleteAssignment } = useHandleAssignments();
+  const { updateAssignmentSentences, deleteAssignmentSentences } =
+    useHandleAssignmentSentences();
 
   const [downloadURL, setDownloadURL] = useState('');
   const [assignmentID, setAssignmentID] = useState('');

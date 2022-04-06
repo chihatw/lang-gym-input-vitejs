@@ -28,8 +28,8 @@ const EditArticleVoicePane = ({
   const { updateArticle } = useHandleArticles();
   const [scale, setScale] = useState(5);
   const [peaks, setPeaks] = useState<number[]>([]);
+  const [marks, setMarks] = useState<Mark[]>([]);
   const [channelData, setChannelData] = useState<Float32Array | null>(null);
-  const [sentenceAudioMarks, setSentenceAudioMarks] = useState<Mark[]>([]);
 
   /**
    * sentences から marks 抽出
@@ -41,7 +41,7 @@ const EditArticleVoicePane = ({
       end,
       start,
     }));
-    setSentenceAudioMarks(marks);
+    setMarks(marks);
   }, [sentences, article]);
 
   /**
@@ -63,7 +63,7 @@ const EditArticleVoicePane = ({
     request.onload = () => {
       audioContext.decodeAudioData(request.response, (buffer) => {
         const channelData = buffer.getChannelData(0);
-        const marks = sentences.map((s) => ({ start: s.start, end: s.end }));
+        const marks = sentences.map(({ start, end }) => ({ start, end }));
         handleSetChannelData({
           marks,
           channelData,
@@ -86,7 +86,6 @@ const EditArticleVoicePane = ({
       channelData: Float32Array | null;
     }) => {
       let _peaks: number[] = [];
-      let _duration = 0;
       if (!!_channelData) {
         const _scale =
           (CANVAS_WIDTH * audioContext.sampleRate) / _channelData.length;
@@ -104,9 +103,9 @@ const EditArticleVoicePane = ({
             blankDuration: INITIAL_BLANK_DURATION,
           });
         }
-        setSentenceAudioMarks(_marks);
+        setMarks(_marks);
       } else {
-        setSentenceAudioMarks([]);
+        setMarks([]);
       }
       setPeaks(_peaks);
       setChannelData(_channelData);
@@ -121,13 +120,13 @@ const EditArticleVoicePane = ({
       blankDuration,
       sampleRate: audioContext.sampleRate,
     });
-    setSentenceAudioMarks(marks);
+    setMarks(marks);
   };
 
   const handleChangeEnd = ({ index, end }: { index: number; end: number }) => {
-    const clonedMarks = [...sentenceAudioMarks];
+    const clonedMarks = [...marks];
     clonedMarks[index] = { ...clonedMarks[index], end };
-    setSentenceAudioMarks(clonedMarks);
+    setMarks(clonedMarks);
   };
 
   const handleChangeStart = ({
@@ -137,9 +136,9 @@ const EditArticleVoicePane = ({
     index: number;
     start: number;
   }) => {
-    const clonedMarks = [...sentenceAudioMarks];
+    const clonedMarks = [...marks];
     clonedMarks[index] = { ...clonedMarks[index], start };
-    setSentenceAudioMarks(clonedMarks);
+    setMarks(clonedMarks);
   };
 
   const handleUploadAudio = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -163,25 +162,25 @@ const EditArticleVoicePane = ({
       );
       const { success } = await deleteFile(path);
       if (success) {
-        const _sentences: Sentence[] = sentences.map((s) => ({
-          ...s,
-          start: 0,
+        const newSentences = sentences.map((sentence) => ({
+          ...sentence,
           end: 0,
+          start: 0,
         }));
-        const { success } = await updateSentences(_sentences);
+        const { success } = await updateSentences(newSentences);
         if (success) {
-          const newArticle: Article = { ...article, downloadURL: '' };
+          const newArticle = { ...article, downloadURL: '' };
           await updateArticle(newArticle);
         }
       }
     }
   };
 
-  const updateSentenceAudioMarks = async () => {
+  const updateMarks = async () => {
     const newSentences: Sentence[] = sentences.map((senetence, index) => ({
       ...senetence,
-      start: sentenceAudioMarks[index].start,
-      end: sentenceAudioMarks[index].end,
+      start: marks[index].start,
+      end: marks[index].end,
     }));
     const { success } = await updateSentences(newSentences);
     if (success) {
@@ -192,13 +191,13 @@ const EditArticleVoicePane = ({
   return (
     <EditArticleVoicePaneComponent
       peaks={peaks}
-      marks={sentenceAudioMarks}
+      marks={marks}
       scale={scale}
       labels={sentences.map((sentence) => sentence.japanese.slice(0, 20))}
       article={article}
       hasMarks={!!sentences.slice(-1)[0]?.end}
       blankDuration={INITIAL_BLANK_DURATION}
-      updateMarks={updateSentenceAudioMarks}
+      updateMarks={updateMarks}
       handleChangeEnd={handleChangeEnd}
       handleUploadAudio={handleUploadAudio}
       handleDeleteAudio={handleDeleteAudio}
