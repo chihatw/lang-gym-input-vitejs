@@ -1,5 +1,6 @@
 import React from 'react';
-import { SentenceParseNew } from '../../../../entities/SentenceParseNew';
+import { SentenceParseNew } from '../../../../services/useSentenceParseNews';
+
 import ComplexSentenceDrawerWrapper from './ComplexSentenceDrawerWrapper';
 
 const SentenceParsePane: React.FC<{

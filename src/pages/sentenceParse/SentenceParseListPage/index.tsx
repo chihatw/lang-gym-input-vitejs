@@ -2,17 +2,15 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import React, { useContext, useEffect, useState } from 'react';
 
 import { AppContext } from '../../../services/app';
-import { SentenceParseNew } from '../../../entities/SentenceParseNew';
+
 import { getSentenceParseNews } from '../../../repositories/sentenceParseNew';
-import { useHandleArticles } from '../../../services/useArticles';
 import SentenceParseListPageComponent from './components/SentenceParseListPageComponent';
 import { SentenceParseListPageContext } from './services/sentenceParseListPage';
+import { SentenceParseNew } from '../../../services/useSentenceParseNews';
 
 const SentenceParseListPage = () => {
   const navigate = useNavigate();
   const { article, isFetching, sentences } = useContext(AppContext);
-
-  const { updateArticle } = useHandleArticles();
 
   const [marks, setMarks] = useState<string[]>(article.marks);
   const [sentenceParseNews, setSentenceParseNews] = useState<{

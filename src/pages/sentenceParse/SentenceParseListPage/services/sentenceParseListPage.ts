@@ -1,8 +1,9 @@
 import { createContext } from 'react';
 
 import { Sentence } from '../../../../entities/Sentence';
-import { SentenceParseNew } from '../../../../entities/SentenceParseNew';
+
 import { Article } from '../../../../services/useArticles';
+import { SentenceParseNew } from '../../../../services/useSentenceParseNews';
 
 export const SentenceParseListPageContext = createContext<{
   marks: string[];

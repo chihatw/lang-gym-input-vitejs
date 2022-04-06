@@ -7,11 +7,11 @@ import {
   updateDoc,
   doc,
 } from '@firebase/firestore';
+import { buildSentenceParseNew } from '../entities/SentenceParseNew';
 import {
-  buildSentenceParseNew,
   CreateSentenceParseNew,
   SentenceParseNew,
-} from '../entities/SentenceParseNew';
+} from '../services/useSentenceParseNews';
 import { db } from './firebase';
 
 const COLLECTION = 'sentenceParseNews';

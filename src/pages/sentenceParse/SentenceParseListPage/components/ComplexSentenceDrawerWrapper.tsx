@@ -2,8 +2,8 @@ import React, { useMemo } from 'react'; // useState
 
 import sentenceParseNew2SentenceParseProps from 'sentence-parse-new2sentence-parse-props';
 
-import { SentenceParseNew } from '../../../../entities/SentenceParseNew';
 import { ComplexSentencePane } from '../../../../components/complex-sentence-pane';
+import { SentenceParseNew } from '../../../../services/useSentenceParseNews';
 
 const ComplexSentenceDrawerWrapper: React.FC<{
   sentenceParseNew: SentenceParseNew;

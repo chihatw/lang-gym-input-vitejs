@@ -5,7 +5,7 @@ import SentenceRow from './SentenceRow';
 import { Article } from '../../../../services/useArticles';
 import { Sentence } from '../../../../entities/Sentence';
 import TableLayoutHeader from '../../../../components/organisms/TableLayoutHeader';
-import { SentenceParseNew } from '../../../../entities/SentenceParseNew';
+import { SentenceParseNew } from '../../../../services/useSentenceParseNews';
 
 const SentenceParseListPageComponent = ({
   article,

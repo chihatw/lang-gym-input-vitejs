@@ -1,10 +1,10 @@
 import React from 'react';
-import { Divider, IconButton } from '@mui/material';
+import { IconButton } from '@mui/material';
 import { Edit, FileCopyOutlined } from '@mui/icons-material';
 
 import { Sentence } from '../../../../entities/Sentence';
 import SentenceParsePane from './SentenceParsePane';
-import { SentenceParseNew } from '../../../../entities/SentenceParseNew';
+import { SentenceParseNew } from '../../../../services/useSentenceParseNews';
 
 const SentenceRow = ({
   index,
