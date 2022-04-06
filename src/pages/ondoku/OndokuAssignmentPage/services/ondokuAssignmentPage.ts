@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDownloadURL } from '@firebase/storage';
-import { Assignment, CreateAssignment } from '../../../../entities/Assignment';
+import { CreateAssignment } from '../../../../entities/Assignment';
 import {
   AssignmentSentence,
   CreateAssignmentSentence,
@@ -25,6 +25,7 @@ import { getOndoku } from '../../../../repositories/ondoku';
 import { getOndokuSentences } from '../../../../repositories/ondokuSentence';
 import { getUsers } from '../../../../repositories/user';
 import { User } from '../../../../services/useUsers';
+import { Assignment } from '../../../../services/useAssignments';
 
 export const useOndokuAssignmentPage = (id: string) => {
   const navigate = useNavigate();

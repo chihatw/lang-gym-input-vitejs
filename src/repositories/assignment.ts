@@ -8,24 +8,23 @@ import {
   updateDoc,
   deleteDoc,
 } from '@firebase/firestore';
-import {
-  Assignment,
-  buildAssignment,
-  CreateAssignment,
-} from '../entities/Assignment';
+import { buildAssignment, CreateAssignment } from '../entities/Assignment';
+import { Assignment } from '../services/useAssignments';
 import { db } from './firebase';
 
 const COLLECTION = 'assignments';
 
 const assignmentsRef = collection(db, COLLECTION);
 
-type Props = {
+export const getAssignment = async ({
+  uid,
+  articleID,
+  ondokuID,
+}: {
   uid: string;
   articleID?: string;
   ondokuID?: string;
-};
-
-export const getAssignment = async ({ uid, articleID, ondokuID }: Props) => {
+}) => {
   try {
     let q = !!articleID
       ? query(assignmentsRef, where('article', '==', articleID))
@@ -73,18 +72,5 @@ export const deleteAssignment = async (id: string) => {
   } catch (e) {
     console.warn(e);
     return { success: false };
-  }
-};
-
-export const getAssignmentDownloadURL = async ({
-  uid,
-  articleID,
-  ondokuID,
-}: Props) => {
-  try {
-    return (await getAssignment({ uid, articleID, ondokuID }))!.downloadURL;
-  } catch (e) {
-    console.warn(e);
-    return null;
   }
 };

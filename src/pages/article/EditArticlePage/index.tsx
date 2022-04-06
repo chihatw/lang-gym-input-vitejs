@@ -15,8 +15,15 @@ import EditArticleVoicePane from './components/EditArticleVoicePane';
 const EditArticlePage = () => {
   const navigate = useNavigate();
   const { addArticle, updateArticle } = useHandleArticles();
-  const { users, article, sentences, isFetching, setArticleId, setIsFetching } =
-    useContext(AppContext);
+  const {
+    users,
+    article,
+    sentences,
+    assignment,
+    isFetching,
+    setArticleId,
+    setIsFetching,
+  } = useContext(AppContext);
 
   const [uid, setUid] = useState('');
   const [date, setDate] = useState<Date>(new Date());

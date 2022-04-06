@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { buildAccents, buildAccentString } from '../../../../entities/Accent';
 import { AssignmentSentence } from '../../../../entities/AssignmentSentence';
 import { Sentence } from '../../../../entities/Sentence';
-import { getAssignment } from '../../../../repositories/assignment';
+
 import {
   getAssignmentSentence,
   updateAssignmentSentence,
@@ -17,7 +17,7 @@ export const useEditArticleAssignmentPage = (
 ) => {
   const navigate = useNavigate();
 
-  const { sentences } = useContext(AppContext);
+  const { sentences, assignment } = useContext(AppContext);
 
   const [end, setEnd] = useState(0);
   const [start, setStart] = useState(0);
@@ -32,12 +32,8 @@ export const useEditArticleAssignmentPage = (
   }, [sentences, id, line]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const assignment = await getAssignment({ uid, articleID: id });
-      !!assignment && setDownloadURL(assignment.downloadURL);
-    };
-    fetchData();
-  });
+    setDownloadURL(assignment.downloadURL);
+  }, [assignment]);
 
   useEffect(() => {
     if (!uid) return;

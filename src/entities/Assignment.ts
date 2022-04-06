@@ -1,20 +1,5 @@
 import { DocumentData } from '@firebase/firestore';
-
-export type Assignment = {
-  id: string;
-  uid: string;
-  ondoku: string;
-  article: string;
-  downloadURL: string;
-};
-
-export const INITIAL_ASSIGNMENT: Assignment = {
-  id: '',
-  uid: '',
-  ondoku: '',
-  article: '',
-  downloadURL: '',
-};
+import { Assignment } from '../services/useAssignments';
 
 export type CreateAssignment = Omit<Assignment, 'id'>;
 

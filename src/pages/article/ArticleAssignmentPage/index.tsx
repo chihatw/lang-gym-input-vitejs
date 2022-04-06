@@ -8,7 +8,6 @@ import {
   CreateAssignmentSentence,
 } from '../../../entities/AssignmentSentence';
 import {
-  getAssignment,
   createAssignment,
   deleteAssignment,
 } from '../../../repositories/assignment';
@@ -18,17 +17,13 @@ import {
   deleteAssignmentSentences,
 } from '../../../repositories/assignmentSentence';
 import { deleteFile, uploadFile } from '../../../repositories/file';
-import {
-  CreateAssignment,
-  INITIAL_ASSIGNMENT,
-} from '../../../entities/Assignment';
+import { CreateAssignment } from '../../../entities/Assignment';
 import ArticleAssignmentPageComponent from './components/ArticleAssignmentPageComponent';
 
-// TODO これどこ？
+// ArticleList から
 const ArticleAssignmentPage = () => {
   const navigate = useNavigate();
-  const { article, isFetching, sentences } = useContext(AppContext);
-  const [assignment, setAssignment] = useState(INITIAL_ASSIGNMENT);
+  const { article, isFetching, sentences, assignment } = useContext(AppContext);
   const [assignmentSentences, setAssignmentSentences] = useState<
     AssignmentSentence[]
   >([]);
@@ -36,13 +31,6 @@ const ArticleAssignmentPage = () => {
   useEffect(() => {
     if (!article.id) return;
     const fetchData = async () => {
-      const assignment = await getAssignment({
-        uid: article.uid,
-        articleID: article.id,
-      });
-      if (!!assignment) {
-        setAssignment(assignment);
-      }
       const assignmentSentences = await getAssignmentSentences({
         uid: article.uid,
         articleID: article.id,

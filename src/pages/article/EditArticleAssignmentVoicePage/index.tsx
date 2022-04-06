@@ -21,7 +21,7 @@ import { deleteFile } from '../../../repositories/file';
 // TODO merge to Article Edit Page
 
 const EditArticleAssignmentVoicePage = () => {
-  const { article, isFetching, sentences } = useContext(AppContext);
+  const { article, isFetching, sentences, assignment } = useContext(AppContext);
 
   const navigate = useNavigate();
 
@@ -38,12 +38,7 @@ const EditArticleAssignmentVoicePage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const assignment = await getAssignment({
-        articleID: article.id,
-        uid: article.uid,
-      });
-      console.log({ assignment });
-      setDownloadURL(!!assignment ? assignment.downloadURL : '');
+      setDownloadURL(assignment.downloadURL);
       if (!!assignment) {
         setAssignmentID(assignment.id);
         const assignmentSentences = await getAssignmentSentences({
@@ -62,7 +57,7 @@ const EditArticleAssignmentVoicePage = () => {
       }
     };
     fetchData();
-  }, [article]);
+  }, [article, assignment]);
 
   useEffect(() => {
     setHasChange(JSON.stringify(marks) !== JSON.stringify(originalMarks));
