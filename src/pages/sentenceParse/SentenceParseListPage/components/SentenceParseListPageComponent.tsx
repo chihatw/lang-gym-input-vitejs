@@ -25,41 +25,29 @@ const SentenceParseListPageComponent = ({
   <Container maxWidth='md' sx={{ paddingTop: 4, paddingBottom: 20 }}>
     <div style={{ display: 'grid', rowGap: 16 }}>
       <TableLayoutHeader title={article.title} backURL='/article/list' />
-      <div>
-        <div style={{ padding: '16px 0 24px', width: '50vw' }}>
-          {!!article!.embedID && (
-            <YoutubeEmbeded
-              embedId={article!.embedID}
-              offSet={400}
-              transition={1000}
-              isShowControls={false}
-            />
-          )}
-        </div>
-        <div
-          style={{
-            height: 1000,
-            border: '1px solid #ddd',
-            overflowY: 'scroll',
-            borderRadius: 4,
-          }}
-        >
-          {sentences.map((sentence, index) => (
-            <SentenceRow
-              key={index}
-              index={index}
-              hasNext={!!sentences[index + 1]}
-              sentence={sentence}
-              sentenceParseNew={sentenceParseNews[sentence.id]}
-              onCopy={() => onCopy(index)}
-              openEditPage={() => openEditPage(sentence.id)}
-            />
-          ))}
-          <div style={{ height: 400 }} />
-        </div>
-        <div style={{ height: 24 }} />
-        <SetMarksForm />
+      <div
+        style={{
+          height: 1000,
+          border: '1px solid #ddd',
+          overflowY: 'scroll',
+          borderRadius: 4,
+        }}
+      >
+        {sentences.map((sentence, index) => (
+          <SentenceRow
+            key={index}
+            index={index}
+            hasNext={!!sentences[index + 1]}
+            sentence={sentence}
+            sentenceParseNew={sentenceParseNews[sentence.id]}
+            onCopy={() => onCopy(index)}
+            openEditPage={() => openEditPage(sentence.id)}
+          />
+        ))}
+        <div style={{ height: 400 }} />
       </div>
+      <div style={{ height: 24 }} />
+      <SetMarksForm />
     </div>
   </Container>
 );

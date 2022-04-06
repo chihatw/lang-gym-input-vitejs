@@ -13,6 +13,7 @@ import {
 
 import { User } from '../../../../services/useUsers';
 import TableLayoutHeader from '../../../../components/organisms/TableLayoutHeader';
+import { YoutubeEmbeded } from '@chihatw/lang-gym-h.ui.youtube-embeded';
 
 const EditArticlePageComponent = ({
   uid,
@@ -86,6 +87,16 @@ const EditArticlePageComponent = ({
           variant='outlined'
           onChange={(e) => handleChangeEmbedId(e.target.value)}
         />
+        {!!embedId && (
+          <div style={{ padding: '16px 0 24px', width: 480 }}>
+            <YoutubeEmbeded
+              embedId={embedId}
+              offSet={400}
+              transition={1000}
+              isShowControls={false}
+            />
+          </div>
+        )}
         <Button variant='contained' color='primary' onClick={handleClickSubmit}>
           送信
         </Button>

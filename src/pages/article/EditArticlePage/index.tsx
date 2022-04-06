@@ -152,7 +152,7 @@ const EditArticlePage = () => {
         _duration =
           Math.round(_channelData.length / (audioContext.sampleRate / 100)) /
           100;
-        const hasMarks = !!_marks.slice(-1)[0].end; // marks の最後の end が初期値の場合 marks を再設定する
+        const hasMarks = !!_marks.slice(-1)[0]?.end; // marks の最後の end が初期値の場合 marks を再設定する
         if (!hasMarks) {
           _marks = buildMarks({
             sampleRate: audioContext.sampleRate,
@@ -373,7 +373,7 @@ const EditArticlePage = () => {
               labels={sentences.map((sentence) =>
                 sentence.japanese.slice(0, 20)
               )}
-              hasMarks={!!sentences.slice(-1)[0].end}
+              hasMarks={!!sentences.slice(-1)[0]?.end}
               scale={scale}
               article={article}
               duration={duration}

@@ -23,6 +23,8 @@ const ArticlePage = () => {
 
   const { article, isFetching, sentences } = useContext(AppContext);
 
+  // TODO add sentenceParseNews (SentenceParseListPage)
+
   const createAccentsQuestion = async () => {
     const questionGroup = await createInitialQuestionGroup();
 
