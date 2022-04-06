@@ -12,7 +12,7 @@ import { Check } from '@mui/icons-material';
 const WAVE_COLOR = 'pink';
 const HEIGHT = 100;
 
-const EditArticleVoicePageComponent = ({
+const EditArticleVoicePaneComponent = ({
   peaks,
   marks,
   scale,
@@ -117,4 +117,4 @@ const EditArticleVoicePageComponent = ({
   );
 };
 
-export default EditArticleVoicePageComponent;
+export default EditArticleVoicePaneComponent;
