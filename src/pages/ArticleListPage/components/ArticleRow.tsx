@@ -23,7 +23,6 @@ import IconButtonCell from './IconButtonCell';
 const ArticleRow = ({
   article,
   openParsePage,
-  openVoicePage,
   openArticlePage,
   handleClickDelete,
   openAssignmentPage,
@@ -34,7 +33,6 @@ const ArticleRow = ({
 }: {
   article: Article;
   openParsePage: () => void;
-  openVoicePage: () => void;
   openArticlePage: () => void;
   handleClickDelete: () => void;
   openAssignmentPage: () => void;
@@ -66,7 +64,6 @@ const ArticleRow = ({
         icon={article.isShowParse ? <FlashOn /> : <FlashOff />}
         onClick={handleClickShowParses}
       />
-      <IconButtonCell icon={<Mic />} onClick={openVoicePage} />
       <IconButtonCell
         icon={article.hasRecButton ? <MicNone /> : <MicOff />}
         onClick={handleClickShowRecButton}

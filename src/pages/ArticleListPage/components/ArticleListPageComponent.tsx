@@ -40,9 +40,6 @@ const ArticleListPageComponent = ({
               openParsePage={() =>
                 openPage({ article, path: `${article.id}/parse` })
               }
-              openVoicePage={() =>
-                openPage({ article, path: `${article.id}/voice` })
-              }
               openAssignmentPage={() =>
                 openPage({
                   article,

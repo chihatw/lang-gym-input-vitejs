@@ -8,10 +8,11 @@ import {
   TextField,
   InputLabel,
   FormControl,
+  Container,
 } from '@mui/material';
 
 import { User } from '../../../../services/useUsers';
-import TableLayout from '../../../../components/templates/TableLayout';
+import TableLayoutHeader from '../../../../components/organisms/TableLayoutHeader';
 
 const EditArticlePageComponent = ({
   uid,
@@ -39,8 +40,12 @@ const EditArticlePageComponent = ({
   handleChangeEmbedId: (value: string) => void;
 }) => {
   return (
-    <TableLayout title={!!articleId ? '新規' : '編集'} backURL='/article/list'>
+    <Container maxWidth='sm' sx={{ paddingTop: 4 }}>
       <div style={{ display: 'grid', rowGap: 16 }}>
+        <TableLayoutHeader
+          title={!articleId ? '新規' : '編集'}
+          backURL={'/article/list'}
+        />
         <FormControl fullWidth>
           <InputLabel>user</InputLabel>
           <Select
@@ -85,7 +90,7 @@ const EditArticlePageComponent = ({
           送信
         </Button>
       </div>
-    </TableLayout>
+    </Container>
   );
 };
 

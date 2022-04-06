@@ -29,7 +29,6 @@ import ArticlePage from '../pages/article/ArticlePage';
 import EditArticlePage from '../pages/article/EditArticlePage';
 import EditArticleAssignmentPage from '../pages/article/EditArticleAssignmentPage';
 import EditArticleAssignmentVoicePage from '../pages/article/EditArticleAssignmentVoicePage';
-import EditArticleVoicePage from '../pages/article/EditArticleVoicePage';
 import InitialArticlePage from '../pages/article/InitialArticlePage';
 import ArticleInputPage from '../pages/ArticleInputPage';
 import EditArticleSentencePage from '../pages/article/EditArticleSentencePage';
@@ -205,14 +204,6 @@ const AppRoutes = () => {
           element={
             <PrivateRoute>
               <InitialArticlePage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path=':id/voice'
-          element={
-            <PrivateRoute>
-              <EditArticleVoicePage />
             </PrivateRoute>
           }
         />
