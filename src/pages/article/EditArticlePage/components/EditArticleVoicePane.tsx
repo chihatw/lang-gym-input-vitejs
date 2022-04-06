@@ -11,7 +11,7 @@ import { deleteFile, uploadFile } from '../../../../repositories/file';
 import EditArticleVoicePaneComponent from './EditArticleVoicePaneComponent';
 import { Article, useHandleArticles } from '../../../../services/useArticles';
 
-const CANVAS_WIDTH = 580;
+const CANVAS_WIDTH = 550;
 const INITIAL_BLANK_DURATION = 700;
 
 const EditArticleVoicePane = ({

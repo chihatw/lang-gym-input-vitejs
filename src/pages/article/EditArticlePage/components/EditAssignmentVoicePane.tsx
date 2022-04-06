@@ -19,7 +19,7 @@ import {
 import { Sentence } from '../../../../services/useSentences';
 import EditAudioPane from './EditAudioPane';
 
-const CANVAS_WIDTH = 580;
+const CANVAS_WIDTH = 550;
 const INITIAL_BLANK_DURATION = 700;
 
 const EditAssignmentVoicePane = ({
@@ -168,6 +168,7 @@ const EditAssignmentVoicePane = ({
 
   // upload 時、 assignment 作成
   const handleUploadAudio = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('hello');
     if (!e.target.files) return;
     const file = e.target.files[0];
     const { success, snapshot } = await uploadFile(file, 'articles');
@@ -223,7 +224,6 @@ const EditAssignmentVoicePane = ({
       navigate(`/article/list`);
     }
   };
-
   return (
     <Container maxWidth='sm'>
       <div style={{ display: 'grid', rowGap: 16 }}>
@@ -244,7 +244,7 @@ const EditAssignmentVoicePane = ({
             handleChangeBlankDuration={handleChangeBlankDuration}
           />
         ) : (
-          <Button variant='contained' component='label' color='secondary'>
+          <Button variant='contained' color='secondary' component='label'>
             提出 Audio アップロード
             <input
               aria-label='audio mp3 upload'

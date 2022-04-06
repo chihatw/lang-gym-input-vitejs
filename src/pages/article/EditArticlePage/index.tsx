@@ -159,7 +159,7 @@ const EditArticlePage = () => {
             <EditArticleVoicePane article={article} sentences={sentences} />
           </>
         )}
-        {!!assignment.id && (
+        {!!article.id && (
           <>
             <Divider />
             <EditAssignmentVoicePane
