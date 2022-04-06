@@ -1,9 +1,8 @@
 import React from 'react';
-import { Grid } from '@mui/material';
 import AudioEdit from '@bit/chihatw.lang-gym.audio-edit'; // TODO 内部化
 
 import { Mark } from '../../../../entities/Mark';
-
+// TODO merge to Edit Article Page
 const ArticleAssignmentVoice = ({
   marks,
   sentences,
@@ -21,23 +20,21 @@ const ArticleAssignmentVoice = ({
   onDeleteAudio: () => void;
   onChangeMarks: (marks: Mark[]) => void;
 }) => {
-  return (
-    <Grid container direction='column' spacing={2}>
-      {!!downloadURL && (
-        <Grid item>
-          <AudioEdit
-            marks={marks}
-            sentences={sentences}
-            hasChange={hasChange}
-            downloadURL={downloadURL}
-            onSubmit={onSubmit}
-            onDeleteAudio={onDeleteAudio}
-            onChangeMarks={onChangeMarks}
-          />
-        </Grid>
-      )}
-    </Grid>
-  );
+  if (!!downloadURL) {
+    return (
+      <AudioEdit
+        marks={marks}
+        sentences={sentences}
+        hasChange={hasChange}
+        downloadURL={downloadURL}
+        onSubmit={onSubmit}
+        onDeleteAudio={onDeleteAudio}
+        onChangeMarks={onChangeMarks}
+      />
+    );
+  } else {
+    return <></>;
+  }
 };
 
 export default ArticleAssignmentVoice;

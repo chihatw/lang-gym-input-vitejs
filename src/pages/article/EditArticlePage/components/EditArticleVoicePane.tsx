@@ -1,22 +1,15 @@
 import { useNavigate } from 'react-router-dom';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
-import { Divider } from '@mui/material';
-import { Article, useHandleArticles } from '../../../../services/useArticles';
-import { Sentence } from '../../../../services/useSentences';
+import { getDownloadURL } from 'firebase/storage';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+
 import { Mark } from '../../../../entities/Mark';
-import { buildSentenceLines } from '../../../../services/buildSentenceLines';
+import { Sentence } from '../../../../services/useSentences';
 import { buildPeaks } from '../../../../services/buildPeaks';
 import { buildMarks } from '../../../../services/buildMarks';
-import { deleteFile, uploadFile } from '../../../../repositories/file';
-import { getDownloadURL } from 'firebase/storage';
 import { updateSentences } from '../../../../repositories/sentence';
+import { deleteFile, uploadFile } from '../../../../repositories/file';
 import EditArticleVoicePaneComponent from './EditArticleVoicePaneComponent';
+import { Article, useHandleArticles } from '../../../../services/useArticles';
 
 const CANVAS_WIDTH = 580;
 const INITIAL_BLANK_DURATION = 700;
@@ -33,20 +26,10 @@ const EditArticleVoicePane = ({
   const audioContext = useMemo(() => new AudioContext(), []);
 
   const { updateArticle } = useHandleArticles();
-
   const [scale, setScale] = useState(5);
   const [peaks, setPeaks] = useState<number[]>([]);
-  const [duration, setDuration] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [channelData, setChannelData] = useState<Float32Array | null>(null);
-  const [currentTime, setCurrentTime] = useState(0);
   const [sentenceAudioMarks, setSentenceAudioMarks] = useState<Mark[]>([]);
-  const [sentenceLines, setSentenceLines] = useState<
-    { xPos: number; color: string }[]
-  >([]);
-  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(
-    null
-  );
 
   /**
    * sentences から marks 抽出
@@ -58,7 +41,7 @@ const EditArticleVoicePane = ({
       end,
       start,
     }));
-    handleSetSentenceAudioMarks({ marks, scale });
+    setSentenceAudioMarks(marks);
   }, [sentences, article]);
 
   /**
@@ -91,22 +74,7 @@ const EditArticleVoicePane = ({
   }, [article, sentences]);
 
   /**
-   * marks をセットするときに、sentenceLines もセットする
-   */
-  const handleSetSentenceAudioMarks = useCallback(
-    ({ marks: _marks, scale: _scale }: { marks: Mark[]; scale: number }) => {
-      setSentenceAudioMarks(_marks);
-      const _sentenceLines = buildSentenceLines({
-        marks: _marks,
-        scale: _scale,
-      });
-      setSentenceLines(_sentenceLines);
-    },
-    []
-  );
-
-  /**
-   * channelData をセットする時に、 scale, marks, peaks, duration もセットする
+   * channelData をセットする時に、 scale, peaks もセットする
    * marks は既存のものがあれば、それを再利用、なければ blankDuration から作成
    */
   const handleSetChannelData = useCallback(
@@ -128,9 +96,6 @@ const EditArticleVoicePane = ({
           sampleRate: audioContext.sampleRate,
           channelData: _channelData,
         });
-        _duration =
-          Math.round(_channelData.length / (audioContext.sampleRate / 100)) /
-          100;
         const hasMarks = !!_marks.slice(-1)[0]?.end; // marks の最後の end が初期値の場合 marks を再設定する
         if (!hasMarks) {
           _marks = buildMarks({
@@ -139,34 +104,15 @@ const EditArticleVoicePane = ({
             blankDuration: INITIAL_BLANK_DURATION,
           });
         }
-        handleSetSentenceAudioMarks({ marks: _marks, scale: _scale });
+        setSentenceAudioMarks(_marks);
       } else {
-        handleSetSentenceAudioMarks({ marks: [], scale });
+        setSentenceAudioMarks([]);
       }
       setPeaks(_peaks);
-      setDuration(_duration);
       setChannelData(_channelData);
     },
     [audioContext]
   );
-
-  const handlePlayMarkRow = (index: number) => {
-    let _audioElement = audioElement;
-    if (!_audioElement) {
-      console.log('get audio');
-      _audioElement = new Audio(article.downloadURL);
-      setAudioElement(_audioElement);
-    }
-    _audioElement.pause();
-    _audioElement.currentTime = sentenceAudioMarks[index].start;
-    _audioElement.ontimeupdate = () => {
-      setCurrentTime(_audioElement!.currentTime);
-      if (_audioElement!.currentTime > sentenceAudioMarks[index].end) {
-        _audioElement!.pause();
-      }
-    };
-    _audioElement.play();
-  };
 
   const handleChangeBlankDuration = (blankDuration: number) => {
     if (!channelData) return;
@@ -175,13 +121,13 @@ const EditArticleVoicePane = ({
       blankDuration,
       sampleRate: audioContext.sampleRate,
     });
-    handleSetSentenceAudioMarks({ marks, scale });
+    setSentenceAudioMarks(marks);
   };
 
   const handleChangeEnd = ({ index, end }: { index: number; end: number }) => {
     const clonedMarks = [...sentenceAudioMarks];
     clonedMarks[index] = { ...clonedMarks[index], end };
-    handleSetSentenceAudioMarks({ marks: clonedMarks, scale });
+    setSentenceAudioMarks(clonedMarks);
   };
 
   const handleChangeStart = ({
@@ -193,33 +139,7 @@ const EditArticleVoicePane = ({
   }) => {
     const clonedMarks = [...sentenceAudioMarks];
     clonedMarks[index] = { ...clonedMarks[index], start };
-    handleSetSentenceAudioMarks({ marks: clonedMarks, scale });
-  };
-
-  const handlePlay = () => {
-    let _audioElement = audioElement;
-    let _isPlaying = isPlaying;
-    if (!_audioElement) {
-      console.log('get audio');
-      _audioElement = new Audio(article.downloadURL);
-      setAudioElement(_audioElement);
-    }
-    _audioElement.pause();
-    setIsPlaying(false);
-
-    if (!_isPlaying) {
-      _audioElement.currentTime = currentTime;
-      _audioElement.ontimeupdate = () => {
-        setCurrentTime(_audioElement!.currentTime);
-        if (_audioElement!.currentTime > duration) {
-          _audioElement!.pause();
-          setIsPlaying(false);
-          setCurrentTime(0);
-        }
-      };
-      _audioElement.play();
-      setIsPlaying(true);
-    }
+    setSentenceAudioMarks(clonedMarks);
   };
 
   const handleUploadAudio = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -273,22 +193,16 @@ const EditArticleVoicePane = ({
     <EditArticleVoicePaneComponent
       peaks={peaks}
       marks={sentenceAudioMarks}
-      labels={sentences.map((sentence) => sentence.japanese.slice(0, 20))}
-      hasMarks={!!sentences.slice(-1)[0]?.end}
       scale={scale}
+      labels={sentences.map((sentence) => sentence.japanese.slice(0, 20))}
       article={article}
-      duration={duration}
-      isPlaying={isPlaying}
-      currentTime={currentTime}
-      sentenceLines={sentenceLines}
+      hasMarks={!!sentences.slice(-1)[0]?.end}
       blankDuration={INITIAL_BLANK_DURATION}
-      handlePlay={handlePlay}
       updateMarks={updateSentenceAudioMarks}
       handleChangeEnd={handleChangeEnd}
       handleUploadAudio={handleUploadAudio}
       handleDeleteAudio={handleDeleteAudio}
       handleChangeStart={handleChangeStart}
-      handlePlayMarkRow={handlePlayMarkRow}
       handleChangeBlankDuration={handleChangeBlankDuration}
     />
   );

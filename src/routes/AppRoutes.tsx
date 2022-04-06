@@ -214,6 +214,7 @@ const AppRoutes = () => {
             </PrivateRoute>
           }
         />
+        {/* AssignmentAudioFile がアップロードされたら、ここに飛んでくる */}
         <Route
           path=':id/assignment/uid/:uid/voice/'
           element={
@@ -230,6 +231,7 @@ const AppRoutes = () => {
             </PrivateRoute>
           }
         />
+        {/* ArticleListPageから */}
         <Route path=':id/assignment' element={<ArticleAssignmentPage />} />
         <Route
           path=':id'

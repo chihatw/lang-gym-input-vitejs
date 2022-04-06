@@ -6,7 +6,6 @@ import { AppContext } from '../../../services/app';
 import { useNavigate } from 'react-router-dom';
 import { Mark } from '../../../entities/Mark';
 import { AssignmentSentence } from '../../../entities/AssignmentSentence';
-import { getSentences } from '../../../repositories/sentence';
 import {
   deleteAssignment,
   getAssignment,
@@ -18,13 +17,14 @@ import {
 } from '../../../repositories/assignmentSentence';
 import { deleteFile } from '../../../repositories/file';
 
+// ArticleAssignmentPage で upload した後、ここに飛ばされる
 // TODO merge to Article Edit Page
 
 const EditArticleAssignmentVoicePage = () => {
-  const { article, isFetching } = useContext(AppContext);
+  const { article, isFetching, sentences } = useContext(AppContext);
 
   const navigate = useNavigate();
-  const [sentences, setSentences] = useState<string[]>([]);
+
   const [downloadURL, setDownloadURL] = useState('');
   const [assignmentID, setAssignmentID] = useState('');
   const [marks, setMarks] = useState<Mark[]>(
@@ -35,18 +35,6 @@ const EditArticleAssignmentVoicePage = () => {
     AssignmentSentence[]
   >([]);
   const [hasChange, setHasChange] = useState(false);
-
-  useEffect(() => {
-    if (!article.id) return;
-    const fetchData = async () => {
-      const sentences = await getSentences(article.id);
-      console.log({ sentences });
-      if (!!sentences) {
-        setSentences(sentences.map((s) => s.japanese));
-      }
-    };
-    fetchData();
-  }, [article]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -125,7 +113,9 @@ const EditArticleAssignmentVoicePage = () => {
       >
         <ArticleAssignmentVoice
           marks={marks}
-          sentences={sentences}
+          sentences={sentences.map((sentence) =>
+            sentence.japanese.slice(0, 20)
+          )}
           hasChange={hasChange}
           downloadURL={downloadURL}
           onSubmit={onSubmit}

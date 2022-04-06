@@ -24,6 +24,7 @@ import {
 } from '../../../entities/Assignment';
 import ArticleAssignmentPageComponent from './components/ArticleAssignmentPageComponent';
 
+// TODO これどこ？
 const ArticleAssignmentPage = () => {
   const navigate = useNavigate();
   const { article, isFetching, sentences } = useContext(AppContext);
@@ -71,6 +72,7 @@ const ArticleAssignmentPage = () => {
     }
   }, [navigate, assignmentSentences, assignment]);
 
+  // upload 時に、 assignment作成
   const onUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const file = e.target.files[0];
