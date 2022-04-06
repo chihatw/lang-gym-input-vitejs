@@ -1,15 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Button } from '@mui/material';
 
-import { Sentence } from '../../../../entities/Sentence';
+import { Sentence } from '../../../entities/Sentence';
 import { useSentenceParseForm } from '../services/sentenceParseForm';
 import sentenceParseNew2SentenceParseProps from 'sentence-parse-new2sentence-parse-props';
-import { ComplexSentenceInput } from '../../../../components/complex-sentence-input';
+import { ComplexSentenceInput } from '../../../components/complex-sentence-input';
 import {
   ComplexSentencePane,
   ComplexSentencePaneProps,
-} from '../../../../components/complex-sentence-pane';
-import { Article } from '../../../../services/useArticles';
+} from '../../../components/complex-sentence-pane';
+import { Article } from '../../../services/useArticles';
 
 const SentenceParseForm: React.FC<{ article: Article; sentence: Sentence }> = ({
   article,

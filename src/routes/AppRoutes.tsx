@@ -7,6 +7,7 @@ import TopPage from '../pages/TopPage';
 import SignInPage from '../pages/SignInPage';
 import BatchPage from '../pages/BatchPage';
 import AudioItemsPage from '../pages/AudioItemsPage';
+
 import OndokuListPage from '../pages/ondoku/OndokuListPage';
 import CreateOndokuPage from '../pages/ondoku/CreateOndokuPage';
 import EditOndokuPage from '../pages/ondoku/EditOndokuPage';
@@ -18,21 +19,23 @@ import EditOndokuAssignmentVoicePage from '../pages/ondoku/EditOngokuAssignmentV
 import EditOndokuAssignmentPage from '../pages/ondoku/EditOndokuAssignmentPage';
 import OndokuAssignmentPage from '../pages/ondoku/OndokuAssignmentPage';
 import OndokuPage from '../pages/ondoku/OndokuPage';
-import AccentsQuestionPage from '../pages/accentsQuestion/AccentsQuestionPage';
-import AccentsQuestionListPage from '../pages/accentsQuestion/AccentsQuestionListPage';
-import RhythmsQuestionListPage from '../pages/rhythmsQuestion/RhythmsQuestionListPage';
-import RhythmsQuestionPage from '../pages/rhythmsQuestion/RhythmsQuestionPage';
+
 import ArticleAssignmentPage from '../pages/article/ArticleAssignmentPage';
 import ArticleListPage from '../pages/ArticleListPage';
 import ArticlePage from '../pages/article/ArticlePage';
 import EditArticlePage from '../pages/article/EditArticlePage';
 import EditArticleAssignmentPage from '../pages/article/EditArticleAssignmentPage';
-import EditArticleAssignmentVoicePage from '../pages/article/EditArticleAssignmentVoicePage';
 import InitialArticlePage from '../pages/article/InitialArticlePage';
+
 import ArticleInputPage from '../pages/ArticleInputPage';
-import EditSentenceParsePage from '../pages/sentenceParse/EditSentenceParsePage';
+import EditSentenceParsePage from '../pages/EditSentenceParsePage';
 import CreateUidOndokuPage from '../pages/uidOndoku/CreateUidOndokuPage';
 import UidOndokuListPage from '../pages/uidOndoku/UidOndokuListPage';
+
+import AccentsQuestionPage from '../pages/accentsQuestion/AccentsQuestionPage';
+import AccentsQuestionListPage from '../pages/accentsQuestion/AccentsQuestionListPage';
+import RhythmsQuestionListPage from '../pages/rhythmsQuestion/RhythmsQuestionListPage';
+import RhythmsQuestionPage from '../pages/rhythmsQuestion/RhythmsQuestionPage';
 
 const AppRoutes = () => {
   return (
@@ -189,6 +192,7 @@ const AppRoutes = () => {
           }
         />
         <Route path='list' element={<ArticleListPage />} />
+        {/* 作文入力作業 */}
         <Route
           path='input'
           element={
@@ -202,15 +206,6 @@ const AppRoutes = () => {
           element={
             <PrivateRoute>
               <InitialArticlePage />
-            </PrivateRoute>
-          }
-        />
-        {/* AssignmentAudioFile がアップロードされたら、ここに飛んでくる */}
-        <Route
-          path=':id/assignment/uid/:uid/voice/'
-          element={
-            <PrivateRoute>
-              <EditArticleAssignmentVoicePage />
             </PrivateRoute>
           }
         />

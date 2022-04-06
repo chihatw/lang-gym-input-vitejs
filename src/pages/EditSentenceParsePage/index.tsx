@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 import { Navigate, useMatch } from 'react-router-dom';
-import { useArticleSentence } from '../../article/EditArticleSentencePage/services/articleSentence';
+import { useArticleSentence } from '../article/EditArticleSentencePage/services/articleSentence';
 import SentenceParseForm from './components/SentenceParseForm';
-import TableLayout from '../../../components/templates/TableLayout';
-import { AppContext } from '../../../services/app';
+import TableLayout from '../../components/templates/TableLayout';
+import { AppContext } from '../../services/app';
 
 const EditSentenceParsePage = () => {
   const match = useMatch('/sentence/:id/parse');
