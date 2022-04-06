@@ -1,3 +1,13 @@
+import {
+  query,
+  where,
+  orderBy,
+  onSnapshot,
+  collection,
+  DocumentData,
+} from '@firebase/firestore';
+import { useEffect, useState } from 'react';
+import { db } from '../repositories/firebase';
 import { Article } from './useArticles';
 
 export type SentenceParseNew = {
@@ -89,4 +99,59 @@ export const INITIAL_SENTENCE: Sentence = {
   juntaiJoshiBunmatsu: '',
 };
 
-export const useSentenceParseNews = ({ article }: { article: Article }) => {};
+const COLLECTION = 'sentenceParseNews';
+
+const colRef = collection(db, COLLECTION);
+
+const buildSentenceParseNew = (doc: DocumentData) => {
+  const sentenceParseNew: SentenceParseNew = {
+    id: doc.id,
+    line: doc.data().line,
+    article: doc.data().article,
+    sentence: doc.data().sentence,
+    units: JSON.parse(doc.data().units),
+    words: JSON.parse(doc.data().words),
+    branches: JSON.parse(doc.data().branches),
+    sentences: JSON.parse(doc.data().sentences),
+    sentenceArrays: JSON.parse(doc.data().sentenceArrays),
+    branchInvisibilities: JSON.parse(doc.data().branchInvisibilities),
+    commentInvisibilities: JSON.parse(doc.data().commentInvisibilities),
+  };
+  return sentenceParseNew;
+};
+
+export const useSentenceParseNews = ({ article }: { article: Article }) => {
+  const [sentenceParseNews, setSentenceParseNews] = useState<
+    SentenceParseNew[]
+  >([]);
+
+  useEffect(() => {
+    if (!article.id) return;
+    const q = query(
+      colRef,
+      where('article', '==', article.id),
+      orderBy('line')
+    );
+    const unsub = onSnapshot(
+      q,
+      (snapshot) => {
+        console.log('snapshot sentence parses');
+        const sentenceParseNews: SentenceParseNew[] = [];
+        snapshot.forEach((doc) => {
+          const sentenceParseNew = buildSentenceParseNew(doc);
+          sentenceParseNews.push(sentenceParseNew);
+        });
+        setSentenceParseNews(sentenceParseNews);
+      },
+      (e) => {
+        console.warn(e);
+        setSentenceParseNews([]);
+      }
+    );
+    return () => {
+      unsub();
+    };
+  }, [article]);
+
+  return { sentenceParseNews };
+};

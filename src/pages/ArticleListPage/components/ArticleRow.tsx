@@ -22,7 +22,6 @@ import IconButtonCell from './IconButtonCell';
 
 const ArticleRow = ({
   article,
-  openParsePage,
   openArticlePage,
   handleClickDelete,
   openAssignmentPage,
@@ -32,7 +31,6 @@ const ArticleRow = ({
   handleClickShowRecButton,
 }: {
   article: Article;
-  openParsePage: () => void;
   openArticlePage: () => void;
   handleClickDelete: () => void;
   openAssignmentPage: () => void;
@@ -59,7 +57,6 @@ const ArticleRow = ({
         onClick={handleClickShowAccents}
       />
       <IconButtonCell icon={<Subject />} onClick={openArticlePage} />
-      <IconButtonCell icon={<SettingsOutlined />} onClick={openParsePage} />
       <IconButtonCell
         icon={article.isShowParse ? <FlashOn /> : <FlashOff />}
         onClick={handleClickShowParses}

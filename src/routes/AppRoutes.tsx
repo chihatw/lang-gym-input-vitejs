@@ -22,7 +22,6 @@ import AccentsQuestionPage from '../pages/accentsQuestion/AccentsQuestionPage';
 import AccentsQuestionListPage from '../pages/accentsQuestion/AccentsQuestionListPage';
 import RhythmsQuestionListPage from '../pages/rhythmsQuestion/RhythmsQuestionListPage';
 import RhythmsQuestionPage from '../pages/rhythmsQuestion/RhythmsQuestionPage';
-import SentenceParseListPage from '../pages/sentenceParse/SentenceParseListPage';
 import ArticleAssignmentPage from '../pages/article/ArticleAssignmentPage';
 import ArticleListPage from '../pages/ArticleListPage';
 import ArticlePage from '../pages/article/ArticlePage';
@@ -203,14 +202,6 @@ const AppRoutes = () => {
           element={
             <PrivateRoute>
               <InitialArticlePage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path=':id/parse'
-          element={
-            <PrivateRoute>
-              <SentenceParseListPage />
             </PrivateRoute>
           }
         />

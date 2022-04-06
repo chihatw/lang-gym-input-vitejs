@@ -8,6 +8,7 @@ import useAudioItems from './services/useAudioItems';
 import { useSentences } from './services/useSentences';
 import { useAssignments } from './services/useAssignments';
 import { useAssignmentSentences } from './services/useAssignmentSentences';
+import { useSentenceParseNews } from './services/useSentenceParseNews';
 
 const App = () => {
   const [articleId, setArticleId] = useState('');
@@ -23,6 +24,7 @@ const App = () => {
   const { sentences } = useSentences({ articleId, sentenceId: '' });
   const { assignment } = useAssignments({ article });
   const { assignmentSentences } = useAssignmentSentences({ article });
+  const { sentenceParseNews } = useSentenceParseNews({ article });
   return (
     <AppContext.Provider
       value={{
@@ -35,6 +37,7 @@ const App = () => {
         isFetching,
         assignment,
         initializing,
+        sentenceParseNews,
         assignmentSentences,
         setArticleId,
         setIsFetching,

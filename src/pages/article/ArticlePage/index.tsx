@@ -21,9 +21,43 @@ const ArticlePage = () => {
   const { createAccentsQuestionSet, createRhythmQuestionSet } =
     useHandleQuestionSets();
 
-  const { article, isFetching, sentences } = useContext(AppContext);
+  const { article, isFetching, sentences, sentenceParseNews } =
+    useContext(AppContext);
 
-  // TODO add sentenceParseNews (SentenceParseListPage)
+  const copySentenceParseNew = async (index: number) => {
+    const sentence = sentences[index];
+    const sentenceParseNew = sentenceParseNews[index];
+    const item: {
+      line: number;
+      japanese: string;
+      chinese: string;
+      units: string;
+      words: string;
+      branches: string;
+      sentences: string;
+      sentenceArrays: string;
+      branchInvisibilities: string;
+      commentInvisibilities: string;
+    } = {
+      line: sentenceParseNew.line + 1,
+      japanese: sentence.japanese,
+      chinese: sentence.chinese,
+      units: JSON.stringify(sentenceParseNew.units),
+      words: JSON.stringify(sentenceParseNew.words),
+      branches: JSON.stringify(sentenceParseNew.branches),
+      sentences: JSON.stringify(sentenceParseNew.sentences),
+      sentenceArrays: JSON.stringify(sentenceParseNew.sentenceArrays),
+      branchInvisibilities: JSON.stringify(
+        sentenceParseNew.branchInvisibilities
+      ),
+      commentInvisibilities: JSON.stringify(
+        sentenceParseNew.commentInvisibilities
+      ),
+    };
+    console.log(JSON.stringify(item));
+    await navigator.clipboard.writeText(JSON.stringify(item));
+    console.log('copied!!');
+  };
 
   const createAccentsQuestion = async () => {
     const questionGroup = await createInitialQuestionGroup();
@@ -100,8 +134,10 @@ const ArticlePage = () => {
       return (
         <ArticlePageComponent
           article={article}
-          openPage={openPage}
           sentences={sentences}
+          sentenceParseNews={sentenceParseNews}
+          openPage={openPage}
+          copySentenceParseNew={copySentenceParseNew}
           createAccentsQuestion={createAccentsQuestion}
           createRhythmsQuestion={createRhythmsQuestion}
         />

@@ -21,6 +21,7 @@ import { User } from './useUsers';
 import { Sentence } from './useSentences';
 import { Assignment, INITIAL_ASSIGNMENT } from './useAssignments';
 import { AssignmentSentence } from './useAssignmentSentences';
+import { SentenceParseNew } from './useSentenceParseNews';
 
 export const AppContext = createContext<{
   user: _User | null;
@@ -32,6 +33,7 @@ export const AppContext = createContext<{
   isFetching: boolean;
   assignment: Assignment;
   initializing: boolean;
+  sentenceParseNews: SentenceParseNew[];
   assignmentSentences: AssignmentSentence[];
   setArticleId: (value: string) => void;
   setIsFetching: (value: boolean) => void;
@@ -59,6 +61,7 @@ export const AppContext = createContext<{
   isFetching: false,
   assignment: INITIAL_ASSIGNMENT,
   initializing: true,
+  sentenceParseNews: [],
   assignmentSentences: [],
   setArticleId: () => {},
   setIsFetching: () => {},
