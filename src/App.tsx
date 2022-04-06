@@ -7,6 +7,7 @@ import { useUsers } from './services/useUsers';
 import useAudioItems from './services/useAudioItems';
 import { useSentences } from './services/useSentences';
 import { useAssignments } from './services/useAssignments';
+import { useAssignmentSentences } from './services/useAssignmentSentences';
 
 const App = () => {
   const [articleId, setArticleId] = useState('');
@@ -21,6 +22,7 @@ const App = () => {
   const { users } = useUsers({ opened: true });
   const { sentences } = useSentences({ articleId, sentenceId: '' });
   const { assignment } = useAssignments({ article });
+  const { assignmentSentences } = useAssignmentSentences({ article });
   return (
     <AppContext.Provider
       value={{
@@ -33,6 +35,7 @@ const App = () => {
         isFetching,
         assignment,
         initializing,
+        assignmentSentences,
         setArticleId,
         setIsFetching,
         deleteAudioItem,

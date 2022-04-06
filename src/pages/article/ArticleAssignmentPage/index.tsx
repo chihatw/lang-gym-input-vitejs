@@ -1,46 +1,27 @@
 import { useNavigate } from 'react-router-dom';
 import { getDownloadURL } from 'firebase/storage';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext } from 'react';
 
 import { AppContext } from '../../../services/app';
-import {
-  AssignmentSentence,
-  CreateAssignmentSentence,
-} from '../../../entities/AssignmentSentence';
+import { CreateAssignmentSentence } from '../../../entities/AssignmentSentence';
 import {
   createAssignment,
   deleteAssignment,
 } from '../../../repositories/assignment';
 import {
-  getAssignmentSentences,
   createAssignmentSentenes,
   deleteAssignmentSentences,
 } from '../../../repositories/assignmentSentence';
 import { deleteFile, uploadFile } from '../../../repositories/file';
 import { CreateAssignment } from '../../../entities/Assignment';
 import ArticleAssignmentPageComponent from './components/ArticleAssignmentPageComponent';
+import { AssignmentSentence } from '../../../services/useAssignmentSentences';
 
 // ArticleList から
 const ArticleAssignmentPage = () => {
   const navigate = useNavigate();
-  const { article, isFetching, sentences, assignment } = useContext(AppContext);
-  const [assignmentSentences, setAssignmentSentences] = useState<
-    AssignmentSentence[]
-  >([]);
-
-  useEffect(() => {
-    if (!article.id) return;
-    const fetchData = async () => {
-      const assignmentSentences = await getAssignmentSentences({
-        uid: article.uid,
-        articleID: article.id,
-      });
-      if (!!assignmentSentences) {
-        setAssignmentSentences(assignmentSentences);
-      }
-    };
-    fetchData();
-  }, [article]);
+  const { article, isFetching, sentences, assignment, assignmentSentences } =
+    useContext(AppContext);
 
   const onDelete = useCallback(async () => {
     const path = decodeURIComponent(

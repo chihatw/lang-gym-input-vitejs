@@ -1,14 +1,14 @@
-import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { buildAccents, buildAccentString } from '../../../../entities/Accent';
-import { AssignmentSentence } from '../../../../entities/AssignmentSentence';
-import { Sentence } from '../../../../entities/Sentence';
+import { useContext, useEffect, useState } from 'react';
 
+import { Sentence } from '../../../../entities/Sentence';
+import { AppContext } from '../../../../services/app';
+import { AssignmentSentence } from '../../../../services/useAssignmentSentences';
+import { buildAccents, buildAccentString } from '../../../../entities/Accent';
 import {
   getAssignmentSentence,
   updateAssignmentSentence,
 } from '../../../../repositories/assignmentSentence';
-import { AppContext } from '../../../../services/app';
 
 export const useEditArticleAssignmentPage = (
   id: string,

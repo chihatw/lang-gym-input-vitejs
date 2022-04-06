@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { buildAccents, buildAccentString } from '../../../../entities/Accent';
-import { AssignmentSentence } from '../../../../entities/AssignmentSentence';
+
 import { OndokuSentence } from '../../../../entities/OndokuSentence';
 import { getAssignment } from '../../../../repositories/assignment';
 import {
@@ -10,6 +10,7 @@ import {
 } from '../../../../repositories/assignmentSentence';
 import { getOndoku } from '../../../../repositories/ondoku';
 import { getOndokuSentences } from '../../../../repositories/ondokuSentence';
+import { AssignmentSentence } from '../../../../services/useAssignmentSentences';
 
 export const useEditOndokuAssignmentPage = (
   id: string,

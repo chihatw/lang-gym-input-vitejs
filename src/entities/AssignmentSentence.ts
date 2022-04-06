@@ -1,17 +1,5 @@
 import { DocumentData } from '@firebase/firestore';
-import { Accent } from './Accent';
-
-export type AssignmentSentence = {
-  id: string;
-  accents: Accent[];
-  article: string;
-  end: number;
-  line: number;
-  mistakes: string[];
-  ondoku: string;
-  start: number;
-  uid: string;
-};
+import { AssignmentSentence } from '../services/useAssignmentSentences';
 
 export type CreateAssignmentSentence = Omit<AssignmentSentence, 'id'>;
 

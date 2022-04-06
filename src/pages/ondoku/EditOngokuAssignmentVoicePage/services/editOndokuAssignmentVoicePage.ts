@@ -1,7 +1,11 @@
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AssignmentSentence } from '../../../../entities/AssignmentSentence';
+import { useEffect, useState } from 'react';
+
 import { Mark } from '../../../../entities/Mark';
+import { getOndoku } from '../../../../repositories/ondoku';
+import { deleteFile } from '../../../../repositories/file';
+import { getOndokuSentences } from '../../../../repositories/ondokuSentence';
+import { AssignmentSentence } from '../../../../services/useAssignmentSentences';
 import {
   deleteAssignment,
   getAssignment,
@@ -11,9 +15,6 @@ import {
   getAssignmentSentences,
   updateAssignmentSentences,
 } from '../../../../repositories/assignmentSentence';
-import { deleteFile } from '../../../../repositories/file';
-import { getOndoku } from '../../../../repositories/ondoku';
-import { getOndokuSentences } from '../../../../repositories/ondokuSentence';
 
 export const useEditOndokuAssignmentVoicePage = (id: string, uid: string) => {
   const navigate = useNavigate();

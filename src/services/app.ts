@@ -20,6 +20,7 @@ import { Article, INITIAL_ARTICLE } from './useArticles';
 import { User } from './useUsers';
 import { Sentence } from './useSentences';
 import { Assignment, INITIAL_ASSIGNMENT } from './useAssignments';
+import { AssignmentSentence } from './useAssignmentSentences';
 
 export const AppContext = createContext<{
   user: _User | null;
@@ -31,6 +32,7 @@ export const AppContext = createContext<{
   isFetching: boolean;
   assignment: Assignment;
   initializing: boolean;
+  assignmentSentences: AssignmentSentence[];
   setArticleId: (value: string) => void;
   setIsFetching: (value: boolean) => void;
   deleteAudioItem: (value: string) => void;
@@ -57,6 +59,7 @@ export const AppContext = createContext<{
   isFetching: false,
   assignment: INITIAL_ASSIGNMENT,
   initializing: true,
+  assignmentSentences: [],
   setArticleId: () => {},
   setIsFetching: () => {},
   deleteAudioItem: () => {},

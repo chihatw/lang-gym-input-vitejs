@@ -9,9 +9,10 @@ import { useNavigate, useMatch } from 'react-router-dom';
 
 import { Accent } from '../../../../entities/Accent';
 import { OndokuSentence } from '../../../../entities/OndokuSentence';
-import { AssignmentSentence } from '../../../../entities/AssignmentSentence';
+
 import SelectUser from '../../../../components/SelectUser';
 import { User } from '../../../../services/useUsers';
+import { AssignmentSentence } from '../../../../services/useAssignmentSentences';
 
 const OndokuAssignment: React.FC<{
   users: User[];

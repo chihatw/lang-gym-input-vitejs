@@ -5,7 +5,7 @@ import accentsForPitchesArray from 'accents-for-pitches-array';
 import Original from './Original';
 import Assignment from './Assignment';
 import { Sentence } from '../../../../entities/Sentence';
-import { AssignmentSentence } from '../../../../entities/AssignmentSentence';
+import { AssignmentSentence } from '../../../../services/useAssignmentSentences';
 
 const AssignmentCard = ({
   index,

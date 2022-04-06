@@ -5,7 +5,7 @@ import TableLayout from '../../../../components/templates/TableLayout';
 import { Article } from '../../../../services/useArticles';
 import { Sentence } from '../../../../entities/Sentence';
 import AssignmentCard from './AssignmentCard';
-import { AssignmentSentence } from '../../../../entities/AssignmentSentence';
+import { AssignmentSentence } from '../../../../services/useAssignmentSentences';
 
 const ArticleAssignmentPageComponent = ({
   article,

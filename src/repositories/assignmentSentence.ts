@@ -1,42 +1,35 @@
 import {
-  collection,
-  startAfter,
-  getDoc,
-  getDocs,
   doc,
   query,
   where,
-  limit,
+  getDocs,
   orderBy,
-  addDoc,
   updateDoc,
-  deleteDoc,
+  collection,
   writeBatch,
 } from '@firebase/firestore';
 import {
-  AssignmentSentence,
   buildAssignmentSentence,
   CreateAssignmentSentence,
 } from '../entities/AssignmentSentence';
+import { AssignmentSentence } from '../services/useAssignmentSentences';
 import { db } from './firebase';
 
 const COLLECTION = 'aSentences';
 
 const assignmentSentencesRef = collection(db, COLLECTION);
 
-type GetAssignmentSentenceProps = {
-  uid: string;
-  articleID?: string;
-  ondokuID?: string;
-  line: number;
-};
-
 export const getAssignmentSentence = async ({
   uid,
   articleID,
   ondokuID,
   line,
-}: GetAssignmentSentenceProps) => {
+}: {
+  uid: string;
+  articleID?: string;
+  ondokuID?: string;
+  line: number;
+}) => {
   try {
     let q = !!articleID
       ? query(assignmentSentencesRef, where('article', '==', articleID))

@@ -1,27 +1,24 @@
+import { useNavigate } from 'react-router-dom';
 import React, { useContext, useEffect, useState } from 'react';
 
-import ArticleAssignmentVoice from './components/ArticleAssignmentVoice';
+import { Mark } from '../../../entities/Mark';
 import TableLayout from '../../../components/templates/TableLayout';
 import { AppContext } from '../../../services/app';
-import { useNavigate } from 'react-router-dom';
-import { Mark } from '../../../entities/Mark';
-import { AssignmentSentence } from '../../../entities/AssignmentSentence';
-import {
-  deleteAssignment,
-  getAssignment,
-} from '../../../repositories/assignment';
+import { deleteFile } from '../../../repositories/file';
+import { deleteAssignment } from '../../../repositories/assignment';
+import { AssignmentSentence } from '../../../services/useAssignmentSentences';
+import ArticleAssignmentVoice from './components/ArticleAssignmentVoice';
 import {
   deleteAssignmentSentences,
-  getAssignmentSentences,
   updateAssignmentSentences,
 } from '../../../repositories/assignmentSentence';
-import { deleteFile } from '../../../repositories/file';
 
 // ArticleAssignmentPage で upload した後、ここに飛ばされる
 // TODO merge to Article Edit Page
 
 const EditArticleAssignmentVoicePage = () => {
-  const { article, isFetching, sentences, assignment } = useContext(AppContext);
+  const { article, isFetching, sentences, assignment, assignmentSentences } =
+    useContext(AppContext);
 
   const navigate = useNavigate();
 
@@ -37,27 +34,14 @@ const EditArticleAssignmentVoicePage = () => {
   const [hasChange, setHasChange] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setDownloadURL(assignment.downloadURL);
-      if (!!assignment) {
-        setAssignmentID(assignment.id);
-        const assignmentSentences = await getAssignmentSentences({
-          uid: article.uid,
-          articleID: article.id,
-        });
-        if (!!assignmentSentences) {
-          setMarks(
-            assignmentSentences.map((s) => ({ start: s.start, end: s.end }))
-          );
-          setOriginalMarks(
-            assignmentSentences.map((s) => ({ start: s.start, end: s.end }))
-          );
-          setOriginalSentences(assignmentSentences);
-        }
-      }
-    };
-    fetchData();
-  }, [article, assignment]);
+    setDownloadURL(assignment.downloadURL);
+    setAssignmentID(assignment.id);
+    setMarks(assignmentSentences.map((s) => ({ start: s.start, end: s.end })));
+    setOriginalMarks(
+      assignmentSentences.map((s) => ({ start: s.start, end: s.end }))
+    );
+    setOriginalSentences(assignmentSentences);
+  }, [article, assignment, assignmentSentences]);
 
   useEffect(() => {
     setHasChange(JSON.stringify(marks) !== JSON.stringify(originalMarks));

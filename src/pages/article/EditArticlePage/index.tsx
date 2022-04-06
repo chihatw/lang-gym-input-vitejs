@@ -21,6 +21,7 @@ const EditArticlePage = () => {
     sentences,
     assignment,
     isFetching,
+    assignmentSentences,
     setArticleId,
     setIsFetching,
   } = useContext(AppContext);
