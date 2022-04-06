@@ -93,6 +93,21 @@ export const useAssignmentSentences = ({ article }: { article: Article }) => {
   return { assignmentSentences };
 };
 export const useHandleAssignmentSentences = () => {
+  const updateAssignmentSentence = async (
+    assignmentSentences: AssignmentSentence
+  ): Promise<{ success: boolean }> => {
+    const { id, ...omitted } = assignmentSentences;
+    console.log('update assignment sentence');
+    return updateDoc(doc(db, COLLECTION, id), { ...omitted })
+      .then(() => {
+        return { success: true };
+      })
+      .catch((e) => {
+        console.warn(e);
+        return { success: false };
+      });
+  };
+
   const createAssignmentSentences = async (
     assignmentSentences: Omit<AssignmentSentence, 'id'>[]
   ): Promise<{
@@ -153,6 +168,7 @@ export const useHandleAssignmentSentences = () => {
       });
   };
   return {
+    updateAssignmentSentence,
     createAssignmentSentences,
     updateAssignmentSentences,
     deleteAssignmentSentences,

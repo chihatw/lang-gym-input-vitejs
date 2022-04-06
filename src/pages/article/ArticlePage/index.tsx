@@ -21,8 +21,14 @@ const ArticlePage = () => {
   const { createAccentsQuestionSet, createRhythmQuestionSet } =
     useHandleQuestionSets();
 
-  const { article, isFetching, sentences, sentenceParseNews } =
-    useContext(AppContext);
+  const {
+    article,
+    isFetching,
+    sentences,
+    sentenceParseNews,
+    assignment,
+    assignmentSentences,
+  } = useContext(AppContext);
 
   const copySentenceParseNew = async (index: number) => {
     const sentence = sentences[index];
@@ -135,7 +141,9 @@ const ArticlePage = () => {
         <ArticlePageComponent
           article={article}
           sentences={sentences}
+          assignment={assignment}
           sentenceParseNews={sentenceParseNews}
+          assignmentSentences={assignmentSentences}
           openPage={openPage}
           copySentenceParseNew={copySentenceParseNew}
           createAccentsQuestion={createAccentsQuestion}

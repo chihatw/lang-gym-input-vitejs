@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Mic,
   Edit,
   MicOff,
   Person,
@@ -9,10 +8,8 @@ import {
   FlashOn,
   MicNone,
   FlashOff,
-  SettingsOutlined,
   VisibilityOutlined,
   VisibilityOffOutlined,
-  Menu,
 } from '@mui/icons-material';
 import { TableRow, TableCell } from '@mui/material';
 

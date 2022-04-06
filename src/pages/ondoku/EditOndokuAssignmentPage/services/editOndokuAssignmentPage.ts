@@ -4,13 +4,13 @@ import { buildAccents, buildAccentString } from '../../../../entities/Accent';
 
 import { OndokuSentence } from '../../../../entities/OndokuSentence';
 import { getAssignment } from '../../../../repositories/assignment';
-import {
-  getAssignmentSentence,
-  updateAssignmentSentence,
-} from '../../../../repositories/assignmentSentence';
+import { getAssignmentSentence } from '../../../../repositories/assignmentSentence';
 import { getOndoku } from '../../../../repositories/ondoku';
 import { getOndokuSentences } from '../../../../repositories/ondokuSentence';
-import { AssignmentSentence } from '../../../../services/useAssignmentSentences';
+import {
+  AssignmentSentence,
+  useHandleAssignmentSentences,
+} from '../../../../services/useAssignmentSentences';
 
 export const useEditOndokuAssignmentPage = (
   id: string,
@@ -18,6 +18,7 @@ export const useEditOndokuAssignmentPage = (
   line: number
 ) => {
   const navigate = useNavigate();
+  const { updateAssignmentSentence } = useHandleAssignmentSentences();
   const [initializing, setInitializing] = useState(true);
   const [title, setTitle] = useState('');
   const [sentence, setSentence] = useState<OndokuSentence | null>(null);

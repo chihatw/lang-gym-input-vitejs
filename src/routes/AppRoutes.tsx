@@ -209,6 +209,7 @@ const AppRoutes = () => {
             </PrivateRoute>
           }
         />
+        {/* merge to article page */}
         <Route
           path=':id/assignment/uid/:uid/line/:line'
           element={
@@ -218,6 +219,7 @@ const AppRoutes = () => {
           }
         />
         {/* ArticleListPageから */}
+        {/* merge to article page */}
         <Route path=':id/assignment' element={<ArticleAssignmentPage />} />
         <Route
           path=':id'

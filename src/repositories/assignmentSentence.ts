@@ -1,15 +1,13 @@
 import {
-  doc,
   query,
   where,
   getDocs,
   orderBy,
-  updateDoc,
   collection,
 } from '@firebase/firestore';
-import { buildAssignmentSentence } from '../entities/AssignmentSentence';
-import { AssignmentSentence } from '../services/useAssignmentSentences';
+
 import { db } from './firebase';
+import { buildAssignmentSentence } from '../entities/AssignmentSentence';
 
 const COLLECTION = 'aSentences';
 
@@ -42,17 +40,15 @@ export const getAssignmentSentence = async ({
   }
 };
 
-type GetAssignmentSentencesProps = {
-  uid: string;
-  articleID?: string;
-  ondokuID?: string;
-};
-
 export const getAssignmentSentences = async ({
   uid,
   articleID,
   ondokuID,
-}: GetAssignmentSentencesProps) => {
+}: {
+  uid: string;
+  articleID?: string;
+  ondokuID?: string;
+}) => {
   try {
     let q = !!articleID
       ? query(assignmentSentencesRef, where('article', '==', articleID))
@@ -70,19 +66,5 @@ export const getAssignmentSentences = async ({
   } catch (e) {
     console.warn(e);
     return null;
-  }
-};
-
-export const updateAssignmentSentence = async (
-  assignmentSentence: AssignmentSentence
-) => {
-  try {
-    const { id, ...omittedAssignmentSentence } = assignmentSentence;
-    console.log('update assignment sentence');
-    await updateDoc(doc(db, COLLECTION, id), { ...omittedAssignmentSentence });
-    return { success: true };
-  } catch (e) {
-    console.warn(e);
-    return { success: false };
   }
 };

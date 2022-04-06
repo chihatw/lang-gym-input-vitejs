@@ -70,9 +70,6 @@ const EditSentencePane = ({
 
   return (
     <div style={{ display: 'grid', rowGap: 16 }}>
-      <div style={{ color: '#555', fontSize: 14 }}>
-        {`${sentence.line + 1}行目`}
-      </div>
       <TextField
         variant='outlined'
         size='small'
@@ -106,7 +103,6 @@ const EditSentencePane = ({
         size='small'
         label='accents'
         value={accentString}
-        rows={5}
         onChange={(e) => onChangeAccentString(e.target.value)}
         multiline
       />
@@ -118,13 +114,11 @@ const EditSentencePane = ({
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '32px 80px 80px',
           columnGap: 16,
+          gridTemplateColumns: '32px 80px 80px',
         }}
       >
-        <div>
-          <Speaker start={start} end={end} downloadURL={article.downloadURL} />
-        </div>
+        <Speaker start={start} end={end} downloadURL={article.downloadURL} />
         <TextField
           variant='outlined'
           size='small'
