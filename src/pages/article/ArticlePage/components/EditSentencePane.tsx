@@ -1,53 +1,156 @@
 import Speaker from '@bit/chihatw.lang-gym.speaker';
-import React, { useState } from 'react';
-import { Collapse, IconButton } from '@mui/material';
-import { Edit, SettingsOutlined } from '@mui/icons-material';
+import { Button, TextField } from '@mui/material';
+import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
+import accentsForPitchesArray from 'accents-for-pitches-array';
+import React, { useState, useContext } from 'react';
 
 import { Sentence } from '../../../../entities/Sentence';
+import { buildTags } from '../../../../entities/Tags';
+import { AppContext } from '../../../../services/app';
+import { updateSentence } from '../../../../repositories/sentence';
+import { buildAccents, buildAccentString } from '../../../../entities/Accent';
 
 const EditSentencePane = ({
   sentence,
-  downloadURL,
-  openEditPage,
-  openEditParsePage,
+  callback,
 }: {
   sentence: Sentence;
-  downloadURL: string;
-  openEditPage: () => void;
-  openEditParsePage: () => void;
+  callback: () => void;
 }) => {
-  const [open, setOpen] = useState(false);
-  const handleOpenEditPane = () => {
-    openEditPage();
-    setOpen(!open);
-    // TODO useSentences を作成してから、編集が行えるようにする
+  const { article } = useContext(AppContext);
+
+  const [end, setEnd] = useState(sentence.end);
+  const [kana, setKana] = useState(sentence.kana);
+  const [start, setStart] = useState(sentence.start);
+  const [chinese, setChinese] = useState(sentence.chinese);
+  const [japanese, setJapanese] = useState(sentence.japanese);
+  const [original, setOriginal] = useState(sentence.original);
+  const [accentString, setAccentString] = useState(
+    buildAccentString(sentence.accents)
+  );
+
+  const onChangeJapanese = (japanese: string) => {
+    setJapanese(japanese);
   };
+  const onChangeOriginal = (original: string) => {
+    setOriginal(original);
+  };
+  const onChangeChinese = (chinese: string) => {
+    setChinese(chinese);
+  };
+  const onChangeKana = (kana: string) => {
+    setKana(kana);
+  };
+  const onChangeAccentString = (accentString: string) => {
+    setAccentString(accentString);
+  };
+  const onChangeStart = (start: number) => {
+    setStart(start);
+  };
+  const onChangeEnd = (end: number) => {
+    setEnd(end);
+  };
+  const handleClickUpdate = async () => {
+    const newSentence: Sentence = {
+      ...sentence,
+      end,
+      kana,
+      start,
+      tags: buildTags([japanese, original, chinese, kana]),
+      accents: buildAccents(accentString),
+      chinese,
+      japanese,
+      original,
+    };
+    const { success } = await updateSentence(newSentence);
+    if (success) {
+      callback();
+    }
+  };
+
   return (
-    <div>
+    <div style={{ display: 'grid', rowGap: 16 }}>
+      <div style={{ color: '#555', fontSize: 14 }}>
+        {`${sentence.line + 1}行目`}
+      </div>
+      <TextField
+        variant='outlined'
+        size='small'
+        label='japanese'
+        value={japanese}
+        onChange={(e) => onChangeJapanese(e.target.value)}
+      />
+      <TextField
+        variant='outlined'
+        size='small'
+        label='original'
+        value={original}
+        onChange={(e) => onChangeOriginal(e.target.value)}
+      />
+      <TextField
+        variant='outlined'
+        size='small'
+        label='chinese'
+        value={chinese}
+        onChange={(e) => onChangeChinese(e.target.value)}
+      />
+      <TextField
+        variant='outlined'
+        size='small'
+        label='kana'
+        value={kana}
+        onChange={(e) => onChangeKana(e.target.value)}
+      />
+      <TextField
+        variant='outlined'
+        size='small'
+        label='accents'
+        value={accentString}
+        rows={5}
+        onChange={(e) => onChangeAccentString(e.target.value)}
+        multiline
+      />
+      <div style={{ padding: '16px 8px 0' }}>
+        <SentencePitchLine
+          pitchesArray={accentsForPitchesArray(buildAccents(accentString))}
+        />
+      </div>
       <div
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'flex-end',
+          display: 'grid',
+          gridTemplateColumns: '32px 80px 80px',
+          columnGap: 16,
         }}
       >
-        {!!downloadURL && sentence.end - sentence.start > 0 && (
-          <Speaker
-            end={sentence.end}
-            start={sentence.start}
-            downloadURL={downloadURL}
-          />
-        )}
-
-        <IconButton size='small' onClick={openEditParsePage}>
-          <SettingsOutlined />
-        </IconButton>
-
-        <IconButton size='small' onClick={handleOpenEditPane}>
-          <Edit />
-        </IconButton>
+        <div>
+          <Speaker start={start} end={end} downloadURL={article.downloadURL} />
+        </div>
+        <TextField
+          variant='outlined'
+          size='small'
+          type='number'
+          label='start'
+          value={start}
+          onChange={(e) => onChangeStart(Number(e.target.value))}
+        />
+        <TextField
+          variant='outlined'
+          size='small'
+          type='number'
+          label='end'
+          value={end}
+          onChange={(e) => onChangeEnd(Number(e.target.value))}
+        />
       </div>
-      <Collapse in={open}>edit pane</Collapse>
+      <Button
+        variant='contained'
+        color='primary'
+        fullWidth
+        style={{ color: 'white' }}
+        onClick={handleClickUpdate}
+      >
+        更新
+      </Button>
     </div>
   );
 };

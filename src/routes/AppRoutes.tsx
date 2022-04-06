@@ -31,7 +31,6 @@ import EditArticleAssignmentPage from '../pages/article/EditArticleAssignmentPag
 import EditArticleAssignmentVoicePage from '../pages/article/EditArticleAssignmentVoicePage';
 import InitialArticlePage from '../pages/article/InitialArticlePage';
 import ArticleInputPage from '../pages/ArticleInputPage';
-import EditArticleSentencePage from '../pages/article/EditArticleSentencePage';
 import EditSentenceParsePage from '../pages/sentenceParse/EditSentenceParsePage';
 import CreateUidOndokuPage from '../pages/uidOndoku/CreateUidOndokuPage';
 import UidOndokuListPage from '../pages/uidOndoku/UidOndokuListPage';
@@ -247,14 +246,6 @@ const AppRoutes = () => {
           element={
             <PrivateRoute>
               <EditSentenceParsePage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path=':id'
-          element={
-            <PrivateRoute>
-              <EditArticleSentencePage />
             </PrivateRoute>
           }
         />

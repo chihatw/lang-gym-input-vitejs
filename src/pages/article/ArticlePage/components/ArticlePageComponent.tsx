@@ -27,7 +27,6 @@ const ArticlePageComponent = ({
             key={index}
             sentence={sentence}
             downloadURL={article.downloadURL}
-            openEditPage={() => openPage({ path: `${sentence.id}`, sentence })}
             openEditParsePage={() =>
               openPage({ path: `${sentence.id}/parse`, sentence })
             }
