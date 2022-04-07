@@ -2,21 +2,21 @@ import { Button, Container } from '@mui/material';
 import { getDownloadURL } from 'firebase/storage';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mark } from '../../../../entities/Mark';
-import { deleteFile, uploadFile } from '../../../../repositories/file';
-import { buildMarks } from '../../../../services/buildMarks';
-import { buildPeaks } from '../../../../services/buildPeaks';
-import { Article } from '../../../../services/useArticles';
+import { Mark } from '../../../entities/Mark';
+import { deleteFile, uploadFile } from '../../../repositories/file';
+import { buildMarks } from '../../../services/buildMarks';
+import { buildPeaks } from '../../../services/buildPeaks';
+import { Article } from '../../../services/useArticles';
 import {
   Assignment,
   useHandleAssignments,
-} from '../../../../services/useAssignments';
+} from '../../../services/useAssignments';
 import {
   AssignmentSentence,
   INITIAL_ASSINGMENT_SENTENCE,
   useHandleAssignmentSentences,
-} from '../../../../services/useAssignmentSentences';
-import { Sentence } from '../../../../services/useSentences';
+} from '../../../services/useAssignmentSentences';
+import { Sentence } from '../../../services/useSentences';
 import EditAudioPane from './EditAudioPane';
 
 const CANVAS_WIDTH = 550;

@@ -1,13 +1,13 @@
 import React from 'react';
 import { Button } from '@mui/material';
 
-import TableLayout from '../../../../components/templates/TableLayout';
+import TableLayout from '../../../components/templates/TableLayout';
 import SentenceRow from './SentenceRow';
-import { Article } from '../../../../services/useArticles';
-import { Sentence } from '../../../../entities/Sentence';
-import { Assignment } from '../../../../services/useAssignments';
-import { SentenceParseNew } from '../../../../services/useSentenceParseNews';
-import { AssignmentSentence } from '../../../../services/useAssignmentSentences';
+import { Article } from '../../../services/useArticles';
+import { Sentence } from '../../../entities/Sentence';
+import { Assignment } from '../../../services/useAssignments';
+import { SentenceParseNew } from '../../../services/useSentenceParseNews';
+import { AssignmentSentence } from '../../../services/useAssignmentSentences';
 import InitializeSentencesPane from './InitializeSentencesPane';
 
 const ArticlePageComponent = ({

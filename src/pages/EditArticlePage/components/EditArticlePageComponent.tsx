@@ -11,8 +11,8 @@ import {
   Container,
 } from '@mui/material';
 
-import { User } from '../../../../services/useUsers';
-import TableLayoutHeader from '../../../../components/organisms/TableLayoutHeader';
+import { User } from '../../../services/useUsers';
+import TableLayoutHeader from '../../../components/organisms/TableLayoutHeader';
 import { YoutubeEmbeded } from '@chihatw/lang-gym-h.ui.youtube-embeded';
 
 const EditArticlePageComponent = ({

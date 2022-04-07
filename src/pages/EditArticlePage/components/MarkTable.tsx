@@ -2,7 +2,7 @@ import React from 'react';
 import { Table, TableBody } from '@mui/material';
 
 import MarkRow from './MarkRow';
-import { Mark } from '../../../../entities/Mark';
+import { Mark } from '../../../entities/Mark';
 
 const MarkTable: React.FC<{
   marks: Mark[];

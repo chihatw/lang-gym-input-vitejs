@@ -4,11 +4,11 @@ import { Button, TextField } from '@mui/material';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import accentsForPitchesArray from 'accents-for-pitches-array';
 
-import { buildAccents, buildAccentString } from '../../../../entities/Accent';
+import { buildAccents, buildAccentString } from '../../../entities/Accent';
 import {
   AssignmentSentence,
   useHandleAssignmentSentences,
-} from '../../../../services/useAssignmentSentences';
+} from '../../../services/useAssignmentSentences';
 
 const EditAssignmentPane = ({
   assignmentSentence,

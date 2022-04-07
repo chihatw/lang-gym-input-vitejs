@@ -4,11 +4,11 @@ import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import accentsForPitchesArray from 'accents-for-pitches-array';
 import React, { useState, useContext } from 'react';
 
-import { Sentence } from '../../../../entities/Sentence';
-import { buildTags } from '../../../../entities/Tags';
-import { AppContext } from '../../../../services/app';
-import { useHandleSentences } from '../../../../services/useSentences';
-import { buildAccents, buildAccentString } from '../../../../entities/Accent';
+import { Sentence } from '../../../entities/Sentence';
+import { buildTags } from '../../../entities/Tags';
+import { AppContext } from '../../../services/app';
+import { useHandleSentences } from '../../../services/useSentences';
+import { buildAccents, buildAccentString } from '../../../entities/Accent';
 
 const EditSentencePane = ({
   sentence,

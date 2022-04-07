@@ -2,14 +2,14 @@ import { useNavigate } from 'react-router-dom';
 import React, { useContext, useEffect, useState } from 'react';
 import { Divider } from '@mui/material';
 
-import { AppContext } from '../../../services/app';
+import { AppContext } from '../../services/app';
 import EditArticlePageComponent from './components/EditArticlePageComponent';
 
 import {
   Article,
   INITIAL_ARTICLE,
   useHandleArticles,
-} from '../../../services/useArticles';
+} from '../../services/useArticles';
 import EditArticleVoicePane from './components/EditArticleVoicePane';
 import EditAssignmentVoicePane from './components/EditAssignmentVoicePane';
 

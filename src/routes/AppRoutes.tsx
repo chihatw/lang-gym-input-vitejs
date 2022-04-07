@@ -24,9 +24,9 @@ import EditOndokuSentencePage from '../pages/ondoku/EditOndokuSentencePage';
 import EditOndokuAssignmentPage from '../pages/ondoku/EditOndokuAssignmentPage';
 import EditOndokuAssignmentVoicePage from '../pages/ondoku/EditOngokuAssignmentVoicePage';
 
-import ArticlePage from '../pages/article/ArticlePage';
+import ArticlePage from '../pages/ArticlePage';
 import ArticleListPage from '../pages/ArticleListPage';
-import EditArticlePage from '../pages/article/EditArticlePage';
+import EditArticlePage from '../pages/EditArticlePage';
 import EditSentenceParsePage from '../pages/EditSentenceParsePage';
 
 import AccentsQuestionPage from '../pages/accentsQuestion/AccentsQuestionPage';

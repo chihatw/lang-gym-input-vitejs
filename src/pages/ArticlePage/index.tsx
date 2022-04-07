@@ -1,14 +1,14 @@
 import { Navigate, useNavigate } from 'react-router-dom';
 import React, { useContext } from 'react';
 
-import { AppContext } from '../../../services/app';
+import { AppContext } from '../../services/app';
 import ArticlePageComponent from './components/ArticlePageComponent';
-import { useHandleQuestions } from '../../../services/useQuestions';
-import { useHandleQuestionSets } from '../../../services/useQuestionSets';
+import { useHandleQuestions } from '../../services/useQuestions';
+import { useHandleQuestionSets } from '../../services/useQuestionSets';
 import {
   QuestionGroup,
   useHandleQuestionGroups,
-} from '../../../services/useQuestionGroups';
+} from '../../services/useQuestionGroups';
 
 const ArticlePage = () => {
   const navigate = useNavigate();

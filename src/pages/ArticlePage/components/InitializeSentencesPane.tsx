@@ -3,14 +3,14 @@ import string2PitchesArray from 'string2pitches-array';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import { Button, TextField } from '@mui/material';
 
-import { Article } from '../../../../services/useArticles';
-import { Sentence } from '../../../../entities/Sentence';
-import { buildTags } from '../../../../entities/Tags';
-import { Accent, buildAccents } from '../../../../entities/Accent';
+import { Article } from '../../../services/useArticles';
+import { Sentence } from '../../../entities/Sentence';
+import { buildTags } from '../../../entities/Tags';
+import { Accent, buildAccents } from '../../../entities/Accent';
 import {
   INITIAL_SENTENCE,
   useHandleSentences,
-} from '../../../../services/useSentences';
+} from '../../../services/useSentences';
 
 const InitializeSentencesPane = ({ article }: { article: Article }) => {
   const { createSentences } = useHandleSentences();

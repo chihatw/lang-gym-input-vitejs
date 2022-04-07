@@ -11,12 +11,12 @@ import {
   SettingsOutlined,
 } from '@mui/icons-material';
 
-import { Sentence } from '../../../../entities/Sentence';
+import { Sentence } from '../../../entities/Sentence';
 import EditSentencePane from './EditSentencePane';
 import EditAssignmentPane from './EditAssignmentPane';
-import { SentenceParseNew } from '../../../../services/useSentenceParseNews';
-import { AssignmentSentence } from '../../../../services/useAssignmentSentences';
-import { ComplexSentencePane } from '../../../../components/complex-sentence-pane';
+import { SentenceParseNew } from '../../../services/useSentenceParseNews';
+import { AssignmentSentence } from '../../../services/useAssignmentSentences';
+import { ComplexSentencePane } from '../../../components/complex-sentence-pane';
 
 const SentenceRow = ({
   sentence,

@@ -2,16 +2,13 @@ import { useNavigate } from 'react-router-dom';
 import { getDownloadURL } from 'firebase/storage';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Mark } from '../../../../entities/Mark';
-import { buildPeaks } from '../../../../services/buildPeaks';
-import { buildMarks } from '../../../../services/buildMarks';
-import { deleteFile, uploadFile } from '../../../../repositories/file';
+import { Mark } from '../../../entities/Mark';
+import { buildPeaks } from '../../../services/buildPeaks';
+import { buildMarks } from '../../../services/buildMarks';
+import { deleteFile, uploadFile } from '../../../repositories/file';
 import EditArticleVoicePaneComponent from './EditArticleVoicePaneComponent';
-import { Article, useHandleArticles } from '../../../../services/useArticles';
-import {
-  Sentence,
-  useHandleSentences,
-} from '../../../../services/useSentences';
+import { Article, useHandleArticles } from '../../../services/useArticles';
+import { Sentence, useHandleSentences } from '../../../services/useSentences';
 
 const CANVAS_WIDTH = 550;
 const INITIAL_BLANK_DURATION = 700;
