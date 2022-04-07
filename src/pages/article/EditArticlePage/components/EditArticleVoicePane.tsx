@@ -3,13 +3,15 @@ import { getDownloadURL } from 'firebase/storage';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Mark } from '../../../../entities/Mark';
-import { Sentence } from '../../../../services/useSentences';
 import { buildPeaks } from '../../../../services/buildPeaks';
 import { buildMarks } from '../../../../services/buildMarks';
-import { updateSentences } from '../../../../repositories/sentence';
 import { deleteFile, uploadFile } from '../../../../repositories/file';
 import EditArticleVoicePaneComponent from './EditArticleVoicePaneComponent';
 import { Article, useHandleArticles } from '../../../../services/useArticles';
+import {
+  Sentence,
+  useHandleSentences,
+} from '../../../../services/useSentences';
 
 const CANVAS_WIDTH = 550;
 const INITIAL_BLANK_DURATION = 700;
@@ -26,6 +28,7 @@ const EditArticleVoicePane = ({
   const audioContext = useMemo(() => new AudioContext(), []);
 
   const { updateArticle } = useHandleArticles();
+  const { updateSentences } = useHandleSentences();
   const [scale, setScale] = useState(5);
   const [peaks, setPeaks] = useState<number[]>([]);
   const [marks, setMarks] = useState<Mark[]>([]);

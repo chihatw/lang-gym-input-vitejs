@@ -27,7 +27,6 @@ import EditOndokuAssignmentVoicePage from '../pages/ondoku/EditOngokuAssignmentV
 import ArticlePage from '../pages/article/ArticlePage';
 import ArticleListPage from '../pages/ArticleListPage';
 import EditArticlePage from '../pages/article/EditArticlePage';
-import InitialArticlePage from '../pages/article/InitialArticlePage';
 import EditSentenceParsePage from '../pages/EditSentenceParsePage';
 
 import AccentsQuestionPage from '../pages/accentsQuestion/AccentsQuestionPage';
@@ -38,213 +37,63 @@ import RhythmsQuestionListPage from '../pages/rhythmsQuestion/RhythmsQuestionLis
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route
-        path='/'
-        element={
-          <PrivateRoute>
-            <TopPage />
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path='/batch'
-        element={
-          <PrivateRoute>
-            <BatchPage />
-          </PrivateRoute>
-        }
-      />
+      <Route path='/' element={<TopPage />} />
+      <Route path='/batch' element={<BatchPage />} />
+
+      {/* ondoku */}
+
       <Route path='/ondoku/*'>
-        <Route
-          path=''
-          element={
-            <PrivateRoute>
-              <CreateOndokuPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path='list'
-          element={
-            <PrivateRoute>
-              <OndokuListPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path='edit/:id'
-          element={
-            <PrivateRoute>
-              <EditOndokuPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path='sentence/:id'
-          element={
-            <PrivateRoute>
-              <EditOndokuSentencePage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path=':id/initial'
-          element={
-            <PrivateRoute>
-              <InitialOndokuPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path=':id/voice/initial'
-          element={
-            <PrivateRoute>
-              <InitialOndokuVoicePage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path=':id/voice'
-          element={
-            <PrivateRoute>
-              <EditOndokuVoicePage />
-            </PrivateRoute>
-          }
-        />
+        <Route path='' element={<CreateOndokuPage />} />
+        <Route path='list' element={<OndokuListPage />} />
+        <Route path='edit/:id' element={<EditOndokuPage />} />
+        <Route path='sentence/:id' element={<EditOndokuSentencePage />} />
+        <Route path=':id/initial' element={<InitialOndokuPage />} />
+        <Route path=':id/voice/initial' element={<InitialOndokuVoicePage />} />
+        <Route path=':id/voice' element={<EditOndokuVoicePage />} />
         <Route
           path=':id/assignment/uid/:uid/voice/'
-          element={
-            <PrivateRoute>
-              <EditOndokuAssignmentVoicePage />
-            </PrivateRoute>
-          }
+          element={<EditOndokuAssignmentVoicePage />}
         />
         <Route
           path=':id/assignment/uid/:uid/line/:line'
-          element={
-            <PrivateRoute>
-              <EditOndokuAssignmentPage />
-            </PrivateRoute>
-          }
+          element={<EditOndokuAssignmentPage />}
         />
-        <Route
-          path=':id/assignment'
-          element={
-            <PrivateRoute>
-              <OndokuAssignmentPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path=':id'
-          element={
-            <PrivateRoute>
-              <OndokuPage />
-            </PrivateRoute>
-          }
-        />
+        <Route path=':id/assignment' element={<OndokuAssignmentPage />} />
+        <Route path=':id' element={<OndokuPage />} />
       </Route>
+
+      {/* accentsQuestion */}
+
       <Route path='/accentsQuestion/*'>
-        <Route
-          path='list'
-          element={
-            <PrivateRoute>
-              <AccentsQuestionListPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path=':id'
-          element={
-            <PrivateRoute>
-              <AccentsQuestionPage />
-            </PrivateRoute>
-          }
-        />
+        <Route path='list' element={<AccentsQuestionListPage />} />
+        <Route path=':id' element={<AccentsQuestionPage />} />
       </Route>
+
+      {/* rhythmsQuestion */}
+
       <Route path='/rhythmsQuestion/*'>
-        <Route
-          path='list'
-          element={
-            <PrivateRoute>
-              <RhythmsQuestionListPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path=':id'
-          element={
-            <PrivateRoute>
-              <RhythmsQuestionPage />
-            </PrivateRoute>
-          }
-        />
+        <Route path='list' element={<RhythmsQuestionListPage />} />
+        <Route path=':id' element={<RhythmsQuestionPage />} />
       </Route>
+
+      {/* article */}
+
       <Route path='/article/*'>
-        <Route
-          path=''
-          element={
-            <PrivateRoute>
-              <EditArticlePage />
-            </PrivateRoute>
-          }
-        />
         <Route path='list' element={<ArticleListPage />} />
         {/* 作文入力作業 */}
-        <Route
-          path='input'
-          element={
-            <PrivateRoute>
-              <ArticleInputPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path=':id/initial'
-          element={
-            <PrivateRoute>
-              <InitialArticlePage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path=':id'
-          element={
-            <PrivateRoute>
-              <ArticlePage />
-            </PrivateRoute>
-          }
-        />
+        <Route path='input' element={<ArticleInputPage />} />
+        <Route path=':id' element={<ArticlePage />} />
+        <Route path='' element={<EditArticlePage />} />
       </Route>
-      <Route path='/sentence/*'>
-        <Route
-          path=':id/parse'
-          element={
-            <PrivateRoute>
-              <EditSentenceParsePage />
-            </PrivateRoute>
-          }
-        />
-      </Route>
+
+      {/* parse */}
+      <Route path='/parse/:index' element={<EditSentenceParsePage />} />
+
       <Route path='/uidOndoku/*'>
-        <Route
-          path='list'
-          element={
-            <PrivateRoute>
-              <UidOndokuListPage />
-            </PrivateRoute>
-          }
-        />
+        <Route path='list' element={<UidOndokuListPage />} />
         <Route path=':id' element={<CreateUidOndokuPage />} />
       </Route>
-      <Route
-        path='/audioItems'
-        element={
-          <PrivateRoute>
-            <AudioItemsPage />
-          </PrivateRoute>
-        }
-      />
+      <Route path='/audioItems' element={<AudioItemsPage />} />
       <Route
         path='/login'
         element={

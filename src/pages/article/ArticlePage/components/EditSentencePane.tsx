@@ -7,7 +7,7 @@ import React, { useState, useContext } from 'react';
 import { Sentence } from '../../../../entities/Sentence';
 import { buildTags } from '../../../../entities/Tags';
 import { AppContext } from '../../../../services/app';
-import { updateSentence } from '../../../../repositories/sentence';
+import { useHandleSentences } from '../../../../services/useSentences';
 import { buildAccents, buildAccentString } from '../../../../entities/Accent';
 
 const EditSentencePane = ({
@@ -18,6 +18,7 @@ const EditSentencePane = ({
   callback: () => void;
 }) => {
   const { article } = useContext(AppContext);
+  const { updateSentence } = useHandleSentences();
 
   const [end, setEnd] = useState(sentence.end);
   const [kana, setKana] = useState(sentence.kana);

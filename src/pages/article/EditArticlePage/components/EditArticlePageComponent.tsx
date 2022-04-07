@@ -48,7 +48,7 @@ const EditArticlePageComponent = ({
     <Container maxWidth='sm' sx={{ paddingTop: 4 }}>
       <div style={{ display: 'grid', rowGap: 16 }}>
         <TableLayoutHeader
-          title={!articleId ? '新規' : '編集'}
+          title={!articleId ? '作文新規' : '作文編集'}
           backURL={'/article/list'}
         />
         <FormControl fullWidth>

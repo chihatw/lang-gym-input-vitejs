@@ -5,9 +5,10 @@ import TableLayout from '../../../../components/templates/TableLayout';
 import SentenceRow from './SentenceRow';
 import { Article } from '../../../../services/useArticles';
 import { Sentence } from '../../../../entities/Sentence';
-import { SentenceParseNew } from '../../../../services/useSentenceParseNews';
 import { Assignment } from '../../../../services/useAssignments';
+import { SentenceParseNew } from '../../../../services/useSentenceParseNews';
 import { AssignmentSentence } from '../../../../services/useAssignmentSentences';
+import InitializeSentencesPane from './InitializeSentencesPane';
 
 const ArticlePageComponent = ({
   article,
@@ -25,13 +26,13 @@ const ArticlePageComponent = ({
   assignment: Assignment;
   sentenceParseNews: SentenceParseNew[];
   assignmentSentences: AssignmentSentence[];
-  openPage: ({ path, sentence }: { path: string; sentence: Sentence }) => void;
+  openPage: (path: string) => void;
   copySentenceParseNew: (value: number) => void;
   createAccentsQuestion: () => void;
   createRhythmsQuestion: () => void;
 }) => (
   <TableLayout maxWidth='md' title={article.title} backURL={`/article/list`}>
-    <div style={{ display: 'grid', rowGap: 16 }}>
+    {!!sentences.length ? (
       <div style={{ display: 'grid', rowGap: 16 }}>
         {sentences.map((sentence, index) => {
           return (
@@ -40,24 +41,24 @@ const ArticlePageComponent = ({
               sentence={sentence}
               downloadURL={article.downloadURL}
               sentenceParseNew={sentenceParseNews[index]}
+              openEditParsePage={() => openPage(`/parse/${index}`)}
               assignmentSentence={assignmentSentences[index]}
               assignmentDownloadURL={assignment.downloadURL}
-              openEditParsePage={() =>
-                openPage({ path: `${sentence.id}/parse`, sentence })
-              }
               copySentenceParseNew={() => copySentenceParseNew(index)}
             />
           );
         })}
-      </div>
 
-      <Button variant='contained' onClick={createAccentsQuestion}>
-        アクセント問題作成
-      </Button>
-      <Button variant='contained' onClick={createRhythmsQuestion}>
-        リズム問題作成
-      </Button>
-    </div>
+        <Button variant='contained' onClick={createAccentsQuestion}>
+          アクセント問題作成
+        </Button>
+        <Button variant='contained' onClick={createRhythmsQuestion}>
+          リズム問題作成
+        </Button>
+      </div>
+    ) : (
+      <InitializeSentencesPane article={article} />
+    )}
   </TableLayout>
 );
 

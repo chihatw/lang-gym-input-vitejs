@@ -1,7 +1,6 @@
 import { Navigate, useNavigate } from 'react-router-dom';
 import React, { useContext } from 'react';
 
-import { Sentence } from '../../../entities/Sentence';
 import { AppContext } from '../../../services/app';
 import ArticlePageComponent from './components/ArticlePageComponent';
 import { useHandleQuestions } from '../../../services/useQuestions';
@@ -23,10 +22,10 @@ const ArticlePage = () => {
 
   const {
     article,
-    isFetching,
     sentences,
-    sentenceParseNews,
+    isFetching,
     assignment,
+    sentenceParseNews,
     assignmentSentences,
   } = useContext(AppContext);
 
@@ -121,15 +120,8 @@ const ArticlePage = () => {
     }
   };
 
-  const openPage = ({
-    path,
-    sentence,
-  }: {
-    path: string;
-    sentence: Sentence;
-  }) => {
-    // TODO useSentences作成時に sentenceId の設定
-    navigate(`/sentence/${path}`);
+  const openPage = (path: string) => {
+    navigate(path);
   };
 
   // データ取得中

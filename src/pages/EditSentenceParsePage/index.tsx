@@ -1,16 +1,16 @@
-import React, { useContext } from 'react';
 import { Navigate, useMatch } from 'react-router-dom';
-import { useArticleSentence } from '../article/EditArticleSentencePage/services/articleSentence';
-import SentenceParseForm from './components/SentenceParseForm';
+import React, { useContext, useMemo } from 'react';
+
 import TableLayout from '../../components/templates/TableLayout';
 import { AppContext } from '../../services/app';
+import SentenceParseForm from './components/SentenceParseForm';
 
 const EditSentenceParsePage = () => {
-  const match = useMatch('/sentence/:id/parse');
-  const { isFetching, article } = useContext(AppContext);
-  const { sentence } = useArticleSentence({
-    id: match?.params.id || '',
-  });
+  const match = useMatch('/parse/:index');
+  const index = Number(match?.params.index || '0');
+  const { isFetching, article, sentences } = useContext(AppContext);
+  const sentence = useMemo(() => sentences[index], [sentences, index]);
+
   if (isFetching) {
     return <></>;
   } else {
@@ -18,7 +18,7 @@ const EditSentenceParsePage = () => {
       return (
         <TableLayout
           title={`${article.title} - sentenceParse 編集`}
-          backURL={`/article/${article.id}/parse`}
+          backURL={`/article/${article.id}`}
           maxWidth='md'
         >
           {!!sentence && (

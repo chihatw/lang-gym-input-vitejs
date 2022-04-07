@@ -1,17 +1,18 @@
+import { useNavigate } from 'react-router-dom';
 import React, { useContext } from 'react';
 
 import { AppContext } from '../../services/app';
 import { deleteFile } from '../../repositories/file';
-import { deleteSentences } from '../../repositories/sentence';
-import { Article, useHandleArticles } from '../../services/useArticles';
+import { useHandleSentences } from '../../services/useSentences';
 import ArticleListPageComponent from './components/ArticleListPageComponent';
-import { useNavigate } from 'react-router-dom';
+import { Article, useHandleArticles } from '../../services/useArticles';
 
 const ArticleListPage = () => {
   const navigate = useNavigate();
   const { article, articles, setArticleId, setIsFetching } =
     useContext(AppContext);
   const { updateArticle, deleteArticle } = useHandleArticles();
+  const { deleteSentences } = useHandleSentences();
 
   const handleClickShowAccents = (article: Article) => {
     updateArticle({

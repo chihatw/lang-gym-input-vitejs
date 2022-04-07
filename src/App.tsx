@@ -21,7 +21,7 @@ const App = () => {
     setIsFetching,
   });
   const { users } = useUsers({ opened: true });
-  const { sentences } = useSentences({ articleId, sentenceId: '' });
+  const { sentences } = useSentences({ article });
   const { assignment } = useAssignments({ article });
   const { assignmentSentences } = useAssignmentSentences({ article });
   const { sentenceParseNews } = useSentenceParseNews({ article });

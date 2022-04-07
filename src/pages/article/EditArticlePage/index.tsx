@@ -23,15 +23,13 @@ const EditArticlePage = () => {
     assignment,
     isFetching,
     assignmentSentences,
-    setArticleId,
-    setIsFetching,
   } = useContext(AppContext);
 
   const [uid, setUid] = useState('');
   const [date, setDate] = useState<Date>(new Date());
   const [title, setTitle] = useState('');
   const [embedId, setEmbedId] = useState('');
-  const [articleMarksString, setArticleMarksString] = useState('hello');
+  const [articleMarksString, setArticleMarksString] = useState('');
 
   useEffect(() => {
     if (!users.length) return;
@@ -89,11 +87,9 @@ const EditArticlePage = () => {
       createdAt: date.getTime(),
       userDisplayname: users.filter((u) => u.id === uid)[0].displayname,
     };
-    const { success, articleId } = await addArticle(article);
+    const { success } = await addArticle(article);
     if (success) {
-      setIsFetching(true);
-      setArticleId(articleId!);
-      navigate(`/article/${articleId!}/initial`);
+      navigate(`/article/list`);
     }
   };
 

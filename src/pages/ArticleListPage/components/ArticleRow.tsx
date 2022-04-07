@@ -40,6 +40,7 @@ const ArticleRow = ({
       </TableCell>
       <TitleDateCell title={article.title} createdAt={article.createdAt} />
       <IconButtonCell icon={<Edit />} onClick={openArticleEditPage} />
+      <IconButtonCell icon={<Subject />} onClick={openArticlePage} />
       <IconButtonCell
         icon={
           article.isShowAccents ? (
@@ -50,7 +51,6 @@ const ArticleRow = ({
         }
         onClick={handleClickShowAccents}
       />
-      <IconButtonCell icon={<Subject />} onClick={openArticlePage} />
       <IconButtonCell
         icon={article.isShowParse ? <FlashOn /> : <FlashOff />}
         onClick={handleClickShowParses}
