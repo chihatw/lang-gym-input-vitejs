@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Edit,
   MicOff,
-  Person,
   Delete,
   Subject,
   FlashOn,
@@ -21,7 +20,6 @@ const ArticleRow = ({
   article,
   openArticlePage,
   handleClickDelete,
-  openAssignmentPage,
   openArticleEditPage,
   handleClickShowParses,
   handleClickShowAccents,
@@ -30,7 +28,6 @@ const ArticleRow = ({
   article: Article;
   openArticlePage: () => void;
   handleClickDelete: () => void;
-  openAssignmentPage: () => void;
   openArticleEditPage: () => void;
   handleClickShowParses: () => void;
   handleClickShowAccents: () => void;
@@ -61,11 +58,6 @@ const ArticleRow = ({
       <IconButtonCell
         icon={article.hasRecButton ? <MicNone /> : <MicOff />}
         onClick={handleClickShowRecButton}
-      />
-      <IconButtonCell
-        icon={<Person />}
-        disabled={!article.downloadURL}
-        onClick={openAssignmentPage}
       />
       <IconButtonCell icon={<Delete />} onClick={handleClickDelete} />
     </TableRow>

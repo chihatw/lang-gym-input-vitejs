@@ -6,13 +6,14 @@ import React, { useMemo, useState } from 'react';
 import sentenceParseNew2SentenceParseProps from 'sentence-parse-new2sentence-parse-props';
 import {
   Edit,
-  FileCopyOutlined,
   Person,
+  FileCopyOutlined,
   SettingsOutlined,
 } from '@mui/icons-material';
 
 import { Sentence } from '../../../../entities/Sentence';
 import EditSentencePane from './EditSentencePane';
+import EditAssignmentPane from './EditAssignmentPane';
 import { SentenceParseNew } from '../../../../services/useSentenceParseNews';
 import { AssignmentSentence } from '../../../../services/useAssignmentSentences';
 import { ComplexSentencePane } from '../../../../components/complex-sentence-pane';
@@ -81,6 +82,8 @@ const SentenceRow = ({
         <RowFooter
           sentence={sentence}
           downloadURL={downloadURL}
+          assignmentSentence={assignmentSentence}
+          assignmentDownloadURL={assignmentDownloadURL}
           openEditParsePage={openEditParsePage}
           copySentenceParseNew={copySentenceParseNew}
         />
@@ -120,11 +123,15 @@ const SentenceFormContainer = ({
 const RowFooter = ({
   sentence,
   downloadURL,
+  assignmentSentence,
+  assignmentDownloadURL,
   openEditParsePage,
   copySentenceParseNew,
 }: {
   sentence: Sentence;
   downloadURL: string;
+  assignmentSentence: AssignmentSentence | null;
+  assignmentDownloadURL: string;
   openEditParsePage: () => void;
   copySentenceParseNew: () => void;
 }) => {
@@ -159,12 +166,14 @@ const RowFooter = ({
         <IconButton size='small' onClick={copySentenceParseNew}>
           <FileCopyOutlined />
         </IconButton>
-        <IconButton
-          size='small'
-          onClick={() => setOpenEditAssignmentPane(!openEditAssignmentPane)}
-        >
-          <Person />
-        </IconButton>
+        {!!assignmentSentence && (
+          <IconButton
+            size='small'
+            onClick={() => setOpenEditAssignmentPane(!openEditAssignmentPane)}
+          >
+            <Person />
+          </IconButton>
+        )}
       </div>
       {openEditSentencePane && (
         <EditSentencePane
@@ -173,7 +182,13 @@ const RowFooter = ({
         />
       )}
 
-      {openEditAssignmentPane && <div>edit assignment pane</div>}
+      {!!assignmentSentence && openEditAssignmentPane && (
+        <EditAssignmentPane
+          assignmentSentence={assignmentSentence}
+          assignmentDownloadURL={assignmentDownloadURL}
+          callback={() => setOpenEditAssignmentPane(false)}
+        />
+      )}
     </div>
   );
 };

@@ -37,12 +37,6 @@ const ArticleListPageComponent = ({
                 openPage({ article, path: `${article.id}` })
               }
               openArticleEditPage={() => openPage({ article, path: `` })}
-              openAssignmentPage={() =>
-                openPage({
-                  article,
-                  path: `${article.id}/assignment`,
-                })
-              }
               handleClickShowAccents={() => handleClickShowAccents(article)}
               handleClickShowRecButton={() => handleClickShowRecButton(article)}
             />

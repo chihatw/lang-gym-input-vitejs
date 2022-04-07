@@ -4,38 +4,36 @@ import { Route, Routes, Navigate } from 'react-router-dom';
 import { AppContext } from '../services/app';
 
 import TopPage from '../pages/TopPage';
-import SignInPage from '../pages/SignInPage';
 import BatchPage from '../pages/BatchPage';
+import SignInPage from '../pages/SignInPage';
 import AudioItemsPage from '../pages/AudioItemsPage';
-
-import OndokuListPage from '../pages/ondoku/OndokuListPage';
-import CreateOndokuPage from '../pages/ondoku/CreateOndokuPage';
-import EditOndokuPage from '../pages/ondoku/EditOndokuPage';
-import EditOndokuSentencePage from '../pages/ondoku/EditOndokuSentencePage';
-import InitialOndokuPage from '../pages/ondoku/InitialOndokuPage';
-import InitialOndokuVoicePage from '../pages/ondoku/InitialOndokuVoicePage';
-import EditOndokuVoicePage from '../pages/ondoku/EditOndokuVoicePage';
-import EditOndokuAssignmentVoicePage from '../pages/ondoku/EditOngokuAssignmentVoicePage';
-import EditOndokuAssignmentPage from '../pages/ondoku/EditOndokuAssignmentPage';
-import OndokuAssignmentPage from '../pages/ondoku/OndokuAssignmentPage';
-import OndokuPage from '../pages/ondoku/OndokuPage';
-
-import ArticleAssignmentPage from '../pages/article/ArticleAssignmentPage';
-import ArticleListPage from '../pages/ArticleListPage';
-import ArticlePage from '../pages/article/ArticlePage';
-import EditArticlePage from '../pages/article/EditArticlePage';
-import EditArticleAssignmentPage from '../pages/article/EditArticleAssignmentPage';
-import InitialArticlePage from '../pages/article/InitialArticlePage';
-
 import ArticleInputPage from '../pages/ArticleInputPage';
-import EditSentenceParsePage from '../pages/EditSentenceParsePage';
-import CreateUidOndokuPage from '../pages/uidOndoku/CreateUidOndokuPage';
+
 import UidOndokuListPage from '../pages/uidOndoku/UidOndokuListPage';
+import CreateUidOndokuPage from '../pages/uidOndoku/CreateUidOndokuPage';
+
+import OndokuPage from '../pages/ondoku/OndokuPage';
+import OndokuListPage from '../pages/ondoku/OndokuListPage';
+import EditOndokuPage from '../pages/ondoku/EditOndokuPage';
+import CreateOndokuPage from '../pages/ondoku/CreateOndokuPage';
+import InitialOndokuPage from '../pages/ondoku/InitialOndokuPage';
+import EditOndokuVoicePage from '../pages/ondoku/EditOndokuVoicePage';
+import OndokuAssignmentPage from '../pages/ondoku/OndokuAssignmentPage';
+import InitialOndokuVoicePage from '../pages/ondoku/InitialOndokuVoicePage';
+import EditOndokuSentencePage from '../pages/ondoku/EditOndokuSentencePage';
+import EditOndokuAssignmentPage from '../pages/ondoku/EditOndokuAssignmentPage';
+import EditOndokuAssignmentVoicePage from '../pages/ondoku/EditOngokuAssignmentVoicePage';
+
+import ArticlePage from '../pages/article/ArticlePage';
+import ArticleListPage from '../pages/ArticleListPage';
+import EditArticlePage from '../pages/article/EditArticlePage';
+import InitialArticlePage from '../pages/article/InitialArticlePage';
+import EditSentenceParsePage from '../pages/EditSentenceParsePage';
 
 import AccentsQuestionPage from '../pages/accentsQuestion/AccentsQuestionPage';
+import RhythmsQuestionPage from '../pages/rhythmsQuestion/RhythmsQuestionPage';
 import AccentsQuestionListPage from '../pages/accentsQuestion/AccentsQuestionListPage';
 import RhythmsQuestionListPage from '../pages/rhythmsQuestion/RhythmsQuestionListPage';
-import RhythmsQuestionPage from '../pages/rhythmsQuestion/RhythmsQuestionPage';
 
 const AppRoutes = () => {
   return (
@@ -209,18 +207,6 @@ const AppRoutes = () => {
             </PrivateRoute>
           }
         />
-        {/* merge to article page */}
-        <Route
-          path=':id/assignment/uid/:uid/line/:line'
-          element={
-            <PrivateRoute>
-              <EditArticleAssignmentPage />
-            </PrivateRoute>
-          }
-        />
-        {/* ArticleListPageから */}
-        {/* merge to article page */}
-        <Route path=':id/assignment' element={<ArticleAssignmentPage />} />
         <Route
           path=':id'
           element={
