@@ -7,7 +7,7 @@ const TopPage = () => {
   return (
     <Container maxWidth='sm'>
       <div style={{ paddingTop: 16 }}>
-        <VersionPane>{`ver. 1.0.7`}</VersionPane>
+        <VersionPane>{`ver. 1.0.8`}</VersionPane>
         <div style={{ height: 4 }} />
         {itemsArray.map((row, rowIndex) => (
           <div key={rowIndex}>

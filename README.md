@@ -1,3 +1,5 @@
+### 1.0.8
+- edit sentence parse page リンク修正
 ### 1.0.7
 - articleListPage と articlePage に集約
 ### 1.0.6

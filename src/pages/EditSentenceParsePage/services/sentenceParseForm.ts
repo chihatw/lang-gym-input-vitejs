@@ -75,7 +75,7 @@ export const useSentenceParseForm = (article: Article, sentence: Sentence) => {
       };
       const { success } = await updateSentenceParseNew(_updateSentenceParse);
       if (success) {
-        navigate(`/article/${article.id}/parse`);
+        navigate(`/article/${article.id}`);
       }
     } else {
       const newSentenceParse: CreateSentenceParseNew = {
@@ -92,7 +92,7 @@ export const useSentenceParseForm = (article: Article, sentence: Sentence) => {
       };
       const { success } = await createSentenceParseNew(newSentenceParse);
       if (success) {
-        navigate(`/article/${article.id}/parse`);
+        navigate(`/article/${article.id}`);
       }
     }
   };
