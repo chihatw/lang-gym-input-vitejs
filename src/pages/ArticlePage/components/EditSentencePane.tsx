@@ -1,5 +1,5 @@
 import Speaker from '@bit/chihatw.lang-gym.speaker';
-import { Button, TextField } from '@mui/material';
+import { Button, Divider, TextField } from '@mui/material';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import accentsForPitchesArray from 'accents-for-pitches-array';
 import React, { useState, useContext } from 'react';
@@ -143,6 +143,7 @@ const EditSentencePane = ({
         fullWidth
         style={{ color: 'white' }}
         onClick={handleClickUpdate}
+        sx={{ marginTop: 5 }}
       >
         更新
       </Button>

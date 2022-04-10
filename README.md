@@ -1,3 +1,5 @@
+### 1.0.7
+- articleListPage と articlePage に集約
 ### 1.0.6
 - add vercel.json
 ### 1.0.5

@@ -79,7 +79,7 @@ const SentenceRow = ({
             </div>
           )}
         </div>
-        <RowFooter
+        <CardFooter
           sentence={sentence}
           downloadURL={downloadURL}
           assignmentSentence={assignmentSentence}
@@ -120,7 +120,7 @@ const SentenceFormContainer = ({
   );
 };
 
-const RowFooter = ({
+const CardFooter = ({
   sentence,
   downloadURL,
   assignmentSentence,

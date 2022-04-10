@@ -1,6 +1,6 @@
 import Speaker from '@bit/chihatw.lang-gym.speaker';
 import React, { useState } from 'react';
-import { Button, TextField } from '@mui/material';
+import { Button, Divider, TextField } from '@mui/material';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import accentsForPitchesArray from 'accents-for-pitches-array';
 
@@ -54,7 +54,7 @@ const EditAssignmentPane = ({
   return (
     <div
       style={{
-        rowGap: 16,
+        rowGap: 32,
         display: 'grid',
       }}
     >
@@ -95,8 +95,11 @@ const EditAssignmentPane = ({
           onChange={(e) => onChangeEnd(Number(e.target.value))}
         />
       </div>
-
-      <Button variant='contained' onClick={handleClickUpdate}>
+      <Button
+        variant='contained'
+        onClick={handleClickUpdate}
+        sx={{ marginTop: 4 }}
+      >
         提出アクセント更新
       </Button>
     </div>

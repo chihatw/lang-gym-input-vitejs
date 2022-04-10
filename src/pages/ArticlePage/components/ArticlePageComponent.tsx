@@ -34,20 +34,18 @@ const ArticlePageComponent = ({
   <TableLayout maxWidth='md' title={article.title} backURL={`/article/list`}>
     {!!sentences.length ? (
       <div style={{ display: 'grid', rowGap: 16 }}>
-        {sentences.map((sentence, index) => {
-          return (
-            <SentenceRow
-              key={index}
-              sentence={sentence}
-              downloadURL={article.downloadURL}
-              sentenceParseNew={sentenceParseNews[index]}
-              openEditParsePage={() => openPage(`/parse/${index}`)}
-              assignmentSentence={assignmentSentences[index]}
-              assignmentDownloadURL={assignment.downloadURL}
-              copySentenceParseNew={() => copySentenceParseNew(index)}
-            />
-          );
-        })}
+        {sentences.map((sentence, index) => (
+          <SentenceRow
+            key={index}
+            sentence={sentence}
+            downloadURL={article.downloadURL}
+            sentenceParseNew={sentenceParseNews[index]}
+            openEditParsePage={() => openPage(`/parse/${index}`)}
+            assignmentSentence={assignmentSentences[index]}
+            assignmentDownloadURL={assignment.downloadURL}
+            copySentenceParseNew={() => copySentenceParseNew(index)}
+          />
+        ))}
 
         <Button variant='contained' onClick={createAccentsQuestion}>
           アクセント問題作成
