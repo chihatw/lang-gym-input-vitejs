@@ -1,3 +1,5 @@
+### 1.0.10
+- add Switch width button to ArticlePage
 ### 1.0.9
 - Textfield type='number' に step 追加
 ### 1.0.8

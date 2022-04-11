@@ -11,6 +11,7 @@ import { AssignmentSentence } from '../../../services/useAssignmentSentences';
 import InitializeSentencesPane from './InitializeSentencesPane';
 
 const ArticlePageComponent = ({
+  isSm,
   article,
   sentences,
   assignment,
@@ -20,7 +21,9 @@ const ArticlePageComponent = ({
   copySentenceParseNew,
   createAccentsQuestion,
   createRhythmsQuestion,
+  handleClickWidthButton,
 }: {
+  isSm: boolean;
   article: Article;
   sentences: Sentence[];
   assignment: Assignment;
@@ -30,8 +33,18 @@ const ArticlePageComponent = ({
   copySentenceParseNew: (value: number) => void;
   createAccentsQuestion: () => void;
   createRhythmsQuestion: () => void;
+  handleClickWidthButton: () => void;
 }) => (
-  <TableLayout maxWidth='md' title={article.title} backURL={`/article/list`}>
+  <TableLayout
+    maxWidth={isSm ? 'sm' : 'md'}
+    title={article.title}
+    backURL={`/article/list`}
+  >
+    <div style={{ marginBottom: 16 }}>
+      <Button size='small' variant='contained' onClick={handleClickWidthButton}>
+        switch width
+      </Button>
+    </div>
     {!!sentences.length ? (
       <div style={{ display: 'grid', rowGap: 16 }}>
         {sentences.map((sentence, index) => (

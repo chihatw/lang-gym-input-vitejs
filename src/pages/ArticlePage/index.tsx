@@ -1,5 +1,5 @@
 import { Navigate, useNavigate } from 'react-router-dom';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 
 import { AppContext } from '../../services/app';
 import ArticlePageComponent from './components/ArticlePageComponent';
@@ -28,6 +28,12 @@ const ArticlePage = () => {
     sentenceParseNews,
     assignmentSentences,
   } = useContext(AppContext);
+
+  const [isSm, setIsSm] = useState(true);
+
+  const handleClickWidthButton = () => {
+    setIsSm(!isSm);
+  };
 
   const copySentenceParseNew = async (index: number) => {
     const sentence = sentences[index];
@@ -131,6 +137,7 @@ const ArticlePage = () => {
     if (!!article.id) {
       return (
         <ArticlePageComponent
+          isSm={isSm}
           article={article}
           sentences={sentences}
           assignment={assignment}
@@ -140,6 +147,7 @@ const ArticlePage = () => {
           copySentenceParseNew={copySentenceParseNew}
           createAccentsQuestion={createAccentsQuestion}
           createRhythmsQuestion={createRhythmsQuestion}
+          handleClickWidthButton={handleClickWidthButton}
         />
       );
     }
