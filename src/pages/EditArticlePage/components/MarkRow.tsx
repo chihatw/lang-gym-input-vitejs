@@ -80,6 +80,7 @@ const MarkRow = ({
           size='small'
           type='number'
           value={start}
+          inputProps={{ step: 0.1 }}
           onChange={(e) => handleChangeStart(Number(e.target.value))}
         />
       </TableCell>
@@ -88,6 +89,7 @@ const MarkRow = ({
           label='end'
           size='small'
           type='number'
+          inputProps={{ step: 0.1 }}
           value={end}
           onChange={(e) => handleChangeEnd(Number(e.target.value))}
         />

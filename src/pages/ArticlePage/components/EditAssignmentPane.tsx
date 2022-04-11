@@ -84,6 +84,7 @@ const EditAssignmentPane = ({
           label='start'
           value={start}
           type='number'
+          inputProps={{ step: 0.1 }}
           onChange={(e) => onChangeStart(Number(e.target.value))}
         />
         <TextField
@@ -92,6 +93,7 @@ const EditAssignmentPane = ({
           label='end'
           value={end}
           type='number'
+          inputProps={{ step: 0.1 }}
           onChange={(e) => onChangeEnd(Number(e.target.value))}
         />
       </div>

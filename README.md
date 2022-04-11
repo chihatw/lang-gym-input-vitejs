@@ -1,3 +1,5 @@
+### 1.0.9
+- Textfield type='number' に step 追加
 ### 1.0.8
 - edit sentence parse page リンク修正
 ### 1.0.7

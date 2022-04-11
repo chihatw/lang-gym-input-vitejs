@@ -127,13 +127,15 @@ const EditSentencePane = ({
           label='start'
           value={start}
           onChange={(e) => onChangeStart(Number(e.target.value))}
+          inputProps={{ step: 0.1 }}
         />
         <TextField
-          variant='outlined'
           size='small'
           type='number'
           label='end'
           value={end}
+          variant='outlined'
+          inputProps={{ step: 0.1 }}
           onChange={(e) => onChangeEnd(Number(e.target.value))}
         />
       </div>
