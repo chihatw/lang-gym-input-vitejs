@@ -22,12 +22,15 @@ import { Sentence } from './useSentences';
 import { Assignment, INITIAL_ASSIGNMENT } from './useAssignments';
 import { AssignmentSentence } from './useAssignmentSentences';
 import { SentenceParseNew } from './useSentenceParseNews';
+import { INITIAL_WORKOUT, Workout } from './useWorkouts';
 
 export const AppContext = createContext<{
   user: _User | null;
   users: User[];
   article: Article;
+  workout: Workout;
   articles: Article[];
+  workouts: Workout[];
   sentences: Sentence[];
   audioItems: AudioItem[];
   isFetching: boolean;
@@ -36,6 +39,7 @@ export const AppContext = createContext<{
   sentenceParseNews: SentenceParseNew[];
   assignmentSentences: AssignmentSentence[];
   setArticleId: (value: string) => void;
+  setWorkoutId: (value: string) => void;
   setIsFetching: (value: boolean) => void;
   deleteAudioItem: (value: string) => void;
   createRhythmsQuestion: ({
@@ -55,6 +59,8 @@ export const AppContext = createContext<{
   user: null,
   users: [],
   article: INITIAL_ARTICLE,
+  workout: INITIAL_WORKOUT,
+  workouts: [],
   articles: [],
   sentences: [],
   audioItems: [],
@@ -64,6 +70,7 @@ export const AppContext = createContext<{
   sentenceParseNews: [],
   assignmentSentences: [],
   setArticleId: () => {},
+  setWorkoutId: () => {},
   setIsFetching: () => {},
   deleteAudioItem: () => {},
   createRhythmsQuestion: async () => {},

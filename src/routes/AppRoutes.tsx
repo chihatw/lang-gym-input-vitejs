@@ -9,6 +9,8 @@ import SignInPage from '../pages/SignInPage';
 import AudioItemsPage from '../pages/AudioItemsPage';
 import ArticleInputPage from '../pages/ArticleInputPage';
 
+import WorkoutPage from '../pages/Workout/WorkoutPage';
+import WorkoutsPage from '../pages/Workout/WorkoutsPage';
 import UidOndokuListPage from '../pages/uidOndoku/UidOndokuListPage';
 import CreateUidOndokuPage from '../pages/uidOndoku/CreateUidOndokuPage';
 
@@ -39,6 +41,8 @@ const AppRoutes = () => {
     <Routes>
       <Route path='/' element={<TopPage />} />
       <Route path='/batch' element={<BatchPage />} />
+      <Route path='/workout' element={<WorkoutPage />} />
+      <Route path='/workouts' element={<WorkoutsPage />} />
 
       {/* ondoku */}
 

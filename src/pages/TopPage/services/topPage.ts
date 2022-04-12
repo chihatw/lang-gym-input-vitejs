@@ -26,7 +26,10 @@ export const useTopPage = () => {
         onClick: () => navigate('/rhythmsQuestion/list'),
       },
     ],
-    [{ label: 'audioItems', onClick: () => navigate('/audioItems') }],
+    [
+      { label: '練習一覧', onClick: () => navigate('/workouts') },
+      { label: 'audioItems', onClick: () => navigate('/audioItems') },
+    ],
     [{ label: 'バッチ処理', onClick: () => navigate('/batch') }],
     [{ label: 'Sign Out', onClick: () => auth.signOut() }],
   ];

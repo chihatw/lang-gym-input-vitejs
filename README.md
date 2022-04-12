@@ -1,3 +1,5 @@
+### 1.0.11
+- add Workout pages
 ### 1.0.10
 - add Switch width button to ArticlePage
 ### 1.0.9
