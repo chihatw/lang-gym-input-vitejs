@@ -2,12 +2,8 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDownloadURL } from '@firebase/storage';
-import { CreateAssignmentSentence } from '../../../../entities/AssignmentSentence';
 
-import { getAssignmentSentences } from '../../../../repositories/assignmentSentence';
 import { deleteFile, uploadFile } from '../../../../repositories/file';
-import { getUsers } from '../../../../repositories/user';
-import { User } from '../../../../services/useUsers';
 import {
   Assignment,
   useHandleAssignments,
@@ -20,8 +16,13 @@ import { AppContext } from '../../../../services/app';
 
 export const useOndokuAssignmentPage = (id: string) => {
   const navigate = useNavigate();
-  const { ondoku, ondokuSentences, ondokuAssignment, users } =
-    useContext(AppContext);
+  const {
+    ondoku,
+    ondokuSentences,
+    ondokuAssignment,
+    users,
+    ondokuAssignmentSentences,
+  } = useContext(AppContext);
 
   const { createAssignment, deleteAssignment } = useHandleAssignments();
   const { createAssignmentSentences, deleteAssignmentSentences } =
@@ -34,15 +35,9 @@ export const useOndokuAssignmentPage = (id: string) => {
 
   useEffect(() => {
     if (!uid || !ondokuAssignment.id) return;
-    const fetchData = async () => {
-      const assignmentSentences = await getAssignmentSentences({
-        uid,
-        ondokuID: id,
-      });
-      setAssignmentSentences(assignmentSentences || []);
-    };
-    fetchData();
-  }, [uid, id, ondokuAssignment]);
+    const assignmentSentences = ondokuAssignmentSentences;
+    setAssignmentSentences(assignmentSentences || []);
+  }, [uid, id, ondokuAssignment, ondokuAssignmentSentences]);
 
   const onChangeUid = useCallback((uid: string) => {
     setUid(uid);
@@ -81,7 +76,7 @@ export const useOndokuAssignmentPage = (id: string) => {
       };
       const result = await createAssignment(assignment);
       if (!!result) {
-        const assignmentSentences: CreateAssignmentSentence[] =
+        const assignmentSentences: Omit<AssignmentSentence, 'id'>[] =
           ondokuSentences.map((s) => ({
             article: '',
             uid: uid,

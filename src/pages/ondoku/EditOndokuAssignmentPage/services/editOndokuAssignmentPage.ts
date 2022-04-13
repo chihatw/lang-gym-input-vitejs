@@ -2,7 +2,6 @@ import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { buildAccents, buildAccentString } from '../../../../entities/Accent';
 
-import { getAssignmentSentence } from '../../../../repositories/assignmentSentence';
 import { AppContext } from '../../../../services/app';
 import {
   AssignmentSentence,
@@ -17,7 +16,12 @@ export const useEditOndokuAssignmentPage = (
 ) => {
   const navigate = useNavigate();
 
-  const { ondoku, ondokuSentences, ondokuAssignment } = useContext(AppContext);
+  const {
+    ondoku,
+    ondokuSentences,
+    ondokuAssignment,
+    ondokuAssignmentSentences,
+  } = useContext(AppContext);
 
   const { updateAssignmentSentence } = useHandleAssignmentSentences();
   const [title, setTitle] = useState('');
@@ -44,11 +48,9 @@ export const useEditOndokuAssignmentPage = (
   useEffect(() => {
     if (!uid) return;
     const fetchData = async () => {
-      const assignmentSentence = await getAssignmentSentence({
-        uid,
-        ondokuID: id,
-        line,
-      });
+      const assignmentSentence = ondokuAssignmentSentences.filter(
+        (ondokuAssignmentSentence) => ondokuAssignmentSentence.line === line
+      )[0];
       if (!!assignmentSentence) {
         setStart(assignmentSentence.start);
         setEnd(assignmentSentence.end);

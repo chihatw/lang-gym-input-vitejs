@@ -13,6 +13,7 @@ import { useSentenceParseNews } from './services/useSentenceParseNews';
 import { useOndokus } from './services/useOndokus';
 import { useOndokuSentences } from './services/useOndokuSentences';
 import { useOndokuAssignments } from './services/useOndokuAssignments';
+import { useOndokuAssignmentSentences } from './services/useOndokuAssignmentSentences';
 
 const App = () => {
   const [articleId, setArticleId] = useState('');
@@ -38,6 +39,7 @@ const App = () => {
     ondokuId,
     ondokuSentenceId,
   });
+  const { ondokuAssignmentSentences } = useOndokuAssignmentSentences(ondokuId);
 
   return (
     <AppContext.Provider
@@ -60,6 +62,7 @@ const App = () => {
         ondokuSentence,
         ondokuSentences,
         ondokuAssignment,
+        ondokuAssignmentSentences,
         setOndokuId,
         setArticleId,
         setWorkoutId,
