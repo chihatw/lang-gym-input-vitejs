@@ -24,7 +24,7 @@ const App = () => {
   const { users } = useUsers({ opened: true });
   const { sentences } = useSentences({ article });
   const { assignment } = useAssignments({ article });
-  const { assignmentSentences } = useAssignmentSentences({ article });
+  const { assignmentSentences } = useAssignmentSentences(article.id);
   const { sentenceParseNews } = useSentenceParseNews({ article });
   const { workout, workouts } = useWorkouts({ workoutId });
   return (

@@ -91,10 +91,10 @@ export const useOndokuAssignmentPage = (id: string) => {
     if (success) {
       const result = await deleteAssignment(assignment.id);
       if (result) {
-        const { success } = await deleteAssignmentSentences(
+        const result = await deleteAssignmentSentences(
           assignmentSentences.map((s) => s.id)
         );
-        if (success) {
+        if (!!result) {
           navigate('/ondoku/list');
         }
       }
@@ -127,10 +127,8 @@ export const useOndokuAssignmentPage = (id: string) => {
             mistakes: [],
           })
         );
-        const { success } = await createAssignmentSentences(
-          assignmentSentences
-        );
-        if (success) {
+        const result = await createAssignmentSentences(assignmentSentences);
+        if (!!result) {
           navigate(`/ondoku/${id}/assignment/uid/${uid}/voice`);
         }
       }

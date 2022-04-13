@@ -1,19 +1,25 @@
 import {
-  doc,
   where,
   orderBy,
-  updateDoc,
-  collection,
-  writeBatch,
+  Unsubscribe,
   DocumentData,
   QueryConstraint,
-  Unsubscribe,
 } from '@firebase/firestore';
-import { useEffect, useMemo, useState } from 'react';
-import { Accent } from '../entities/Accent';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
 import { db } from '../repositories/firebase';
-import { snapshotCollection } from '../repositories/utils';
-import { Article } from './useArticles';
+import {
+  updateDocument,
+  snapshotCollection,
+  batchUpdateDocuments,
+  batchAddDocuments,
+  batchDeleteDocuments,
+} from '../repositories/utils';
+
+type Accent = {
+  moras: string[];
+  pitchPoint: number;
+};
 
 export type AssignmentSentence = {
   id: string;
@@ -40,9 +46,8 @@ export const INITIAL_ASSINGMENT_SENTENCE: AssignmentSentence = {
 };
 
 const COLLECTION = 'aSentences';
-const colRef = collection(db, COLLECTION);
 
-export const useAssignmentSentences = ({ article }: { article: Article }) => {
+export const useAssignmentSentences = (articleId: string) => {
   const [assignmentSentences, setAssignmentSentences] = useState<
     AssignmentSentence[]
   >([]);
@@ -70,10 +75,10 @@ export const useAssignmentSentences = ({ article }: { article: Article }) => {
   );
 
   useEffect(() => {
-    if (!article.id) return;
+    if (!articleId) return;
 
     const unsub = _snapshotCollection({
-      queries: [where('article', '==', article.id), orderBy('line')],
+      queries: [where('article', '==', articleId), orderBy('line')],
       setValues: setAssignmentSentences,
       buildValue: buildAssignmentSentence,
     });
@@ -81,83 +86,64 @@ export const useAssignmentSentences = ({ article }: { article: Article }) => {
     return () => {
       unsub();
     };
-  }, [article]);
+  }, [articleId]);
   return { assignmentSentences };
 };
 export const useHandleAssignmentSentences = () => {
+  const _updateDocument = useMemo(
+    () =>
+      async function <T extends { id: string }>(value: T): Promise<T | null> {
+        return await updateDocument({
+          db,
+          colId: COLLECTION,
+          value,
+        });
+      },
+    []
+  );
+
+  const _batchUpdateDocuments = useMemo(
+    () =>
+      async function <T extends { id: string }>(values: T[]): Promise<boolean> {
+        return await batchUpdateDocuments({ db, colId: COLLECTION, values });
+      },
+    []
+  );
+
+  const _batchAddDocuments = useMemo(
+    () =>
+      async function <T extends { id: string }>(
+        values: Omit<T, 'id'>[]
+      ): Promise<boolean> {
+        return await batchAddDocuments({ db, colId: COLLECTION, values });
+      },
+    []
+  );
+
+  const _batchDeleteDocuments = useCallback(async (ids: string[]) => {
+    return await batchDeleteDocuments({ db, colId: COLLECTION, ids });
+  }, []);
+
   const updateAssignmentSentence = async (
-    assignmentSentences: AssignmentSentence
-  ): Promise<{ success: boolean }> => {
-    const { id, ...omitted } = assignmentSentences;
-    console.log('update assignment sentence');
-    return updateDoc(doc(db, COLLECTION, id), { ...omitted })
-      .then(() => {
-        return { success: true };
-      })
-      .catch((e) => {
-        console.warn(e);
-        return { success: false };
-      });
+    assignmentSentence: AssignmentSentence
+  ): Promise<AssignmentSentence | null> => {
+    return await _updateDocument(assignmentSentence);
   };
 
   const createAssignmentSentences = async (
     assignmentSentences: Omit<AssignmentSentence, 'id'>[]
-  ): Promise<{
-    success: boolean;
-  }> => {
-    const batch = writeBatch(db);
-    assignmentSentences.forEach((aSentence) => {
-      const docRef = doc(colRef);
-      batch.set(docRef, aSentence);
-    });
-    console.log('create assignment sentences');
-    return await batch
-      .commit()
-      .then(() => {
-        return { success: true };
-      })
-      .catch((e) => {
-        console.warn(e);
-        return { success: false };
-      });
+  ): Promise<boolean> => {
+    return await _batchAddDocuments(assignmentSentences);
   };
+
   const updateAssignmentSentences = async (
     assignmentSentences: AssignmentSentence[]
-  ): Promise<{ success: boolean }> => {
-    const batch = writeBatch(db);
-    assignmentSentences.forEach((assignmentSentence) => {
-      const { id, ...omitted } = assignmentSentence;
-      batch.update(doc(db, COLLECTION, id), { ...omitted });
-    });
-    console.log('update assignment sentences');
-    return await batch
-      .commit()
-      .then(() => {
-        return { success: true };
-      })
-      .catch((e) => {
-        console.warn(e);
-        return { success: false };
-      });
+  ): Promise<boolean> => {
+    return await _batchUpdateDocuments(assignmentSentences);
   };
-  const deleteAssignmentSentences = async (
-    ids: string[]
-  ): Promise<{ success: boolean }> => {
-    const batch = writeBatch(db);
 
-    ids.forEach((id) => {
-      batch.delete(doc(db, COLLECTION, id));
-    });
-    console.log('delete assignment sentences');
-    return await batch
-      .commit()
-      .then(() => {
-        return { success: true };
-      })
-      .catch((e) => {
-        console.warn(e);
-        return { success: false };
-      });
+  const deleteAssignmentSentences = async (ids: string[]): Promise<boolean> => {
+    return await _batchDeleteDocuments(ids);
   };
   return {
     updateAssignmentSentence,

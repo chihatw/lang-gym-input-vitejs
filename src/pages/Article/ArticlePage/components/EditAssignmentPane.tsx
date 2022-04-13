@@ -45,8 +45,8 @@ const EditAssignmentPane = ({
       start,
       accents: buildAccents(accentString),
     };
-    const { success } = await updateAssignmentSentence(newAssignmentSentence);
-    if (success) {
+    const result = await updateAssignmentSentence(newAssignmentSentence);
+    if (!!result) {
       callback();
     }
   };

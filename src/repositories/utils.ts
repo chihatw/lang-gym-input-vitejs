@@ -6,6 +6,7 @@ import {
   updateDoc,
   deleteDoc,
   Firestore,
+  writeBatch,
   onSnapshot,
   collection,
   Unsubscribe,
@@ -193,7 +194,7 @@ export const updateDocument = async <T extends { id: string }>({
   value: T;
 }): Promise<T | null> => {
   const { id, ...omitted } = value;
-  console.log(`update doc of ${colId}.${id}`);
+  console.log(`update ${colId}.${id}`);
   return await updateDoc(doc(db, colId, id), { ...omitted })
     .then(() => {
       return value;
@@ -201,6 +202,32 @@ export const updateDocument = async <T extends { id: string }>({
     .catch((e) => {
       console.warn(e);
       return null;
+    });
+};
+
+export const batchUpdateDocuments = async <T extends { id: string }>({
+  db,
+  colId,
+  values,
+}: {
+  db: Firestore;
+  colId: string;
+  values: T[];
+}): Promise<boolean> => {
+  const batch = writeBatch(db);
+  for (const value of values) {
+    const { id, ...omitted } = value;
+    batch.update(doc(db, colId, id), { ...omitted });
+  }
+  console.log(`update docs ${colId}`);
+  return await batch
+    .commit()
+    .then(() => {
+      return true;
+    })
+    .catch((e) => {
+      console.warn(e);
+      return false;
     });
 };
 
@@ -214,7 +241,7 @@ export const setDocument = async <T extends { id: string }>({
   value: T;
 }): Promise<T | null> => {
   const { id, ...omitted } = value;
-  console.log(`%cset doc of ${colId}.${id}`, 'color:red');
+  console.log(`set doc ${colId}.${id}`);
   return await setDoc(doc(db, colId, id), { ...omitted })
     .then(() => {
       return value;
@@ -234,7 +261,7 @@ export const addDocument = async <T extends { id: string }>({
   colId: string;
   value: Omit<T, 'id'>;
 }): Promise<T | null> => {
-  console.log(`add doc to ${colId}`);
+  console.log(`add doc ${colId}`);
   return await addDoc(collection(db, colId), value)
     .then((doc) => {
       return { id: doc.id, ...value } as T;
@@ -242,6 +269,32 @@ export const addDocument = async <T extends { id: string }>({
     .catch((e) => {
       console.warn(e);
       return null;
+    });
+};
+
+export const batchAddDocuments = async <T extends { id: string }>({
+  db,
+  colId,
+  values,
+}: {
+  db: Firestore;
+  colId: string;
+  values: Omit<T, 'id'>[];
+}): Promise<boolean> => {
+  const batch = writeBatch(db);
+  for (const value of values) {
+    const docRef = doc(collection(db, colId));
+    batch.set(docRef, value);
+  }
+  console.log(`set docs ${colId}`);
+  return await batch
+    .commit()
+    .then(() => {
+      return true;
+    })
+    .catch((e) => {
+      console.warn(e);
+      return false;
     });
 };
 
@@ -279,6 +332,31 @@ export const deleteDocument = async ({
 }): Promise<boolean> => {
   console.log(`delete ${colId}.${id}`);
   return await deleteDoc(doc(db, colId, id))
+    .then(() => {
+      return true;
+    })
+    .catch((e) => {
+      console.warn(e);
+      return false;
+    });
+};
+
+export const batchDeleteDocuments = async ({
+  db,
+  ids,
+  colId,
+}: {
+  db: Firestore;
+  ids: string[];
+  colId: string;
+}): Promise<boolean> => {
+  const batch = writeBatch(db);
+  for (const id of ids) {
+    batch.delete(doc(db, colId, id));
+  }
+  console.log(`delete docs ${colId}`);
+  return await batch
+    .commit()
     .then(() => {
       return true;
     })

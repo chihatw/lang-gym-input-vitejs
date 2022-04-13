@@ -93,8 +93,8 @@ export const useEditOndokuAssignmentPage = (
       end,
       accents: buildAccents(accentString),
     };
-    const { success } = await updateAssignmentSentence(assignmentSentence);
-    if (success) {
+    const result = await updateAssignmentSentence(assignmentSentence);
+    if (!!result) {
       navigate(`/ondoku/${id}/assignment?uid=${uid}`);
     }
   };

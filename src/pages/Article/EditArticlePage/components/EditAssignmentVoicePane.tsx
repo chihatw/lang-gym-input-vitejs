@@ -195,7 +195,7 @@ const EditAssignmentVoicePane = ({
           const { id, ...omitted } = assignmentSentence;
           assignmentSentences.push(omitted);
         });
-        await createAssignmentSentences(assignmentSentences);
+        createAssignmentSentences(assignmentSentences);
       }
     }
   };
@@ -219,8 +219,8 @@ const EditAssignmentVoicePane = ({
         start: marks[index].start,
         end: marks[index].end,
       }));
-    const { success } = await updateAssignmentSentences(newAssignmentSentences);
-    if (success) {
+    const result = await updateAssignmentSentences(newAssignmentSentences);
+    if (!!result) {
       navigate(`/article/list`);
     }
   };

@@ -82,10 +82,10 @@ export const useEditOndokuAssignmentVoicePage = (id: string, uid: string) => {
       if (success) {
         const result = await deleteAssignment(assignmentID);
         if (result) {
-          const { success } = await deleteAssignmentSentences(
+          const result = await deleteAssignmentSentences(
             originalSentences.map((s) => s.id)
           );
-          if (success) {
+          if (result!!) {
             navigate('/ondoku/list');
           }
         }
@@ -105,8 +105,8 @@ export const useEditOndokuAssignmentVoicePage = (id: string, uid: string) => {
         end: marks[index].end,
       })
     );
-    const { success } = await updateAssignmentSentences(sentences);
-    if (success) {
+    const result = await updateAssignmentSentences(sentences);
+    if (!!result) {
       navigate(`/ondoku/${id}/assignment/?uid=${uid}`);
     }
   };
