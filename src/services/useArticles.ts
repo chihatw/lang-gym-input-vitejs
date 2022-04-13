@@ -1,7 +1,6 @@
 import {
   doc,
   limit,
-  query,
   addDoc,
   orderBy,
   updateDoc,
@@ -10,9 +9,11 @@ import {
   collection,
   Unsubscribe,
   DocumentData,
+  QueryConstraint,
 } from '@firebase/firestore';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { db } from '../repositories/firebase';
+import { snapshotCollection } from '../repositories/utils';
 
 export type Article = {
   id: string;
@@ -61,6 +62,31 @@ export const useArticles = ({
   const [article, setArticle] = useState(INITIAL_ARTICLE);
   const [articles, setArticles] = useState<Article[]>([]);
 
+  const _snapshotCollection = useMemo(
+    () =>
+      function <T>({
+        limit,
+        queries,
+        setValues,
+        buildValue,
+      }: {
+        limit?: number;
+        queries?: QueryConstraint[];
+        setValues: (value: T[]) => void;
+        buildValue: (value: DocumentData) => T;
+      }): Unsubscribe {
+        return snapshotCollection({
+          db,
+          colId: COLLECTION,
+          limit,
+          queries,
+          setValues,
+          buildValue,
+        });
+      },
+    []
+  );
+
   const finishFetchData = useCallback((article: Article) => {
     setArticle(article);
     setIsFetching(false);
@@ -101,21 +127,13 @@ export const useArticles = ({
 
   useEffect(() => {
     if (!opened) return;
-    const q = query(colRef, orderBy('createdAt', 'desc'), limit(LIMIT));
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        console.log('snapshot articles');
-        const articles = snapshot.docs.map((doc) => buildArticle(doc));
-        setArticles(articles);
-      },
-      (e) => {
-        console.warn(e);
-        setArticles([]);
-      }
-    );
+    const unsub = _snapshotCollection({
+      queries: [orderBy('createdAt', 'desc'), limit(6)],
+      setValues: setArticles,
+      buildValue: buildArticle,
+    });
     return () => {
-      unsubscribe();
+      unsub();
     };
   }, [opened]);
   return { article, articles };

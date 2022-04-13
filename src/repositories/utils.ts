@@ -1,10 +1,14 @@
 import {
   doc,
+  query,
   setDoc,
   updateDoc,
   Firestore,
   onSnapshot,
+  collection,
   Unsubscribe,
+  DocumentData,
+  QueryConstraint,
 } from 'firebase/firestore';
 
 // ドキュメントの value フィールドの値を取得する（フィールド名固定）
@@ -39,6 +43,45 @@ export const snapshotDocumentValue = <T>({
     (e) => {
       console.warn(e);
       setValue(initialValue);
+    }
+  );
+};
+
+export const snapshotCollection = <T>({
+  db,
+  colId,
+  limit: _limit,
+  queries,
+  setValues,
+  buildValue,
+}: {
+  db: Firestore;
+  colId: string;
+  limit?: number;
+  queries?: QueryConstraint[];
+  setValues: (values: T[]) => void;
+  buildValue: (value: DocumentData) => T;
+}): Unsubscribe => {
+  let q = query(collection(db, colId));
+  if (!!queries) {
+    for (let _q of queries) {
+      q = query(q, _q);
+    }
+  }
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      console.log(`snap shot ${colId}`);
+      const values: T[] = [];
+      snapshot.forEach((doc) => {
+        const value = buildValue(doc);
+        values.push(value);
+      });
+      setValues(values);
+    },
+    (e) => {
+      console.warn(e);
+      setValues([]);
     }
   );
 };

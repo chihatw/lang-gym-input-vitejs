@@ -1,6 +1,14 @@
-import { collection, onSnapshot, deleteDoc, doc } from '@firebase/firestore';
-import { useEffect, useState } from 'react';
+import {
+  doc,
+  deleteDoc,
+  collection,
+  Unsubscribe,
+  DocumentData,
+  QueryConstraint,
+} from '@firebase/firestore';
+import { useEffect, useMemo, useState } from 'react';
 import { db } from '../repositories/firebase';
+import { snapshotCollection } from '../repositories/utils';
 
 export type AudioItem = {
   id: string;
@@ -19,20 +27,37 @@ const colRef = collection(db, COLLECTION);
 const useAudioItems = () => {
   const [audioItems, setAudioItems] = useState<AudioItem[]>([]);
 
-  useEffect(() => {
-    const unsub = onSnapshot(
-      colRef,
-      (snapshot) => {
-        const audioItems: AudioItem[] = [];
-        snapshot.forEach((doc) => {
-          audioItems.push(doc.data() as AudioItem);
+  const _snapshotCollection = useMemo(
+    () =>
+      function <T>({
+        limit,
+        queries,
+        setValues,
+        buildValue,
+      }: {
+        limit?: number;
+        queries?: QueryConstraint[];
+        setValues: (value: T[]) => void;
+        buildValue: (value: DocumentData) => T;
+      }): Unsubscribe {
+        return snapshotCollection({
+          db,
+          colId: COLLECTION,
+          limit,
+          queries,
+          setValues,
+          buildValue,
         });
-        setAudioItems(audioItems);
       },
-      (error) => {
-        console.warn(error);
-      }
-    );
+    []
+  );
+
+  useEffect(() => {
+    const unsub = _snapshotCollection({
+      setValues: setAudioItems,
+      buildValue: buildAudioItem,
+    });
+
     return () => unsub();
   }, []);
 
@@ -46,3 +71,17 @@ const useAudioItems = () => {
 };
 
 export default useAudioItems;
+
+const buildAudioItem = (doc: DocumentData) => {
+  const audioItem: AudioItem = {
+    id: doc.data().id,
+    uid: doc.data().uid,
+    bpm: doc.data().bpm,
+    dateId: doc.data().dateId,
+    dataURI: doc.data().dataURI,
+    workoutId: doc.data().workoutId,
+    isPerfect: doc.data().isPerfect,
+    isDeleted: doc.data().isDeleted,
+  };
+  return audioItem;
+};

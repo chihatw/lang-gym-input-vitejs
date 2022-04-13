@@ -1,17 +1,18 @@
 import {
-  addDoc,
-  collection,
-  deleteDoc,
   doc,
-  DocumentData,
   limit,
-  onSnapshot,
+  addDoc,
+  deleteDoc,
+  collection,
+  DocumentData,
   orderBy,
-  query,
+  QueryConstraint,
   updateDoc,
+  Unsubscribe,
 } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { db } from '../repositories/firebase';
+import { snapshotCollection } from '../repositories/utils';
 
 export type WorkoutItem = {
   text: string;
@@ -61,24 +62,37 @@ export const useWorkouts = ({ workoutId }: { workoutId: string }) => {
     setWorkout(workout || INITIAL_WORKOUT);
   }, [workoutId, workouts]);
 
-  useEffect(() => {
-    const q = query(colRef, orderBy('createdAt', 'desc'), limit(6));
-    const unsub = onSnapshot(
-      q,
-      (snapshot) => {
-        console.log('snap shot workouts');
-        const workouts: Workout[] = [];
-        snapshot.forEach((doc) => {
-          const workout = buildWorkout(doc);
-          workouts.push(workout);
+  const _snapshotCollection = useMemo(
+    () =>
+      function <T>({
+        limit,
+        queries,
+        setValues,
+        buildValue,
+      }: {
+        limit?: number;
+        queries?: QueryConstraint[];
+        setValues: (value: T[]) => void;
+        buildValue: (value: DocumentData) => T;
+      }): Unsubscribe {
+        return snapshotCollection({
+          db,
+          colId: COLLECTION,
+          limit,
+          queries,
+          setValues,
+          buildValue,
         });
-        setWorkouts(workouts);
       },
-      (e) => {
-        console.warn(e);
-        setWorkouts([]);
-      }
-    );
+    []
+  );
+
+  useEffect(() => {
+    const unsub = _snapshotCollection({
+      queries: [orderBy('createdAt', 'desc'), limit(6)],
+      setValues: setWorkouts,
+      buildValue: buildWorkout,
+    });
     return () => {
       unsub();
     };

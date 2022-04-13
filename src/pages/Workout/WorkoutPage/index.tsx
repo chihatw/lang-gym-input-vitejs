@@ -8,8 +8,8 @@ import {
   Workout,
   WorkoutItem,
   useHandleWorkouts,
-  useWorkouts,
 } from '../../../services/useWorkouts';
+import string2PitchesArray from 'string2pitches-array';
 
 const WorkoutPage = () => {
   const navigate = useNavigate();
@@ -164,7 +164,8 @@ const workoutItems2String = (workoutItems: WorkoutItem[]) => {
 const calcBeatCount = (workoutItems: WorkoutItem[]) => {
   let moraCount = 0;
   for (const workoutItem of workoutItems) {
-    const { pitchesArray } = workoutItem;
+    let { pitchesArray: pitchesArrayStr } = workoutItem;
+    const pitchesArray = string2PitchesArray(pitchesArrayStr);
     const tmp: string[] = [];
     for (const pitches of pitchesArray) {
       for (const pitch of pitches) {
