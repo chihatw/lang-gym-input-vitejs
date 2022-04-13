@@ -3,7 +3,6 @@ import { useContext, useEffect, useState } from 'react';
 
 import { Mark } from '../../../../entities/Mark';
 import { deleteFile } from '../../../../repositories/file';
-import { getOndokuSentences } from '../../../../repositories/ondokuSentence';
 import {
   AssignmentSentence,
   useHandleAssignmentSentences,
@@ -15,12 +14,12 @@ import { AppContext } from '../../../../services/app';
 
 export const useEditOndokuAssignmentVoicePage = (id: string, uid: string) => {
   const navigate = useNavigate();
-  const { ondoku } = useContext(AppContext);
+  const { ondoku, ondokuSentences } = useContext(AppContext);
   const { deleteAssignment } = useHandleAssignments();
   const { updateAssignmentSentences, deleteAssignmentSentences } =
     useHandleAssignmentSentences();
   const [title, setTitle] = useState('');
-  const [initializing, setInitializing] = useState(true);
+
   const [sentences, setSentences] = useState<string[]>([]);
   const [downloadURL, setDownloadURL] = useState('');
   const [assignmentID, setAssignmentID] = useState('');
@@ -35,17 +34,10 @@ export const useEditOndokuAssignmentVoicePage = (id: string, uid: string) => {
 
   useEffect(() => {
     if (!ondoku.id) return;
-    const fetchData = async () => {
-      setTitle(ondoku.title);
-      const ondokuSentences = await getOndokuSentences(ondoku.id);
-      if (!!ondokuSentences) {
-        setSentences(ondokuSentences.map((s) => s.japanese));
-      }
 
-      setInitializing(false);
-    };
-    fetchData();
-  }, [ondoku]);
+    setTitle(ondoku.title);
+    setSentences(ondokuSentences.map((s) => s.japanese));
+  }, [ondoku, ondokuSentences]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -113,7 +105,7 @@ export const useEditOndokuAssignmentVoicePage = (id: string, uid: string) => {
 
   return {
     title,
-    initializing,
+    initializing: false,
     sentences,
     uid,
     downloadURL,

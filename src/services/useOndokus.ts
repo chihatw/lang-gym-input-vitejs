@@ -1,13 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  doc,
   limit,
   orderBy,
-  updateDoc,
-  collection,
-  QueryConstraint,
   Unsubscribe,
   DocumentData,
+  QueryConstraint,
 } from '@firebase/firestore';
 
 import { db } from '../repositories/firebase';
@@ -36,8 +33,6 @@ export const INITIAL_ONDOKU: Ondoku = {
 
 const LIMIT = 6;
 const COLLECTION = 'ondokus';
-
-const colRef = collection(db, COLLECTION);
 
 const buildOndoku = (doc: DocumentData) => {
   const ondoku: Ondoku = {
@@ -142,15 +137,7 @@ export const useHandleOndokus = () => {
   const updateOndoku = async (ondoku: Ondoku): Promise<Ondoku | null> => {
     return await _updateDocument(ondoku);
   };
-  const toggleShowAccents = async (ondoku: Ondoku) => {
-    const newOndoku: Ondoku = {
-      ...ondoku,
-      isShowAccents: !ondoku.isShowAccents,
-    };
-    const { id, ...omitted } = newOndoku;
-    console.log('update Ondoku');
-    updateDoc(doc(db, COLLECTION, ondoku.id), { ...omitted });
-  };
+
   const deleteOndoku = async (id: string): Promise<boolean> => {
     return await _deleteDocument(id);
   };
@@ -158,6 +145,5 @@ export const useHandleOndokus = () => {
     addOndoku,
     deleteOndoku,
     updateOndoku,
-    toggleShowAccents,
   };
 };

@@ -1,19 +1,22 @@
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { buildAccents } from '../../../../entities/Accent';
-import { CreateOndokuSentence } from '../../../../entities/OndokuSentence';
 
-import { createOndokuSentences } from '../../../../repositories/ondokuSentence';
 import { AppContext } from '../../../../services/app';
+import {
+  OndokuSentence,
+  useHandleOndokuSentences,
+} from '../../../../services/useOndokuSentences';
 
 export const useInitialOndokuPage = (id: string) => {
   const navigate = useNavigate();
   const { ondoku } = useContext(AppContext);
+  const { addOndokuSentences } = useHandleOndokuSentences();
   const [title, setTitle] = useState('');
   const [japanese, setJapanese] = useState('');
   const [accentString, setAccentString] = useState('');
   const [ondokuSentences, setOndokuSentences] = useState<
-    CreateOndokuSentence[]
+    Omit<OndokuSentence, 'id'>[]
   >([]);
   const [isValid, setIsValid] = useState(false);
   useEffect(() => {
@@ -55,8 +58,8 @@ export const useInitialOndokuPage = (id: string) => {
   }, [japanese, accentString, id]);
 
   const onSubmit = async () => {
-    const { success } = await createOndokuSentences(ondokuSentences);
-    if (success) {
+    const result = await addOndokuSentences(ondokuSentences);
+    if (!!result) {
       navigate(`/ondoku/list`);
     }
   };

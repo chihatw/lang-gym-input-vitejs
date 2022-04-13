@@ -1,24 +1,24 @@
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mark } from '../../../../entities/Mark';
-import { OndokuSentence } from '../../../../entities/OndokuSentence';
+
 import { deleteFile } from '../../../../repositories/file';
-import {
-  getOndokuSentences,
-  updateOndokuSentences,
-} from '../../../../repositories/ondokuSentence';
 import { AppContext } from '../../../../services/app';
 import { Ondoku, useHandleOndokus } from '../../../../services/useOndokus';
+import {
+  OndokuSentence,
+  useHandleOndokuSentences,
+} from '../../../../services/useOndokuSentences';
 
 export const useEditOndokuVoicePage = (id: string) => {
   const navigate = useNavigate();
 
-  const { ondoku } = useContext(AppContext);
+  const { ondoku, ondokuSentences } = useContext(AppContext);
 
   const { updateOndoku } = useHandleOndokus();
+  const { updateOndokuSentences } = useHandleOndokuSentences();
   const [title, setTitle] = useState('');
   const [downloadURL, setDownloadURL] = useState('');
-  const [initializing, setInitializing] = useState(true);
   const [marks, setMarks] = useState<Mark[]>([]);
   const [sentences, setSentences] = useState<string[]>([]);
   const [originalOndoku, setOriginalOndoku] = useState<Ondoku | null>(null);
@@ -29,24 +29,16 @@ export const useEditOndokuVoicePage = (id: string) => {
   const [hasChange, setHasChange] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setTitle(ondoku.title);
-      setDownloadURL(ondoku.downloadURL);
-      setOriginalOndoku(ondoku);
-      const ondokuSentences = await getOndokuSentences(id);
-      if (ondokuSentences) {
-        setMarks(ondokuSentences.map((s) => ({ start: s.start, end: s.end })));
-        setSentences(ondokuSentences.map((s) => s.japanese));
-        setOriginalMarks(
-          ondokuSentences.map((s) => ({ start: s.start, end: s.end }))
-        );
-        setOriginalSentences(ondokuSentences);
-      }
-
-      setInitializing(false);
-    };
-    fetchData();
-  }, [ondoku]);
+    setTitle(ondoku.title);
+    setDownloadURL(ondoku.downloadURL);
+    setOriginalOndoku(ondoku);
+    setMarks(ondokuSentences.map((s) => ({ start: s.start, end: s.end })));
+    setSentences(ondokuSentences.map((s) => s.japanese));
+    setOriginalMarks(
+      ondokuSentences.map((s) => ({ start: s.start, end: s.end }))
+    );
+    setOriginalSentences(ondokuSentences);
+  }, [ondoku, ondokuSentences]);
 
   useEffect(() => {
     setHasChange(JSON.stringify(marks) !== JSON.stringify(originalMarks));
@@ -62,8 +54,8 @@ export const useEditOndokuVoicePage = (id: string) => {
           start: 0,
           end: 0,
         }));
-        const { success } = await updateOndokuSentences(sentences);
-        if (success) {
+        const result = await updateOndokuSentences(sentences);
+        if (!!result) {
           const ondoku: Ondoku = { ...originalOndoku!, downloadURL: '' };
           const result = await updateOndoku(ondoku);
           if (!!result) {
@@ -84,15 +76,15 @@ export const useEditOndokuVoicePage = (id: string) => {
       start: marks[index].start,
       end: marks[index].end,
     }));
-    const { success } = await updateOndokuSentences(sentences);
-    if (success) {
+    const result = await updateOndokuSentences(sentences);
+    if (!!result) {
       navigate(`ondoku/${id}`);
     }
   };
 
   return {
     title,
-    initializing,
+    initializing: false,
     downloadURL,
     marks,
     sentences,

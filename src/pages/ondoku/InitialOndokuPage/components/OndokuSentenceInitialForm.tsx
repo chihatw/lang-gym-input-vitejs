@@ -2,15 +2,14 @@ import React from 'react';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import accentsForPitchesArray from 'accents-for-pitches-array';
 import { Box, Grid, Button, TextField } from '@mui/material';
-
-import { CreateOndokuSentence } from '../../../../entities/OndokuSentence';
+import { OndokuSentence } from '../../../../services/useOndokuSentences';
 
 const OndokuSentenceInitialForm: React.FC<{
   japanese: string;
   accentString: string;
   onChangeJapanese: (japanese: string) => void;
   onChangeAccentString: (accentString: string) => void;
-  ondokuSentences: CreateOndokuSentence[];
+  ondokuSentences: Omit<OndokuSentence, 'id'>[];
   onSubmit: () => void;
   isValid: boolean;
 }> = ({

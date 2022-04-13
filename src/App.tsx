@@ -11,12 +11,14 @@ import { useAssignments } from './services/useAssignments';
 import { useAssignmentSentences } from './services/useAssignmentSentences';
 import { useSentenceParseNews } from './services/useSentenceParseNews';
 import { useOndokus } from './services/useOndokus';
+import { useOndokuSentences } from './services/useOndokuSentences';
 
 const App = () => {
   const [articleId, setArticleId] = useState('');
   const [ondokuId, setOndokuId] = useState('');
   const [workoutId, setWorkoutId] = useState('');
   const [isFetching, setIsFetching] = useState(false);
+  const [ondokuSentenceId, setOndokuSentenceId] = useState('');
   const { initializing, user, createRhythmsQuestion } = useApp();
   const { audioItems } = useAudioItems();
   const { article, articles } = useArticles({
@@ -30,6 +32,10 @@ const App = () => {
   const { sentenceParseNews } = useSentenceParseNews({ article });
   const { workout, workouts } = useWorkouts({ workoutId });
   const { ondoku, ondokus } = useOndokus({ opened: true, ondokuId });
+  const { ondokuSentence, ondokuSentences } = useOndokuSentences({
+    ondokuId,
+    ondokuSentenceId,
+  });
 
   return (
     <AppContext.Provider
@@ -49,11 +55,14 @@ const App = () => {
         initializing,
         sentenceParseNews,
         assignmentSentences,
+        ondokuSentence,
+        ondokuSentences,
         setOndokuId,
         setArticleId,
         setWorkoutId,
         setIsFetching,
         createRhythmsQuestion,
+        setOndokuSentenceId,
       }}
     >
       <AppRoutes />

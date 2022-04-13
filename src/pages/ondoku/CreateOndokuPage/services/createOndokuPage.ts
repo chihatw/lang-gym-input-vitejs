@@ -1,4 +1,3 @@
-import dayjs from 'dayjs';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -44,7 +43,7 @@ export const useCreateOndokuPage = () => {
   };
   const onSubmit = async () => {
     const newOndoku: Omit<Ondoku, 'id'> = {
-      createdAt: dayjs(date).valueOf(),
+      createdAt: date.getTime(),
       downloadURL,
       isShowAccents,
       title,

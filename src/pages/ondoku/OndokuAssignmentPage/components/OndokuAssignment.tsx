@@ -8,11 +8,11 @@ import { Button, Card, IconButton } from '@mui/material';
 import { useNavigate, useMatch } from 'react-router-dom';
 
 import { Accent } from '../../../../entities/Accent';
-import { OndokuSentence } from '../../../../entities/OndokuSentence';
 
 import SelectUser from '../../../../components/SelectUser';
 import { User } from '../../../../services/useUsers';
 import { AssignmentSentence } from '../../../../services/useAssignmentSentences';
+import { OndokuSentence } from '../../../../services/useOndokuSentences';
 
 const OndokuAssignment: React.FC<{
   users: User[];

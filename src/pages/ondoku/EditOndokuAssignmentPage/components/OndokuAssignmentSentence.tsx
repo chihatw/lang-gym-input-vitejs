@@ -5,7 +5,7 @@ import { Button, TextField } from '@mui/material';
 import accentsForPitchesArray from 'accents-for-pitches-array';
 
 import { Accent, buildAccents } from '../../../../entities/Accent';
-import { OndokuSentence } from '../../../../entities/OndokuSentence';
+import { OndokuSentence } from '../../../../services/useOndokuSentences';
 
 const OndokuAssignmentSentence: React.FC<{
   sentence: OndokuSentence;

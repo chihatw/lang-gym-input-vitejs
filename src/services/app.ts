@@ -24,6 +24,7 @@ import { AssignmentSentence } from './useAssignmentSentences';
 import { SentenceParseNew } from './useSentenceParseNews';
 import { INITIAL_WORKOUT, Workout } from './useWorkouts';
 import { INITIAL_ONDOKU, Ondoku } from './useOndokus';
+import { INITIAL_ONDOKU_SENTENCE, OndokuSentence } from './useOndokuSentences';
 
 export const AppContext = createContext<{
   user: _User | null;
@@ -41,10 +42,13 @@ export const AppContext = createContext<{
   initializing: boolean;
   sentenceParseNews: SentenceParseNew[];
   assignmentSentences: AssignmentSentence[];
+  ondokuSentence: OndokuSentence;
+  ondokuSentences: OndokuSentence[];
   setOndokuId: (value: string) => void;
   setArticleId: (value: string) => void;
   setWorkoutId: (value: string) => void;
   setIsFetching: (value: boolean) => void;
+  setOndokuSentenceId: (value: string) => void;
   createRhythmsQuestion: ({
     title,
     endArray,
@@ -71,6 +75,8 @@ export const AppContext = createContext<{
   audioItems: [],
   isFetching: false,
   assignment: INITIAL_ASSIGNMENT,
+  ondokuSentence: INITIAL_ONDOKU_SENTENCE,
+  ondokuSentences: [],
   initializing: true,
   sentenceParseNews: [],
   assignmentSentences: [],
@@ -78,6 +84,7 @@ export const AppContext = createContext<{
   setArticleId: () => {},
   setWorkoutId: () => {},
   setIsFetching: () => {},
+  setOndokuSentenceId: () => {},
   createRhythmsQuestion: async () => {},
 });
 

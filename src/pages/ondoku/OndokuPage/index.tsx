@@ -11,9 +11,7 @@ const OndokuSentencesPage: React.FC = () => {
   const { title, onEdit, ondoku, initializing, ondokuSentences } =
     useOndokuPage(match?.params.id || '');
   const { createRhythmsQuestion } = useContext(AppContext);
-  if (!initializing && !ondokuSentences.length) {
-    return <Navigate to={`/ondoku/${match?.params.id}/initial`} />;
-  }
+
   if (initializing) {
     return <div></div>;
   } else {

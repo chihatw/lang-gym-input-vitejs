@@ -18,7 +18,6 @@ import Person from '@mui/icons-material/Person';
 import Mic from '@mui/icons-material/Mic';
 import React from 'react';
 
-import dayjs from 'dayjs';
 import { Ondoku } from '../../../../services/useOndokus';
 
 const OndokuTable: React.FC<{
@@ -44,6 +43,7 @@ const OndokuTable: React.FC<{
     <Table>
       <TableBody>
         {ondokus.map((ondoku) => {
+          const date = new Date(ondoku.createdAt);
           return (
             <TableRow key={ondoku.id}>
               <TableCell>
@@ -53,7 +53,9 @@ const OndokuTable: React.FC<{
                   justifyContent='space-between'
                 >
                   <Box>{ondoku.title}</Box>
-                  <Box>{dayjs(ondoku.createdAt).format('YYYY年M月D日')}</Box>
+                  <Box>{`${date.getFullYear()}年${
+                    date.getMonth() + 1
+                  }月${date.getDate()}日`}</Box>
                 </Box>
               </TableCell>
               <TableCell padding='none'>

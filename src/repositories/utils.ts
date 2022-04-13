@@ -3,6 +3,7 @@ import {
   query,
   addDoc,
   setDoc,
+  getDocs,
   updateDoc,
   deleteDoc,
   Firestore,
@@ -159,6 +160,39 @@ export const snapshotDocumentByQuery = <T>({
       setValue(initialValue);
     }
   );
+};
+
+export const getDocumentsByQuety = async <T>({
+  db,
+  colId,
+  queries,
+  buildValue,
+}: {
+  db: Firestore;
+  colId: string;
+  queries?: QueryConstraint[];
+  buildValue: (value: DocumentData) => T;
+}): Promise<T[]> => {
+  let q = query(collection(db, colId));
+  if (!!queries) {
+    for (let _q of queries) {
+      q = query(q, _q);
+    }
+  }
+  console.log(`get docs ${colId}`);
+  return await getDocs(q)
+    .then((snapshot) => {
+      const values: T[] = [];
+      snapshot.forEach((doc) => {
+        const value = buildValue(doc);
+        values.push(value);
+      });
+      return values;
+    })
+    .catch((e) => {
+      console.warn(e);
+      return [];
+    });
 };
 
 // ドキュメントの value フィールドの値を更新する（フィールド名固定）

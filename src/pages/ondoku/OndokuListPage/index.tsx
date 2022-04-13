@@ -5,12 +5,13 @@ import TableLayout from '../../../components/templates/TableLayout';
 import { AppContext } from '../../../services/app';
 import { Ondoku, useHandleOndokus } from '../../../services/useOndokus';
 import { deleteFile } from '../../../repositories/file';
-import { deleteOndokuSentences } from '../../../repositories/ondokuSentence';
+import { useHandleOndokuSentences } from '../../../services/useOndokuSentences';
 
 const OndokuListPage = () => {
   const navigate = useNavigate();
   const { ondokus, setOndokuId } = useContext(AppContext);
   const { updateOndoku, deleteOndoku } = useHandleOndokus();
+  const { deleteOndokuSentences } = useHandleOndokuSentences();
 
   const onEdit = (ondoku: Ondoku) => {
     setOndokuId(ondoku.id);

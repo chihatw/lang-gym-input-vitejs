@@ -4,12 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { getDownloadURL } from '@firebase/storage';
 import { CreateAssignment } from '../../../../entities/Assignment';
 import { CreateAssignmentSentence } from '../../../../entities/AssignmentSentence';
-import { OndokuSentence } from '../../../../entities/OndokuSentence';
 
 import { getAssignment } from '../../../../repositories/assignment';
 import { getAssignmentSentences } from '../../../../repositories/assignmentSentence';
 import { deleteFile, uploadFile } from '../../../../repositories/file';
-import { getOndokuSentences } from '../../../../repositories/ondokuSentence';
 import { getUsers } from '../../../../repositories/user';
 import { User } from '../../../../services/useUsers';
 import {
@@ -24,28 +22,18 @@ import { AppContext } from '../../../../services/app';
 
 export const useOndokuAssignmentPage = (id: string) => {
   const navigate = useNavigate();
-  const { ondoku } = useContext(AppContext);
+  const { ondoku, ondokuSentences } = useContext(AppContext);
+
   const { createAssignment, deleteAssignment } = useHandleAssignments();
   const { createAssignmentSentences, deleteAssignmentSentences } =
     useHandleAssignmentSentences();
 
-  // const [initializing, setInitializing] = useState(false);
-
   const [uid, setUid] = useState('');
   const [users, setUsers] = useState<User[]>([]);
-  const [sentences, setSentences] = useState<OndokuSentence[]>([]);
   const [assignmentSentences, setAssignmentSentences] = useState<
     AssignmentSentence[]
   >([]);
   const [assignment, setAssignment] = useState<Assignment | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const sentences = await getOndokuSentences(id);
-      !!sentences && setSentences(sentences);
-    };
-    fetchData();
-  }, [id]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -106,8 +94,8 @@ export const useOndokuAssignmentPage = (id: string) => {
       };
       const result = await createAssignment(assignment);
       if (!!result) {
-        const assignmentSentences: CreateAssignmentSentence[] = sentences.map(
-          (s) => ({
+        const assignmentSentences: CreateAssignmentSentence[] =
+          ondokuSentences.map((s) => ({
             article: '',
             uid: uid,
             ondoku: id,
@@ -116,8 +104,7 @@ export const useOndokuAssignmentPage = (id: string) => {
             start: 0,
             line: s.line,
             mistakes: [],
-          })
-        );
+          }));
         const result = await createAssignmentSentences(assignmentSentences);
         if (!!result) {
           navigate(`/ondoku/${id}/assignment/uid/${uid}/voice`);
@@ -133,7 +120,7 @@ export const useOndokuAssignmentPage = (id: string) => {
     uid,
     onChangeUid,
     users,
-    sentences,
+    sentences: ondokuSentences,
     onDelete,
     onUpload,
   };

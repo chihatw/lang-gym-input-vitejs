@@ -1,20 +1,21 @@
 import {
-  doc,
-  query,
   where,
-  getDoc,
-  getDocs,
   orderBy,
-  deleteDoc,
-  collection,
-  DocumentData,
-  updateDoc,
-  onSnapshot,
   Unsubscribe,
+  DocumentData,
+  QueryConstraint,
 } from '@firebase/firestore';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Accent } from '../entities/Accent';
 import { db } from '../repositories/firebase';
+import {
+  batchAddDocuments,
+  batchDeleteDocuments,
+  batchUpdateDocuments,
+  getDocumentsByQuety,
+  snapshotCollection,
+  updateDocument,
+} from '../repositories/utils';
 
 export type OndokuSentence = {
   id: string;
@@ -39,7 +40,6 @@ export const INITIAL_ONDOKU_SENTENCE: OndokuSentence = {
 };
 
 const COLLECTION = 'oSentences';
-const colRef = collection(db, COLLECTION);
 
 export const useOndokuSentences = ({
   ondokuId,
@@ -51,67 +51,43 @@ export const useOndokuSentences = ({
   const [ondokuSentence, setOndokuSentence] = useState(INITIAL_ONDOKU_SENTENCE);
   const [ondokuSentences, setOndokuSentences] = useState<OndokuSentence[]>([]);
 
-  useEffect(() => {
-    let unsub: Unsubscribe | null = null;
-    if (!ondokuSentenceId) {
-      setOndokuSentence(INITIAL_ONDOKU_SENTENCE);
-    } else {
-      const ondokuSentenceIds = ondokuSentences.map((sentence) => sentence.id);
-      if (ondokuSentenceIds.includes(ondokuSentenceId)) {
-        const ondokuSentence = ondokuSentences.filter(
-          (sentence) => sentence.id === ondokuSentenceId
-        )[0];
-        setOndokuSentence(ondokuSentence);
-      } else {
-        unsub = onSnapshot(
-          doc(db, COLLECTION, ondokuSentenceId),
-          (doc) => {
-            console.log('snapshot ondokuSentence');
-            if (doc.exists()) {
-              const ondokuSentence = buildOndokuSentence(doc);
-              setOndokuSentence(ondokuSentence);
-            } else {
-              setOndokuSentence(INITIAL_ONDOKU_SENTENCE);
-            }
-          },
-          (e) => {
-            console.warn(e);
-            !!unsub && unsub();
-          }
-        );
-      }
-    }
-    return () => {
-      !!unsub && unsub();
-    };
-  }, [ondokuSentenceId]);
+  const _snapshotCollection = useMemo(
+    () =>
+      function <T>({
+        queries,
+        setValues,
+        buildValue,
+      }: {
+        queries?: QueryConstraint[];
+        setValues: (value: T[]) => void;
+        buildValue: (value: DocumentData) => T;
+      }): Unsubscribe {
+        return snapshotCollection({
+          db,
+          colId: COLLECTION,
+          queries,
+          setValues,
+          buildValue,
+        });
+      },
+    []
+  );
 
   useEffect(() => {
-    let unsub: Unsubscribe | null = null;
-    if (!ondokuId) {
-      setOndokuSentences([]);
-    } else {
-      const q = query(colRef, where('ondoku', '==', ondokuId), orderBy('line'));
-      unsub = onSnapshot(
-        q,
-        (snapshot) => {
-          console.log('snapshot ondokuSentences');
-          const ondokuSentences: OndokuSentence[] = [];
-          snapshot.forEach((doc) => {
-            const ondokuSentence = buildOndokuSentence(doc);
-            ondokuSentences.push(ondokuSentence);
-          });
-          setOndokuSentences(ondokuSentences);
-        },
-        (e) => {
-          console.warn(e);
-          setOndokuSentences([]);
-          !!unsub && unsub();
-        }
-      );
-    }
+    const ondokuSentence = ondokuSentences.filter(
+      (ondokuSentence) => ondokuSentence.id === ondokuSentenceId
+    )[0];
+    setOndokuSentence(ondokuSentence ?? INITIAL_ONDOKU_SENTENCE);
+  }, [ondokuSentenceId, ondokuSentences]);
+
+  useEffect(() => {
+    const unsub = _snapshotCollection({
+      setValues: setOndokuSentences,
+      buildValue: buildOndokuSentence,
+      queries: [where('ondoku', '==', ondokuId), orderBy('line')],
+    });
     return () => {
-      !!unsub && unsub();
+      unsub();
     };
   }, [ondokuId]);
 
@@ -119,31 +95,70 @@ export const useOndokuSentences = ({
 };
 
 export const useHandleOndokuSentences = () => {
-  const updateOndokuSentence = ({
-    ondokuSentence,
-    callback,
-  }: {
-    ondokuSentence: OndokuSentence;
-    callback?: () => void;
-  }) => {
-    const { id, ...omitted } = ondokuSentence;
-    console.log('update ondoku sentence');
-    updateDoc(doc(db, COLLECTION, id), { ...omitted })
-      .then(() => {
-        !!callback && callback();
-      })
-      .catch((e) => console.warn(e));
+  const _updateDocument = useMemo(
+    () =>
+      async function <T extends { id: string }>(value: T): Promise<T | null> {
+        return await updateDocument({
+          db,
+          colId: COLLECTION,
+          value,
+        });
+      },
+    []
+  );
+  const _batchDeleteDocuments = useCallback(async (ids: string[]) => {
+    return await batchDeleteDocuments({ db, colId: COLLECTION, ids });
+  }, []);
+
+  const _batchUpdateDocuments = useMemo(
+    () =>
+      async function <T extends { id: string }>(values: T[]): Promise<boolean> {
+        return await batchUpdateDocuments({ db, colId: COLLECTION, values });
+      },
+    []
+  );
+
+  const _batchAddDocuments = useMemo(
+    () =>
+      async function <T extends { id: string }>(
+        values: Omit<T, 'id'>[]
+      ): Promise<boolean> {
+        return await batchAddDocuments({ db, colId: COLLECTION, values });
+      },
+    []
+  );
+
+  const updateOndokuSentence = async (
+    ondokuSentence: OndokuSentence
+  ): Promise<OndokuSentence | null> => {
+    return await _updateDocument(ondokuSentence);
+  };
+
+  const updateOndokuSentences = async (ondokuSentences: OndokuSentence[]) => {
+    return await _batchUpdateDocuments(ondokuSentences);
+  };
+
+  const addOndokuSentences = async (
+    ondokuSentences: Omit<OndokuSentence, 'id'>[]
+  ) => {
+    return await _batchAddDocuments(ondokuSentences);
   };
 
   const deleteOndokuSentences = async (ondokuId: string) => {
-    const q = query(colRef, where('ondoku', '==', ondokuId));
-    const snapshot = await getDocs(q);
-    snapshot.forEach((doc) => {
-      console.log('delete ondoku sentences');
-      deleteDoc(doc.ref);
+    const ids = await getDocumentsByQuety({
+      db,
+      colId: COLLECTION,
+      queries: [where('ondoku', '==', ondokuId)],
+      buildValue: (doc: DocumentData) => doc.id as string,
     });
+    _batchDeleteDocuments(ids);
   };
-  return { deleteOndokuSentences, updateOndokuSentence };
+  return {
+    deleteOndokuSentences,
+    updateOndokuSentence,
+    updateOndokuSentences,
+    addOndokuSentences,
+  };
 };
 
 const buildOndokuSentence = (doc: DocumentData): OndokuSentence => {

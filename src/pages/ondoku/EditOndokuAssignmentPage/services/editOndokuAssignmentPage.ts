@@ -2,15 +2,14 @@ import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { buildAccents, buildAccentString } from '../../../../entities/Accent';
 
-import { OndokuSentence } from '../../../../entities/OndokuSentence';
 import { getAssignment } from '../../../../repositories/assignment';
 import { getAssignmentSentence } from '../../../../repositories/assignmentSentence';
-import { getOndokuSentences } from '../../../../repositories/ondokuSentence';
 import { AppContext } from '../../../../services/app';
 import {
   AssignmentSentence,
   useHandleAssignmentSentences,
 } from '../../../../services/useAssignmentSentences';
+import { OndokuSentence } from '../../../../services/useOndokuSentences';
 
 export const useEditOndokuAssignmentPage = (
   id: string,
@@ -19,7 +18,7 @@ export const useEditOndokuAssignmentPage = (
 ) => {
   const navigate = useNavigate();
 
-  const { ondoku } = useContext(AppContext);
+  const { ondoku, ondokuSentences } = useContext(AppContext);
 
   const { updateAssignmentSentence } = useHandleAssignmentSentences();
   const [title, setTitle] = useState('');
@@ -36,14 +35,8 @@ export const useEditOndokuAssignmentPage = (
   }, [ondoku]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const sentences = await getOndokuSentences(id);
-      if (!!sentences) {
-        setSentence(sentences.filter((s) => s.line === line)[0]);
-      }
-    };
-    fetchData();
-  }, [id, line]);
+    setSentence(ondokuSentences.filter((s) => s.line === line)[0]);
+  }, [id, line, ondokuSentences]);
 
   useEffect(() => {
     const fetchData = async () => {
