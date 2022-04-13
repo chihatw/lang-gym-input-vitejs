@@ -27,7 +27,7 @@ import EditOndokuAssignmentPage from '../pages/ondoku/EditOndokuAssignmentPage';
 import EditOndokuAssignmentVoicePage from '../pages/ondoku/EditOngokuAssignmentVoicePage';
 
 import ArticleListPage from '../pages/Article/ArticleListPage';
-import ArticlePage from '../pages/Article/ArticlePage';
+import EditArticlePage from '../pages/Article/EditArticlePage';
 import EditSentenceParsePage from '../pages/Article/EditSentenceParsePage';
 
 import AccentsQuestionPage from '../pages/Question/accentsQuestion/AccentsQuestionPage';
@@ -85,7 +85,7 @@ const AppRoutes = () => {
         <Route path='list' element={<ArticleListPage />} />
         {/* 作文入力作業 */}
         <Route path='input' element={<ArticleInputPage />} />
-        <Route path='' element={<ArticlePage />} />
+        <Route path='' element={<EditArticlePage />} />
       </Route>
 
       {/* parse */}

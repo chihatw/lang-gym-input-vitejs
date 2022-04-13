@@ -13,7 +13,7 @@ import {
 import EditArticleVoicePane from './components/EditArticleVoicePane';
 import EditAssignmentVoicePane from './components/EditAssignmentVoicePane';
 
-const ArticlePage = () => {
+const EditArticlePage = () => {
   const navigate = useNavigate();
   const { addArticle, updateArticle } = useHandleArticles();
   const {
@@ -171,4 +171,4 @@ const ArticlePage = () => {
   }
 };
 
-export default ArticlePage;
+export default EditArticlePage;
