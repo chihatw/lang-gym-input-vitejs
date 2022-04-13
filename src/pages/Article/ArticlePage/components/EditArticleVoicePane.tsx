@@ -173,7 +173,7 @@ const EditArticleVoicePane = ({
         const { success } = await updateSentences(newSentences);
         if (success) {
           const newArticle = { ...article, downloadURL: '' };
-          await updateArticle(newArticle);
+          updateArticle(newArticle);
         }
       }
     }

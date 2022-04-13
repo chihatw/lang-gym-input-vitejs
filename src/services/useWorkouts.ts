@@ -1,22 +1,18 @@
-import { add } from 'date-fns';
 import {
-  doc,
   limit,
-  addDoc,
-  deleteDoc,
-  collection,
-  DocumentData,
   orderBy,
-  QueryConstraint,
-  updateDoc,
+  collection,
   Unsubscribe,
+  DocumentData,
+  QueryConstraint,
 } from 'firebase/firestore';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { db } from '../repositories/firebase';
 import {
   addDocument,
-  snapshotCollection,
+  deleteDocument,
   updateDocument,
+  snapshotCollection,
 } from '../repositories/utils';
 
 export type WorkoutItem = {
@@ -132,6 +128,10 @@ export const useHandleWorkouts = () => {
     []
   );
 
+  const _deleteDocument = useCallback(async (id: string) => {
+    return await deleteDocument({ db, colId: COLLECTION, id });
+  }, []);
+
   const createWorkout = async (
     workout: Omit<Workout, 'id'>
   ): Promise<Workout | null> => {
@@ -141,9 +141,10 @@ export const useHandleWorkouts = () => {
   const updateWorkout = async (workout: Workout): Promise<Workout | null> => {
     return await _updateDocument(workout);
   };
-  const deleteWorkout = (id: string) => {
-    deleteDoc(doc(db, COLLECTION, id)).catch((e) => console.warn(e));
+  const deleteWorkout = async (id: string) => {
+    return await _deleteDocument(id);
   };
+
   return { createWorkout, updateWorkout, deleteWorkout };
 };
 

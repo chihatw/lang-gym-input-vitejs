@@ -64,7 +64,6 @@ const ArticleListPage = () => {
     article: Article;
   }) => {
     if (article.id !== _article.id) {
-      setIsFetching(true);
       setArticleId(_article.id);
     }
     navigate(`/article/${path}`);

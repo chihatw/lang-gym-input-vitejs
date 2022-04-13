@@ -20,7 +20,6 @@ const App = () => {
   const { article, articles } = useArticles({
     opened: true,
     articleId,
-    setIsFetching,
   });
   const { users } = useUsers({ opened: true });
   const { sentences } = useSentences({ article });

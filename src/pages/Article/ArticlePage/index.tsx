@@ -87,8 +87,8 @@ const ArticlePage = () => {
       createdAt: date.getTime(),
       userDisplayname: users.filter((u) => u.id === uid)[0].displayname,
     };
-    const { success } = await addArticle(article);
-    if (success) {
+    const result = await addArticle(article);
+    if (!!result) {
       navigate(`/article/list`);
     }
   };
@@ -115,8 +115,8 @@ const ArticlePage = () => {
       createdAt: date.getTime(),
       userDisplayname: users.filter((u) => u.id === uid)[0].displayname,
     };
-    const { success } = await updateArticle(newArticle);
-    if (success) {
+    const result = await updateArticle(newArticle);
+    if (!!result) {
       navigate('/article/list');
     }
   };

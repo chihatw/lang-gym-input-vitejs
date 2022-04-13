@@ -1,10 +1,6 @@
 import {
-  doc,
   limit,
   orderBy,
-  deleteDoc,
-  onSnapshot,
-  collection,
   Unsubscribe,
   DocumentData,
   QueryConstraint,
@@ -14,6 +10,7 @@ import { db } from '../repositories/firebase';
 import {
   addDocument,
   updateDocument,
+  deleteDocument,
   snapshotCollection,
 } from '../repositories/utils';
 
@@ -47,17 +44,12 @@ export const INITIAL_ARTICLE: Article = {
 
 const COLLECTION = 'articles';
 
-/**
- * アプリ全体で使用
- */
 export const useArticles = ({
   opened,
   articleId,
-  setIsFetching,
 }: {
   opened: boolean;
   articleId: string;
-  setIsFetching: (value: boolean) => void;
 }) => {
   const [article, setArticle] = useState(INITIAL_ARTICLE);
   const [articles, setArticles] = useState<Article[]>([]);
@@ -87,42 +79,9 @@ export const useArticles = ({
     []
   );
 
-  const finishFetchData = useCallback((article: Article) => {
-    setArticle(article);
-    setIsFetching(false);
-  }, []);
-
   useEffect(() => {
-    let unsub: Unsubscribe | null = null;
-    // articleId が未設定の場合
-    if (!articleId) {
-      finishFetchData(INITIAL_ARTICLE);
-    } else {
-      const article = articles.filter((article) => articleId === article.id)[0];
-      if (!!article) {
-        finishFetchData(article);
-      } else {
-        unsub = onSnapshot(
-          doc(db, COLLECTION, articleId),
-          (doc) => {
-            console.log(`snap shot article: [${articleId}]`);
-            if (doc.exists()) {
-              const article = buildArticle(doc);
-              finishFetchData(article);
-            } else {
-              finishFetchData(INITIAL_ARTICLE);
-            }
-          },
-          (e) => {
-            console.warn(e);
-            finishFetchData(INITIAL_ARTICLE);
-          }
-        );
-      }
-    }
-    return () => {
-      !!unsub && unsub();
-    };
+    const article = articles.filter((article) => article.id === articleId)[0];
+    setArticle(article ?? INITIAL_ARTICLE);
   }, [articleId, articles]);
 
   useEffect(() => {
@@ -139,9 +98,6 @@ export const useArticles = ({
   return { article, articles };
 };
 
-/**
- * 単発のデータ操作用
- */
 export const useHandleArticles = () => {
   const _addDocument = useMemo(
     () =>
@@ -168,25 +124,21 @@ export const useHandleArticles = () => {
     []
   );
 
+  const _deleteDocument = useCallback(async (id: string) => {
+    return await deleteDocument({ db, colId: COLLECTION, id });
+  }, []);
+
   const addArticle = async (
     article: Omit<Article, 'id'>
-  ): Promise<{
-    success: boolean;
-    articleId?: string;
-  }> => {
-    const result = await _addDocument(article);
-    return { success: !!result, articleId: result?.id };
+  ): Promise<Article | null> => {
+    return await _addDocument(article);
   };
 
-  const updateArticle = async (
-    article: Article
-  ): Promise<{ success: boolean }> => {
-    const result = await _updateDocument(article);
-    return { success: !!result };
+  const updateArticle = async (article: Article): Promise<Article | null> => {
+    return await _updateDocument(article);
   };
   const deleteArticle = (id: string) => {
-    console.log('delete article');
-    deleteDoc(doc(db, COLLECTION, id));
+    _deleteDocument(id);
   };
 
   return { updateArticle, deleteArticle, addArticle };

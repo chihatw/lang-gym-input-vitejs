@@ -4,6 +4,7 @@ import {
   addDoc,
   setDoc,
   updateDoc,
+  deleteDoc,
   Firestore,
   onSnapshot,
   collection,
@@ -171,5 +172,25 @@ export const setDocumenValue = async <T>({
     .catch((e) => {
       console.warn(e);
       return null;
+    });
+};
+
+export const deleteDocument = async ({
+  id,
+  db,
+  colId,
+}: {
+  id: string;
+  db: Firestore;
+  colId: string;
+}): Promise<boolean> => {
+  console.log(`delete ${colId}.${id}`);
+  return await deleteDoc(doc(db, colId, id))
+    .then(() => {
+      return true;
+    })
+    .catch((e) => {
+      console.warn(e);
+      return false;
     });
 };
