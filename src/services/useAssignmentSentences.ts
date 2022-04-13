@@ -1,19 +1,18 @@
 import {
   doc,
-  query,
   where,
-  getDocs,
   orderBy,
   updateDoc,
   collection,
   writeBatch,
-  onSnapshot,
   DocumentData,
+  QueryConstraint,
+  Unsubscribe,
 } from '@firebase/firestore';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Accent } from '../entities/Accent';
-import { buildAssignment } from '../entities/Assignment';
 import { db } from '../repositories/firebase';
+import { snapshotCollection } from '../repositories/utils';
 import { Article } from './useArticles';
 
 export type AssignmentSentence = {
@@ -43,48 +42,41 @@ export const INITIAL_ASSINGMENT_SENTENCE: AssignmentSentence = {
 const COLLECTION = 'aSentences';
 const colRef = collection(db, COLLECTION);
 
-const buildAssignmentSentence = (doc: DocumentData) => {
-  const assignmentSentence: AssignmentSentence = {
-    id: doc.id,
-    end: doc.data().end,
-    uid: doc.data().uid,
-    line: doc.data().line,
-    start: doc.data().start,
-    ondoku: doc.data().ondoku,
-    accents: doc.data().accents,
-    article: doc.data().article,
-    mistakes: doc.data().mistakes,
-  };
-  return assignmentSentence;
-};
-
 export const useAssignmentSentences = ({ article }: { article: Article }) => {
   const [assignmentSentences, setAssignmentSentences] = useState<
     AssignmentSentence[]
   >([]);
+
+  const _snapshotCollection = useMemo(
+    () =>
+      function <T>({
+        queries,
+        setValues,
+        buildValue,
+      }: {
+        queries?: QueryConstraint[];
+        setValues: (value: T[]) => void;
+        buildValue: (value: DocumentData) => T;
+      }): Unsubscribe {
+        return snapshotCollection({
+          db,
+          colId: COLLECTION,
+          queries,
+          setValues,
+          buildValue,
+        });
+      },
+    []
+  );
+
   useEffect(() => {
     if (!article.id) return;
-    const q = query(
-      colRef,
-      where('article', '==', article.id),
-      orderBy('line')
-    );
-    const unsub = onSnapshot(
-      q,
-      (snapshot) => {
-        console.log('snapshot assignment sentence');
-        const assignmentSentences: AssignmentSentence[] = [];
-        snapshot.forEach((doc) => {
-          const assignmentSentence = buildAssignmentSentence(doc);
-          assignmentSentences.push(assignmentSentence);
-        });
-        setAssignmentSentences(assignmentSentences);
-      },
-      (e) => {
-        console.warn(e);
-        setAssignmentSentences([]);
-      }
-    );
+
+    const unsub = _snapshotCollection({
+      queries: [where('article', '==', article.id), orderBy('line')],
+      setValues: setAssignmentSentences,
+      buildValue: buildAssignmentSentence,
+    });
 
     return () => {
       unsub();
@@ -173,4 +165,19 @@ export const useHandleAssignmentSentences = () => {
     updateAssignmentSentences,
     deleteAssignmentSentences,
   };
+};
+
+const buildAssignmentSentence = (doc: DocumentData) => {
+  const assignmentSentence: AssignmentSentence = {
+    id: doc.id,
+    end: doc.data().end,
+    uid: doc.data().uid,
+    line: doc.data().line,
+    start: doc.data().start,
+    ondoku: doc.data().ondoku,
+    accents: doc.data().accents,
+    article: doc.data().article,
+    mistakes: doc.data().mistakes,
+  };
+  return assignmentSentence;
 };
