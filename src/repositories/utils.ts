@@ -49,17 +49,48 @@ export const snapshotDocumentValue = <T>({
   );
 };
 
+export const snapshotDocument = <T>({
+  db,
+  id,
+  colId,
+  setValue,
+  buildValue,
+  initialValue,
+}: {
+  db: Firestore;
+  id: string;
+  colId: string;
+  initialValue: T;
+  setValue: (value: T) => void;
+  buildValue: (value: DocumentData) => T;
+}): Unsubscribe => {
+  return onSnapshot(
+    doc(db, colId, id),
+    (snapshot) => {
+      console.log(`snapshot ${colId}.${id}`);
+      if (snapshot.exists()) {
+        const value = buildValue(snapshot);
+        setValue(value);
+      } else {
+        setValue(initialValue);
+      }
+    },
+    (e) => {
+      console.warn(e);
+      setValue(initialValue);
+    }
+  );
+};
+
 export const snapshotCollection = <T>({
   db,
   colId,
-  limit: _limit,
   queries,
   setValues,
   buildValue,
 }: {
   db: Firestore;
   colId: string;
-  limit?: number;
   queries?: QueryConstraint[];
   setValues: (values: T[]) => void;
   buildValue: (value: DocumentData) => T;
@@ -84,6 +115,47 @@ export const snapshotCollection = <T>({
     (e) => {
       console.warn(e);
       setValues([]);
+    }
+  );
+};
+
+export const snapshotDocumentByQuery = <T>({
+  db,
+  colId,
+  queries,
+  initialValue,
+  setValue,
+  buildValue,
+}: {
+  db: Firestore;
+  colId: string;
+  queries?: QueryConstraint[];
+  initialValue: T;
+  setValue: (values: T) => void;
+  buildValue: (value: DocumentData) => T;
+}): Unsubscribe => {
+  let q = query(collection(db, colId));
+  if (!!queries) {
+    for (let _q of queries) {
+      q = query(q, _q);
+    }
+  }
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      console.log(`snap shot ${colId}`);
+      if (snapshot.size > 0) {
+        const doc = snapshot.docs[0];
+
+        const value = buildValue(doc);
+        setValue(value);
+      } else {
+        setValue(initialValue);
+      }
+    },
+    (e) => {
+      console.warn(e);
+      setValue(initialValue);
     }
   );
 };
@@ -123,6 +195,27 @@ export const updateDocument = async <T extends { id: string }>({
   const { id, ...omitted } = value;
   console.log(`update doc of ${colId}.${id}`);
   return await updateDoc(doc(db, colId, id), { ...omitted })
+    .then(() => {
+      return value;
+    })
+    .catch((e) => {
+      console.warn(e);
+      return null;
+    });
+};
+
+export const setDocument = async <T extends { id: string }>({
+  db,
+  colId,
+  value,
+}: {
+  db: Firestore;
+  colId: string;
+  value: T;
+}): Promise<T | null> => {
+  const { id, ...omitted } = value;
+  console.log(`%cset doc of ${colId}.${id}`, 'color:red');
+  return await setDoc(doc(db, colId, id), { ...omitted })
     .then(() => {
       return value;
     })

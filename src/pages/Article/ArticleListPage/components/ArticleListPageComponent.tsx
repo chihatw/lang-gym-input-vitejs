@@ -1,30 +1,43 @@
 import React from 'react';
-import { Container, Table, TableBody } from '@mui/material';
+import { Button, Container, Table, TableBody, Typography } from '@mui/material';
 
 import ArticleRow from './ArticleRow';
 import { Article } from '../../../../services/useArticles';
-import TablePageHeader from '../../../../components/ui/TablePageHeader';
+import LinkButton from '../../../../components/ui/LinkButton';
 
 const ArticleListPageComponent = ({
-  links,
   articles,
   openPage,
   handleClickDelete,
   handleClickShowParses,
   handleClickShowAccents,
   handleClickShowRecButton,
+  handleClickOpenCreateArticlePage,
 }: {
-  links: { label: string; pathname: string }[];
   articles: Article[];
   openPage: ({ path, article }: { path: string; article: Article }) => void;
   handleClickDelete: (article: Article) => void;
   handleClickShowParses: (article: Article) => void;
   handleClickShowAccents: (article: Article) => void;
   handleClickShowRecButton: (article: Article) => void;
+  handleClickOpenCreateArticlePage: () => void;
 }) => (
   <Container maxWidth={'sm'} sx={{ paddingTop: 2 }}>
     <div style={{ display: 'grid', rowGap: 16 }}>
-      <TablePageHeader label='作文一覧' links={links} />
+      <div style={{ display: 'grid', rowGap: 16 }}>
+        <Typography variant='h5'>{'作文一覧'}</Typography>
+        <div>
+          <LinkButton label={'戻る'} pathname={'/'} />
+        </div>
+        <div>
+          <Button
+            variant='contained'
+            onClick={handleClickOpenCreateArticlePage}
+          >
+            新規作成
+          </Button>
+        </div>
+      </div>
       <Table>
         <TableBody>
           {articles.map((article, index) => (

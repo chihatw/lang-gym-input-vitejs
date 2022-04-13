@@ -80,8 +80,8 @@ export const useEditOndokuAssignmentVoicePage = (id: string, uid: string) => {
       const path = decodeURIComponent(downloadURL.split('/')[7].split('?')[0]);
       const { success } = await deleteFile(path);
       if (success) {
-        const { success } = await deleteAssignment(assignmentID);
-        if (success) {
+        const result = await deleteAssignment(assignmentID);
+        if (result) {
           const { success } = await deleteAssignmentSentences(
             originalSentences.map((s) => s.id)
           );

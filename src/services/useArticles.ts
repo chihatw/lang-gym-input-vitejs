@@ -57,12 +57,10 @@ export const useArticles = ({
   const _snapshotCollection = useMemo(
     () =>
       function <T>({
-        limit,
         queries,
         setValues,
         buildValue,
       }: {
-        limit?: number;
         queries?: QueryConstraint[];
         setValues: (value: T[]) => void;
         buildValue: (value: DocumentData) => T;
@@ -70,7 +68,6 @@ export const useArticles = ({
         return snapshotCollection({
           db,
           colId: COLLECTION,
-          limit,
           queries,
           setValues,
           buildValue,

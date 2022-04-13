@@ -28,12 +28,10 @@ const useAudioItems = () => {
   const _snapshotCollection = useMemo(
     () =>
       function <T>({
-        limit,
         queries,
         setValues,
         buildValue,
       }: {
-        limit?: number;
         queries?: QueryConstraint[];
         setValues: (value: T[]) => void;
         buildValue: (value: DocumentData) => T;
@@ -41,7 +39,6 @@ const useAudioItems = () => {
         return snapshotCollection({
           db,
           colId: COLLECTION,
-          limit,
           queries,
           setValues,
           buildValue,

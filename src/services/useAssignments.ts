@@ -1,17 +1,18 @@
 import {
-  doc,
-  query,
   where,
-  addDoc,
-  deleteDoc,
-  updateDoc,
-  onSnapshot,
   collection,
   DocumentData,
+  Unsubscribe,
+  QueryConstraint,
 } from '@firebase/firestore';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Article } from './useArticles';
 import { db } from '../repositories/firebase';
+import {
+  addDocument,
+  deleteDocument,
+  snapshotDocumentByQuery,
+} from '../repositories/utils';
 
 export type Assignment = {
   id: string;
@@ -35,27 +36,40 @@ const colRef = collection(db, COLLECTION);
 
 export const useAssignments = ({ article }: { article: Article }) => {
   const [assignment, setAssignment] = useState(INITIAL_ASSIGNMENT);
+
+  const _snapshotDocumentByQuery = useMemo(
+    () =>
+      function <T>({
+        queries,
+        initialValue,
+        setValue,
+        buildValue,
+      }: {
+        queries?: QueryConstraint[];
+        initialValue: T;
+        setValue: (value: T) => void;
+        buildValue: (value: DocumentData) => T;
+      }): Unsubscribe {
+        return snapshotDocumentByQuery({
+          db,
+          colId: COLLECTION,
+          queries,
+          initialValue,
+          setValue,
+          buildValue,
+        });
+      },
+    []
+  );
+
   useEffect(() => {
     if (!article.id) return;
-    console.log(article.id);
-    const q = query(colRef, where('article', '==', article.id));
-    const unsub = onSnapshot(
-      q,
-      (snapshot) => {
-        console.log('snapshot assignment');
-        const doc = snapshot.docs[0];
-        if (doc) {
-          const assignment = buildAssignment(doc);
-          setAssignment(assignment);
-        } else {
-          setAssignment(INITIAL_ASSIGNMENT);
-        }
-      },
-      (e) => {
-        console.warn(e);
-        setAssignment(INITIAL_ASSIGNMENT);
-      }
-    );
+    const unsub = _snapshotDocumentByQuery({
+      queries: [where('article', '==', article.id)],
+      initialValue: INITIAL_ASSIGNMENT,
+      setValue: setAssignment,
+      buildValue: buildAssignment,
+    });
     return () => {
       unsub();
     };
@@ -63,49 +77,34 @@ export const useAssignments = ({ article }: { article: Article }) => {
   return { assignment };
 };
 export const useHandleAssignments = () => {
+  const _addDocument = useMemo(
+    () =>
+      async function <T extends { id: string }>(
+        value: Omit<T, 'id'>
+      ): Promise<T | null> {
+        return await addDocument({
+          db,
+          colId: COLLECTION,
+          value,
+        });
+      },
+    []
+  );
+  const _deleteDocument = useCallback(async (id: string) => {
+    return await deleteDocument({ db, colId: COLLECTION, id });
+  }, []);
+
   const createAssignment = async (
     assignment: Omit<Assignment, 'id'>
-  ): Promise<{ success: boolean }> => {
-    console.log('create assignment');
-    return await addDoc(colRef, assignment)
-      .then(() => {
-        return { success: true };
-      })
-      .catch((e) => {
-        console.warn(e);
-        return { success: false };
-      });
+  ): Promise<Assignment | null> => {
+    return await _addDocument(assignment);
   };
 
-  const updateAssignment = async (
-    assignment: Assignment
-  ): Promise<{ success: boolean }> => {
-    const { id, ...omitted } = assignment;
-    console.log('update assignment');
-    return await updateDoc(doc(db, COLLECTION, id), { ...omitted })
-      .then(() => {
-        return { success: true };
-      })
-      .catch((e) => {
-        console.warn(e);
-        return { success: false };
-      });
+  const deleteAssignment = async (assignmentId: string): Promise<boolean> => {
+    return await _deleteDocument(assignmentId);
   };
 
-  const deleteAssignment = async (
-    assignmentId: string
-  ): Promise<{ success: boolean }> => {
-    return await deleteDoc(doc(db, COLLECTION, assignmentId))
-      .then(() => {
-        return { success: true };
-      })
-      .catch((e) => {
-        console.warn(e);
-        return { success: false };
-      });
-  };
-
-  return { createAssignment, updateAssignment, deleteAssignment };
+  return { createAssignment, deleteAssignment };
 };
 
 const buildAssignment = (doc: DocumentData) => {

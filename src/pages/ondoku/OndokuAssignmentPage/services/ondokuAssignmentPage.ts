@@ -89,8 +89,8 @@ export const useOndokuAssignmentPage = (id: string) => {
     );
     const { success } = await deleteFile(path);
     if (success) {
-      const { success } = await deleteAssignment(assignment.id);
-      if (success) {
+      const result = await deleteAssignment(assignment.id);
+      if (result) {
         const { success } = await deleteAssignmentSentences(
           assignmentSentences.map((s) => s.id)
         );
@@ -113,8 +113,8 @@ export const useOndokuAssignmentPage = (id: string) => {
         uid,
         downloadURL: url,
       };
-      const { success } = await createAssignment(assignment);
-      if (success) {
+      const result = await createAssignment(assignment);
+      if (!!result) {
         const assignmentSentences: CreateAssignmentSentence[] = sentences.map(
           (s) => ({
             article: '',

@@ -9,8 +9,7 @@ import { Article, useHandleArticles } from '../../../services/useArticles';
 
 const ArticleListPage = () => {
   const navigate = useNavigate();
-  const { article, articles, setArticleId, setIsFetching } =
-    useContext(AppContext);
+  const { articles, setArticleId } = useContext(AppContext);
   const { updateArticle, deleteArticle } = useHandleArticles();
   const { deleteSentences } = useHandleSentences();
 
@@ -63,26 +62,24 @@ const ArticleListPage = () => {
     path: string;
     article: Article;
   }) => {
-    if (article.id !== _article.id) {
-      setArticleId(_article.id);
-    }
-    navigate(`/article/${path}`);
+    setArticleId(_article.id);
+    navigate(`/article`);
   };
 
-  const links = [
-    { label: '戻る', pathname: '/' },
-    { label: '新規作成', pathname: '/article' },
-  ];
+  const handleClickOpenCreateArticlePage = () => {
+    setArticleId('');
+    setTimeout(() => navigate('/article'), 100);
+  };
 
   return (
     <ArticleListPageComponent
-      links={links}
       articles={articles}
       openPage={openPage}
       handleClickDelete={handleClickDelete}
       handleClickShowAccents={handleClickShowAccents}
       handleClickShowParses={handleClickShowParses}
       handleClickShowRecButton={handleClickShowRecButton}
+      handleClickOpenCreateArticlePage={handleClickOpenCreateArticlePage}
     />
   );
 };

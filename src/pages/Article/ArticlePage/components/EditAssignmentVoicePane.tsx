@@ -180,8 +180,8 @@ const EditAssignmentVoicePane = ({
         article: article.id,
         downloadURL: url,
       };
-      const { success } = await createAssignment(assignment);
-      if (success) {
+      const result = await createAssignment(assignment);
+      if (!!result) {
         const assignmentSentences: Omit<AssignmentSentence, 'id'>[] = [];
 
         sentences.forEach((sentence) => {
