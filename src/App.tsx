@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import AppRoutes from './routes/AppRoutes';
 import { AppContext, useApp } from './services/app';
@@ -10,9 +10,11 @@ import { useSentences } from './services/useSentences';
 import { useAssignments } from './services/useAssignments';
 import { useAssignmentSentences } from './services/useAssignmentSentences';
 import { useSentenceParseNews } from './services/useSentenceParseNews';
+import { useOndokus } from './services/useOndokus';
 
 const App = () => {
   const [articleId, setArticleId] = useState('');
+  const [ondokuId, setOndokuId] = useState('');
   const [workoutId, setWorkoutId] = useState('');
   const [isFetching, setIsFetching] = useState(false);
   const { initializing, user, createRhythmsQuestion } = useApp();
@@ -27,12 +29,16 @@ const App = () => {
   const { assignmentSentences } = useAssignmentSentences(article.id);
   const { sentenceParseNews } = useSentenceParseNews({ article });
   const { workout, workouts } = useWorkouts({ workoutId });
+  const { ondoku, ondokus } = useOndokus({ opened: true, ondokuId });
+
   return (
     <AppContext.Provider
       value={{
         user,
         users,
         article,
+        ondoku,
+        ondokus,
         workout,
         articles,
         workouts,
@@ -43,6 +49,7 @@ const App = () => {
         initializing,
         sentenceParseNews,
         assignmentSentences,
+        setOndokuId,
         setArticleId,
         setWorkoutId,
         setIsFetching,

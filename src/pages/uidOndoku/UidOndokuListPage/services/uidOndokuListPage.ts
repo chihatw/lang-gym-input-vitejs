@@ -5,17 +5,18 @@ import {
   orderBy,
   limit,
 } from '@firebase/firestore';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { buildUidOndoku, UidOndoku } from '../../../../entities/UidOndoku';
 import { db } from '../../../../repositories/firebase';
-import { getOndoku } from '../../../../repositories/ondoku';
 import { deleteUidOndoku } from '../../../../repositories/uidOndoku';
 import { getUser } from '../../../../repositories/user';
+import { AppContext } from '../../../../services/app';
 
 const COLLECTION = 'uidOndokus';
 const colRef = collection(db, COLLECTION);
 
 export const useUidOndokuListPage = (_limit: number) => {
+  const { ondoku } = useContext(AppContext);
   const [uidOndokus, setUidOndokus] = useState<UidOndoku[]>([]);
   const [uids, setUids] = useState<string[]>([]);
   const [ondokuIDs, setOndokuIDs] = useState<string[]>([]);
@@ -78,14 +79,13 @@ export const useUidOndokuListPage = (_limit: number) => {
       const titles: { [key: string]: string } = {};
       await Promise.all(
         ondokuIDs.map(async (id) => {
-          const ondoku = await getOndoku(id);
           titles[id] = !!ondoku ? ondoku.title : '';
         })
       );
       setTitles(titles);
     };
     fetchData();
-  }, [uids, ondokuIDs, uidOndokus]);
+  }, [uids, ondokuIDs, uidOndokus, ondoku]);
 
   const onDelete = (uidOndoku: UidOndoku) => {
     if (

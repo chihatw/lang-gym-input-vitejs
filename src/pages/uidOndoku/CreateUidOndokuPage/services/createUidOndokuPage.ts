@@ -1,31 +1,27 @@
 import { doc } from '@firebase/firestore';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CreateUidOndoku } from '../../../../entities/UidOndoku';
 
 import { db } from '../../../../repositories/firebase';
-import { getOndoku } from '../../../../repositories/ondoku';
 import { createUidOndoku } from '../../../../repositories/uidOndoku';
 import { getUsers } from '../../../../repositories/user';
+import { AppContext } from '../../../../services/app';
 import { User } from '../../../../services/useUsers';
 
 const COLLECTION = 'ondokus';
 
 export const useCreateUidOndokuPage = (id: string, limit: number) => {
   const navigate = useNavigate();
-  const [initializing, setInitializing] = useState(true);
+  const { ondoku } = useContext(AppContext);
+
   const [title, setTitle] = useState('');
   const [users, setUsers] = useState<User[]>([]);
   const [uid, setUid] = useState('');
 
   useEffect(() => {
-    const fetchData = async () => {
-      const ondoku = await getOndoku(id);
-      !!ondoku && setTitle(ondoku.title);
-      setInitializing(false);
-    };
-    fetchData();
-  }, [id]);
+    setTitle(ondoku.title);
+  }, [ondoku]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,5 +50,5 @@ export const useCreateUidOndokuPage = (id: string, limit: number) => {
     }
   };
 
-  return { initializing, title, users, uid, onChangeUid, onSubmit };
+  return { initializing: false, title, users, uid, onChangeUid, onSubmit };
 };

@@ -2,11 +2,11 @@ import dayjs from 'dayjs';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { CreateOndoku } from '../../../../entities/Ondoku';
-import { createOndoku } from '../../../../repositories/ondoku';
+import { Ondoku, useHandleOndokus } from '../../../../services/useOndokus';
 
 export const useCreateOndokuPage = () => {
   const navigate = useNavigate();
+  const { addOndoku } = useHandleOndokus();
   const [date, setDate] = useState<Date>(new Date());
   const [isShowAccents, setIsShowAccents] = useState(false);
   const [title, setTitle] = useState('');
@@ -43,15 +43,15 @@ export const useCreateOndokuPage = () => {
     setIsShowAccents(!isShowAccents);
   };
   const onSubmit = async () => {
-    const newOndoku: CreateOndoku = {
+    const newOndoku: Omit<Ondoku, 'id'> = {
       createdAt: dayjs(date).valueOf(),
       downloadURL,
       isShowAccents,
       title,
     };
-    const { success, ondokuID } = await createOndoku(newOndoku);
-    if (success) {
-      navigate(`/ondoku/${ondokuID}`);
+    const result = await addOndoku(newOndoku);
+    if (!!result) {
+      navigate(`/ondoku/${result.id}`);
     }
   };
   return {

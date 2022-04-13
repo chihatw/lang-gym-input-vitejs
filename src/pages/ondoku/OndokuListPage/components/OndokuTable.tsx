@@ -17,8 +17,9 @@ import {
 import Person from '@mui/icons-material/Person';
 import Mic from '@mui/icons-material/Mic';
 import React from 'react';
-import { Ondoku } from '../../../../entities/Ondoku';
+
 import dayjs from 'dayjs';
+import { Ondoku } from '../../../../services/useOndokus';
 
 const OndokuTable: React.FC<{
   ondokus: Ondoku[];

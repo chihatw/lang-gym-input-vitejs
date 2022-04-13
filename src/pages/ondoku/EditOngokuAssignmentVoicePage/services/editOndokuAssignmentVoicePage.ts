@@ -1,8 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { Mark } from '../../../../entities/Mark';
-import { getOndoku } from '../../../../repositories/ondoku';
 import { deleteFile } from '../../../../repositories/file';
 import { getOndokuSentences } from '../../../../repositories/ondokuSentence';
 import {
@@ -12,9 +11,11 @@ import {
 import { getAssignment } from '../../../../repositories/assignment';
 import { getAssignmentSentences } from '../../../../repositories/assignmentSentence';
 import { useHandleAssignments } from '../../../../services/useAssignments';
+import { AppContext } from '../../../../services/app';
 
 export const useEditOndokuAssignmentVoicePage = (id: string, uid: string) => {
   const navigate = useNavigate();
+  const { ondoku } = useContext(AppContext);
   const { deleteAssignment } = useHandleAssignments();
   const { updateAssignmentSentences, deleteAssignmentSentences } =
     useHandleAssignmentSentences();
@@ -33,19 +34,18 @@ export const useEditOndokuAssignmentVoicePage = (id: string, uid: string) => {
   const [hasChange, setHasChange] = useState(false);
 
   useEffect(() => {
+    if (!ondoku.id) return;
     const fetchData = async () => {
-      const ondoku = await getOndoku(id);
-      if (!!ondoku) {
-        setTitle(ondoku.title);
-        const ondokuSentences = await getOndokuSentences(ondoku.id);
-        if (!!ondokuSentences) {
-          setSentences(ondokuSentences.map((s) => s.japanese));
-        }
+      setTitle(ondoku.title);
+      const ondokuSentences = await getOndokuSentences(ondoku.id);
+      if (!!ondokuSentences) {
+        setSentences(ondokuSentences.map((s) => s.japanese));
       }
+
       setInitializing(false);
     };
     fetchData();
-  }, [id]);
+  }, [ondoku]);
 
   useEffect(() => {
     const fetchData = async () => {

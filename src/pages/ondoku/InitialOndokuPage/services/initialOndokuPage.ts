@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { buildAccents } from '../../../../entities/Accent';
 import { CreateOndokuSentence } from '../../../../entities/OndokuSentence';
-import { getOndoku } from '../../../../repositories/ondoku';
+
 import { createOndokuSentences } from '../../../../repositories/ondokuSentence';
+import { AppContext } from '../../../../services/app';
 
 export const useInitialOndokuPage = (id: string) => {
   const navigate = useNavigate();
+  const { ondoku } = useContext(AppContext);
   const [title, setTitle] = useState('');
   const [japanese, setJapanese] = useState('');
   const [accentString, setAccentString] = useState('');
@@ -15,14 +17,8 @@ export const useInitialOndokuPage = (id: string) => {
   >([]);
   const [isValid, setIsValid] = useState(false);
   useEffect(() => {
-    const fetchData = async () => {
-      const ondoku = await getOndoku(id);
-      if (!!ondoku) {
-        setTitle(ondoku.title);
-      }
-    };
-    fetchData();
-  }, [id]);
+    setTitle(ondoku.title);
+  }, [ondoku]);
   const onChangeJapanese = (japanese: string) => {
     setJapanese(japanese);
   };

@@ -5,8 +5,8 @@ import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import accentsForPitchesArray from 'accents-for-pitches-array';
 import { Card, IconButton, Button } from '@mui/material';
 
-import { Ondoku } from '../../../../entities/Ondoku';
 import { OndokuSentence } from '../../../../entities/OndokuSentence';
+import { Ondoku } from '../../../../services/useOndokus';
 
 const OndokuSentenceList: React.FC<{
   ondoku: Ondoku;

@@ -1,15 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { buildAccents, buildAccentString } from '../../../../entities/Accent';
 import { UpdateOndokuSentence } from '../../../../entities/OndokuSentence';
-import { getOndoku } from '../../../../repositories/ondoku';
 import {
   getOndokuSentence,
   updateOndokuSentence,
 } from '../../../../repositories/ondokuSentence';
+import { AppContext } from '../../../../services/app';
 
 export const useEditOndokuSentencePage = (id: string) => {
   const navigate = useNavigate();
+  const { ondoku } = useContext(AppContext);
+
   const [title, setTitle] = useState('');
   const [downloadURL, setDownloadURL] = useState('');
   const [ondokuID, setOndokuID] = useState('');
@@ -34,16 +36,9 @@ export const useEditOndokuSentencePage = (id: string) => {
   }, [id]);
 
   useEffect(() => {
-    if (!ondokuID) return;
-    const fetchData = async () => {
-      const ondoku = await getOndoku(ondokuID);
-      if (!!ondoku) {
-        setTitle(ondoku.title);
-        setDownloadURL(ondoku.downloadURL);
-      }
-    };
-    fetchData();
-  }, [ondokuID]);
+    setTitle(ondoku.title);
+    setDownloadURL(ondoku.downloadURL);
+  }, [ondoku]);
   const onChangeJapanese = (japanese: string) => {
     setJapanese(japanese);
   };

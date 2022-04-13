@@ -1,16 +1,14 @@
 // https://firebase.google.com/docs/storage/web/download-files#download_data_via_url
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDownloadURL } from '@firebase/storage';
 import { CreateAssignment } from '../../../../entities/Assignment';
 import { CreateAssignmentSentence } from '../../../../entities/AssignmentSentence';
-import { Ondoku } from '../../../../entities/Ondoku';
 import { OndokuSentence } from '../../../../entities/OndokuSentence';
 
 import { getAssignment } from '../../../../repositories/assignment';
 import { getAssignmentSentences } from '../../../../repositories/assignmentSentence';
 import { deleteFile, uploadFile } from '../../../../repositories/file';
-import { getOndoku } from '../../../../repositories/ondoku';
 import { getOndokuSentences } from '../../../../repositories/ondokuSentence';
 import { getUsers } from '../../../../repositories/user';
 import { User } from '../../../../services/useUsers';
@@ -22,16 +20,17 @@ import {
   AssignmentSentence,
   useHandleAssignmentSentences,
 } from '../../../../services/useAssignmentSentences';
+import { AppContext } from '../../../../services/app';
 
 export const useOndokuAssignmentPage = (id: string) => {
   const navigate = useNavigate();
-
+  const { ondoku } = useContext(AppContext);
   const { createAssignment, deleteAssignment } = useHandleAssignments();
   const { createAssignmentSentences, deleteAssignmentSentences } =
     useHandleAssignmentSentences();
 
-  const [initializing, setInitializing] = useState(true);
-  const [ondoku, setOndoku] = useState<Ondoku | null>(null);
+  // const [initializing, setInitializing] = useState(false);
+
   const [uid, setUid] = useState('');
   const [users, setUsers] = useState<User[]>([]);
   const [sentences, setSentences] = useState<OndokuSentence[]>([]);
@@ -39,14 +38,6 @@ export const useOndokuAssignmentPage = (id: string) => {
     AssignmentSentence[]
   >([]);
   const [assignment, setAssignment] = useState<Assignment | null>(null);
-  useEffect(() => {
-    const fetchData = async () => {
-      const ondoku = await getOndoku(id);
-      setOndoku(ondoku);
-      setInitializing(false);
-    };
-    fetchData();
-  }, [id]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -137,7 +128,7 @@ export const useOndokuAssignmentPage = (id: string) => {
   return {
     assignment,
     assignmentSentences,
-    initializing,
+    initializing: false,
     ondoku,
     uid,
     onChangeUid,

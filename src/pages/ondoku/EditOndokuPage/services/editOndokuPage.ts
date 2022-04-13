@@ -1,28 +1,25 @@
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
-import { Ondoku } from '../../../../entities/Ondoku';
-import { getOndoku, updateOndoku } from '../../../../repositories/ondoku';
+import { Ondoku, useHandleOndokus } from '../../../../services/useOndokus';
+import { AppContext } from '../../../../services/app';
 
 export const useEditOndokuPage = (id: string) => {
   const navigate = useNavigate();
+  const { ondoku } = useContext(AppContext);
+  const { updateOndoku } = useHandleOndokus();
+
   const [date, setDate] = useState<Date>(new Date());
   const [isShowAccents, setIsShowAccents] = useState(false);
   const [title, setTitle] = useState('');
   const [downloadURL, setDownloadURL] = useState('');
   useEffect(() => {
-    const fetchData = async () => {
-      const ondoku = await getOndoku(id);
-      if (!!ondoku) {
-        setDate(new Date(ondoku.createdAt));
-        setIsShowAccents(ondoku.isShowAccents);
-        setTitle(ondoku.title);
-        setDownloadURL(ondoku.downloadURL);
-      }
-    };
-    fetchData();
-  }, [id]);
+    setDate(new Date(ondoku.createdAt));
+    setIsShowAccents(ondoku.isShowAccents);
+    setTitle(ondoku.title);
+    setDownloadURL(ondoku.downloadURL);
+  }, [ondoku]);
   const textFieldItems: {
     label: string;
     value: string;
@@ -49,9 +46,6 @@ export const useEditOndokuPage = (id: string) => {
   const onPickDate = (date: Date | null) => {
     !!date && setDate(date);
   };
-  // const onPickDate = (date: MaterialUiPickersDate) => {
-  //   !!date && setDate(date.toDate());
-  // };
   const onToggleShowAccents = () => {
     setIsShowAccents(!isShowAccents);
   };
@@ -63,8 +57,8 @@ export const useEditOndokuPage = (id: string) => {
       isShowAccents,
       title,
     };
-    const { success } = await updateOndoku(newOndoku);
-    if (success) {
+    const result = await updateOndoku(newOndoku);
+    if (!!result) {
       navigate('/ondoku/list');
     }
   };

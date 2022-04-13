@@ -1,25 +1,25 @@
 import { getDownloadURL } from '@firebase/storage';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Ondoku } from '../../../../entities/Ondoku';
 import { uploadFile } from '../../../../repositories/file';
-import { getOndoku, updateOndoku } from '../../../../repositories/ondoku';
 import { getOndokuSentences } from '../../../../repositories/ondokuSentence';
+import { AppContext } from '../../../../services/app';
+import { Ondoku, useHandleOndokus } from '../../../../services/useOndokus';
 
 export const useInitialOndokuVoicePage = (id: string) => {
   const navigate = useNavigate();
+
+  const { updateOndoku } = useHandleOndokus();
+  const { ondoku } = useContext(AppContext);
   const [title, setTitle] = useState('');
   const [initializing, setInitializing] = useState(true);
-  const [ondoku, setOndoku] = useState<Ondoku | null>(null);
   const [hasSentences, setHasSentences] = useState(false);
 
   useEffect(() => {
+    if (!ondoku.id) return;
     const fetchData = async () => {
-      const ondoku = await getOndoku(id);
-      if (!!ondoku) {
-        setTitle(ondoku.title);
-        setOndoku(ondoku);
-      }
+      setTitle(ondoku.title);
+
       const ondokuSentences = await getOndokuSentences(id);
       if (!!ondokuSentences) {
         setHasSentences(!!ondokuSentences.length);
@@ -27,7 +27,7 @@ export const useInitialOndokuVoicePage = (id: string) => {
       setInitializing(false);
     };
     fetchData();
-  }, [id]);
+  }, [ondoku]);
 
   const onUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -39,8 +39,8 @@ export const useInitialOndokuVoicePage = (id: string) => {
         ...ondoku!,
         downloadURL: url,
       };
-      const { success } = await updateOndoku(newOndoku);
-      if (success) {
+      const result = await updateOndoku(newOndoku);
+      if (!!result) {
         navigate(`/ondoku/${id}/voice`);
       }
     }

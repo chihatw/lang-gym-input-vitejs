@@ -23,11 +23,14 @@ import { Assignment, INITIAL_ASSIGNMENT } from './useAssignments';
 import { AssignmentSentence } from './useAssignmentSentences';
 import { SentenceParseNew } from './useSentenceParseNews';
 import { INITIAL_WORKOUT, Workout } from './useWorkouts';
+import { INITIAL_ONDOKU, Ondoku } from './useOndokus';
 
 export const AppContext = createContext<{
   user: _User | null;
   users: User[];
   article: Article;
+  ondoku: Ondoku;
+  ondokus: Ondoku[];
   workout: Workout;
   articles: Article[];
   workouts: Workout[];
@@ -38,6 +41,7 @@ export const AppContext = createContext<{
   initializing: boolean;
   sentenceParseNews: SentenceParseNew[];
   assignmentSentences: AssignmentSentence[];
+  setOndokuId: (value: string) => void;
   setArticleId: (value: string) => void;
   setWorkoutId: (value: string) => void;
   setIsFetching: (value: boolean) => void;
@@ -60,6 +64,8 @@ export const AppContext = createContext<{
   article: INITIAL_ARTICLE,
   workout: INITIAL_WORKOUT,
   workouts: [],
+  ondoku: INITIAL_ONDOKU,
+  ondokus: [],
   articles: [],
   sentences: [],
   audioItems: [],
@@ -68,6 +74,7 @@ export const AppContext = createContext<{
   initializing: true,
   sentenceParseNews: [],
   assignmentSentences: [],
+  setOndokuId: () => {},
   setArticleId: () => {},
   setWorkoutId: () => {},
   setIsFetching: () => {},

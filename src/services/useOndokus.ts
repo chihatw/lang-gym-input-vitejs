@@ -1,17 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   doc,
   limit,
-  query,
-  getDoc,
   orderBy,
   updateDoc,
-  deleteDoc,
   collection,
-  onSnapshot,
+  QueryConstraint,
+  Unsubscribe,
+  DocumentData,
 } from '@firebase/firestore';
 
 import { db } from '../repositories/firebase';
+import {
+  addDocument,
+  deleteDocument,
+  snapshotCollection,
+  updateDocument,
+} from '../repositories/utils';
 
 export type Ondoku = {
   id: string;
@@ -34,84 +39,61 @@ const COLLECTION = 'ondokus';
 
 const colRef = collection(db, COLLECTION);
 
+const buildOndoku = (doc: DocumentData) => {
+  const ondoku: Ondoku = {
+    id: doc.id,
+    title: doc.data().title,
+    createdAt: doc.data().createdAt,
+    downloadURL: doc.data().downloadURL,
+    isShowAccents: doc.data().isShowAccents,
+  };
+  return ondoku;
+};
+
 export const useOndokus = ({
   opened,
   ondokuId,
-  isFetchingRef,
 }: {
   opened: boolean;
   ondokuId: string;
-  isFetchingRef: React.MutableRefObject<boolean>;
 }) => {
   const [ondoku, setOndoku] = useState(INITIAL_ONDOKU);
   const [ondokus, setOndokus] = useState<Ondoku[]>([]);
 
+  const _snapshotCollection = useMemo(
+    () =>
+      function <T>({
+        queries,
+        setValues,
+        buildValue,
+      }: {
+        queries?: QueryConstraint[];
+        setValues: (value: T[]) => void;
+        buildValue: (value: DocumentData) => T;
+      }): Unsubscribe {
+        return snapshotCollection({
+          db,
+          colId: COLLECTION,
+          queries,
+          setValues,
+          buildValue,
+        });
+      },
+    []
+  );
+
   useEffect(() => {
-    if (!ondokuId) {
-      setOndoku(INITIAL_ONDOKU);
-      isFetchingRef.current = false;
-    } else {
-      const ondokuIds = ondokus.map((ondoku) => ondoku.id);
-      if (ondokuIds.includes(ondokuId)) {
-        const ondoku = ondokus.filter((ondoku) => ondoku.id === ondokuId)[0];
-        setOndoku(ondoku);
-        isFetchingRef.current = false;
-      } else {
-        const fetchData = async () => {
-          console.log('get ondoku');
-          getDoc(doc(db, COLLECTION, ondokuId))
-            .then((doc) => {
-              if (doc.exists()) {
-                const ondoku: Ondoku = {
-                  id: doc.id,
-                  title: doc.data().title,
-                  createdAt: doc.data().createdAt,
-                  downloadURL: doc.data().downloadURL,
-                  isShowAccents: doc.data().isShowAccents,
-                };
-                setOndoku(ondoku);
-              } else {
-                setOndoku(INITIAL_ONDOKU);
-              }
-              isFetchingRef.current = false;
-            })
-            .catch((e) => {
-              console.warn(e);
-              setOndoku(INITIAL_ONDOKU);
-              isFetchingRef.current = false;
-            });
-        };
-        fetchData();
-      }
-    }
+    const ondoku = ondokus.filter((ondoku) => ondoku.id === ondokuId)[0];
+    setOndoku(ondoku ?? INITIAL_ONDOKU);
   }, [ondokuId]);
 
   useEffect(() => {
     if (!opened) return;
-    const q = query(colRef, orderBy('createdAt', 'desc'), limit(LIMIT));
-    const unsub = onSnapshot(
-      q,
-      (snapshot) => {
-        const ondokus: Ondoku[] = [];
-        console.log('snapshot ondokus');
-        snapshot.forEach((doc) => {
-          const ondoku: Ondoku = {
-            id: doc.id,
-            title: doc.data().title,
-            createdAt: doc.data().createdAt,
-            downloadURL: doc.data().downloadURL,
-            isShowAccents: doc.data().isShowAccents,
-          };
-          ondokus.push(ondoku);
-        });
-        setOndokus(ondokus);
-      },
-      (error) => {
-        setOndokus([]);
-        console.log(error);
-      }
-    );
-
+    const unsub = _snapshotCollection({
+      queries: [orderBy('createdAt', 'desc'), limit(LIMIT)],
+      setValues: setOndokus,
+      buildValue: buildOndoku,
+    });
     return () => {
       unsub();
     };
@@ -124,19 +106,41 @@ export const useOndokus = ({
 };
 
 export const useHandleOndokus = () => {
-  const updateOndoku = async (
-    ondoku: Ondoku
-  ): Promise<{ success: boolean }> => {
-    const { id, ...omitted } = ondoku;
-    console.log('update Ondoku');
-    return await updateDoc(doc(db, COLLECTION, ondoku.id), { ...omitted })
-      .then(() => {
-        return { success: true };
-      })
-      .catch((e) => {
-        console.warn(e);
-        return { success: false };
-      });
+  const _addDocument = useMemo(
+    () =>
+      async function <T extends { id: string }>(
+        value: Omit<T, 'id'>
+      ): Promise<T | null> {
+        return await addDocument({
+          db,
+          colId: COLLECTION,
+          value,
+        });
+      },
+    []
+  );
+  const _updateDocument = useMemo(
+    () =>
+      async function <T extends { id: string }>(value: T): Promise<T | null> {
+        return await updateDocument({
+          db,
+          colId: COLLECTION,
+          value,
+        });
+      },
+    []
+  );
+
+  const _deleteDocument = useCallback(async (id: string) => {
+    return await deleteDocument({ db, colId: COLLECTION, id });
+  }, []);
+  const addOndoku = async (
+    ondoku: Omit<Ondoku, 'id'>
+  ): Promise<Ondoku | null> => {
+    return await _addDocument(ondoku);
+  };
+  const updateOndoku = async (ondoku: Ondoku): Promise<Ondoku | null> => {
+    return await _updateDocument(ondoku);
   };
   const toggleShowAccents = async (ondoku: Ondoku) => {
     const newOndoku: Ondoku = {
@@ -147,11 +151,11 @@ export const useHandleOndokus = () => {
     console.log('update Ondoku');
     updateDoc(doc(db, COLLECTION, ondoku.id), { ...omitted });
   };
-  const deleteOndoku = (id: string) => {
-    console.log('delete Ondoku');
-    deleteDoc(doc(db, COLLECTION, id));
+  const deleteOndoku = async (id: string): Promise<boolean> => {
+    return await _deleteDocument(id);
   };
   return {
+    addOndoku,
     deleteOndoku,
     updateOndoku,
     toggleShowAccents,
