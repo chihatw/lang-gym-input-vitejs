@@ -2,7 +2,6 @@ import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { buildAccents, buildAccentString } from '../../../../entities/Accent';
 
-import { getAssignment } from '../../../../repositories/assignment';
 import { getAssignmentSentence } from '../../../../repositories/assignmentSentence';
 import { AppContext } from '../../../../services/app';
 import {
@@ -18,7 +17,7 @@ export const useEditOndokuAssignmentPage = (
 ) => {
   const navigate = useNavigate();
 
-  const { ondoku, ondokuSentences } = useContext(AppContext);
+  const { ondoku, ondokuSentences, ondokuAssignment } = useContext(AppContext);
 
   const { updateAssignmentSentence } = useHandleAssignmentSentences();
   const [title, setTitle] = useState('');
@@ -39,12 +38,8 @@ export const useEditOndokuAssignmentPage = (
   }, [id, line, ondokuSentences]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const assignment = await getAssignment({ uid, ondokuID: id });
-      !!assignment && setDownloadURL(assignment.downloadURL);
-    };
-    fetchData();
-  });
+    setDownloadURL(ondokuAssignment.downloadURL);
+  }, [ondokuAssignment]);
 
   useEffect(() => {
     if (!uid) return;

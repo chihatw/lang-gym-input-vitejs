@@ -11,27 +11,12 @@ import {
   deleteDocument,
   snapshotDocumentByQuery,
 } from '../repositories/utils';
-
-export type Assignment = {
-  id: string;
-  uid: string;
-  ondoku: string;
-  article: string;
-  downloadURL: string;
-};
-
-export const INITIAL_ASSIGNMENT: Assignment = {
-  id: '',
-  uid: '',
-  ondoku: '',
-  article: '',
-  downloadURL: '',
-};
+import { Assignment, INITIAL_ASSIGNMENT } from './useAssignments';
 
 const COLLECTION = 'assignments';
 
-export const useAssignments = (articleId: string) => {
-  const [assignment, setAssignment] = useState(INITIAL_ASSIGNMENT);
+export const useOndokuAssignments = (ondokuId: string) => {
+  const [ondokuAssignment, setOndokuAssignment] = useState(INITIAL_ASSIGNMENT);
 
   const _snapshotDocumentByQuery = useMemo(
     () =>
@@ -59,18 +44,18 @@ export const useAssignments = (articleId: string) => {
   );
 
   useEffect(() => {
-    if (!articleId) return;
+    if (!ondokuId) return;
     const unsub = _snapshotDocumentByQuery({
-      queries: [where('article', '==', articleId)],
+      queries: [where('ondoku', '==', ondokuId)],
       initialValue: INITIAL_ASSIGNMENT,
-      setValue: setAssignment,
+      setValue: setOndokuAssignment,
       buildValue: buildAssignment,
     });
     return () => {
       unsub();
     };
-  }, [articleId]);
-  return { assignment };
+  }, [ondokuId]);
+  return { ondokuAssignment };
 };
 export const useHandleAssignments = () => {
   const _addDocument = useMemo(
@@ -90,26 +75,28 @@ export const useHandleAssignments = () => {
     return await deleteDocument({ db, colId: COLLECTION, id });
   }, []);
 
-  const createAssignment = async (
-    assignment: Omit<Assignment, 'id'>
+  const createOndokuAssignment = async (
+    ondokuAssignment: Omit<Assignment, 'id'>
   ): Promise<Assignment | null> => {
-    return await _addDocument(assignment);
+    return await _addDocument(ondokuAssignment);
   };
 
-  const deleteAssignment = async (assignmentId: string): Promise<boolean> => {
+  const deleteOndokuAssignment = async (
+    assignmentId: string
+  ): Promise<boolean> => {
     return await _deleteDocument(assignmentId);
   };
 
-  return { createAssignment, deleteAssignment };
+  return { createOndokuAssignment, deleteOndokuAssignment };
 };
 
 const buildAssignment = (doc: DocumentData) => {
-  const assignment: Assignment = {
+  const ondokuAssignment: Assignment = {
     id: doc.id,
     uid: doc.data().uid,
     ondoku: doc.data().ondoku,
     article: doc.data().article,
     downloadURL: doc.data().downloadURL,
   };
-  return assignment;
+  return ondokuAssignment;
 };

@@ -1,29 +1,47 @@
-import React from 'react';
-import { useCreateOndokuPage } from './services/createOndokuPage';
-import OndokuForm from '../../../components/organisms/OndokuForm';
-import TableLayout from '../../../components/templates/TableLayout';
+import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+
+import { Ondoku, useHandleOndokus } from '../../../services/useOndokus';
+import CreateOndokuPageComponent from './components/CreateOndokuPageComponent';
 
 const CreateOndokuPage = () => {
-  const {
-    date,
-    onSubmit,
-    onPickDate,
-    isShowAccents,
-    textFieldItems,
-    onToggleShowAccents,
-  } = useCreateOndokuPage();
+  const navigate = useNavigate();
+  const { addOndoku } = useHandleOndokus();
+  const [date, setDate] = useState<Date>(new Date());
+  const [isShowAccents, setIsShowAccents] = useState(false);
+  const [title, setTitle] = useState('');
+  const [downloadURL, setDownloadURL] = useState('');
+
+  const onPickDate = (date: Date | null) => {
+    !!date && setDate(date);
+  };
+  const onToggleShowAccents = () => {
+    setIsShowAccents(!isShowAccents);
+  };
+  const onSubmit = async () => {
+    const newOndoku: Omit<Ondoku, 'id'> = {
+      createdAt: date.getTime(),
+      downloadURL,
+      isShowAccents,
+      title,
+    };
+    const result = await addOndoku(newOndoku);
+    if (!!result) {
+      navigate(`/ondoku/${result.id}`);
+    }
+  };
   return (
-    <TableLayout title='音読作成' backURL='/ondoku/list'>
-      <OndokuForm
-        date={date}
-        onSubmit={onSubmit}
-        onPickDate={onPickDate}
-        isShowAccents={isShowAccents}
-        textFieldItems={textFieldItems}
-        submitButtonLabel='作成'
-        onToggleShowAccents={onToggleShowAccents}
-      />
-    </TableLayout>
+    <CreateOndokuPageComponent
+      date={date}
+      title={title}
+      downloadURL={downloadURL}
+      isShowAccents={isShowAccents}
+      setTitle={setTitle}
+      onSubmit={onSubmit}
+      onPickDate={onPickDate}
+      setDownloadURL={setDownloadURL}
+      onToggleShowAccents={onToggleShowAccents}
+    />
   );
 };
 

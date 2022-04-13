@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import AppRoutes from './routes/AppRoutes';
 import { AppContext, useApp } from './services/app';
@@ -12,6 +12,7 @@ import { useAssignmentSentences } from './services/useAssignmentSentences';
 import { useSentenceParseNews } from './services/useSentenceParseNews';
 import { useOndokus } from './services/useOndokus';
 import { useOndokuSentences } from './services/useOndokuSentences';
+import { useOndokuAssignments } from './services/useOndokuAssignments';
 
 const App = () => {
   const [articleId, setArticleId] = useState('');
@@ -27,7 +28,8 @@ const App = () => {
   });
   const { users } = useUsers({ opened: true });
   const { sentences } = useSentences({ article });
-  const { assignment } = useAssignments({ article });
+  const { assignment } = useAssignments(articleId);
+  const { ondokuAssignment } = useOndokuAssignments(ondokuId);
   const { assignmentSentences } = useAssignmentSentences(article.id);
   const { sentenceParseNews } = useSentenceParseNews({ article });
   const { workout, workouts } = useWorkouts({ workoutId });
@@ -57,6 +59,7 @@ const App = () => {
         assignmentSentences,
         ondokuSentence,
         ondokuSentences,
+        ondokuAssignment,
         setOndokuId,
         setArticleId,
         setWorkoutId,

@@ -7,14 +7,13 @@ import {
   AssignmentSentence,
   useHandleAssignmentSentences,
 } from '../../../../services/useAssignmentSentences';
-import { getAssignment } from '../../../../repositories/assignment';
 import { getAssignmentSentences } from '../../../../repositories/assignmentSentence';
 import { useHandleAssignments } from '../../../../services/useAssignments';
 import { AppContext } from '../../../../services/app';
 
 export const useEditOndokuAssignmentVoicePage = (id: string, uid: string) => {
   const navigate = useNavigate();
-  const { ondoku, ondokuSentences } = useContext(AppContext);
+  const { ondoku, ondokuSentences, ondokuAssignment } = useContext(AppContext);
   const { deleteAssignment } = useHandleAssignments();
   const { updateAssignmentSentences, deleteAssignmentSentences } =
     useHandleAssignmentSentences();
@@ -40,28 +39,27 @@ export const useEditOndokuAssignmentVoicePage = (id: string, uid: string) => {
   }, [ondoku, ondokuSentences]);
 
   useEffect(() => {
+    if (!ondokuAssignment.id) return;
     const fetchData = async () => {
-      const assignment = await getAssignment({ ondokuID: id, uid });
-      setDownloadURL(!!assignment ? assignment.downloadURL : '');
-      if (!!assignment) {
-        setAssignmentID(assignment.id);
-        const assignmentSentences = await getAssignmentSentences({
-          uid,
-          ondokuID: id,
-        });
-        if (!!assignmentSentences) {
-          setMarks(
-            assignmentSentences.map((s) => ({ start: s.start, end: s.end }))
-          );
-          setOriginalMarks(
-            assignmentSentences.map((s) => ({ start: s.start, end: s.end }))
-          );
-          setOriginalSentences(assignmentSentences);
-        }
+      setDownloadURL(ondokuAssignment.downloadURL);
+
+      setAssignmentID(ondokuAssignment.id);
+      const assignmentSentences = await getAssignmentSentences({
+        uid,
+        ondokuID: id,
+      });
+      if (!!assignmentSentences) {
+        setMarks(
+          assignmentSentences.map((s) => ({ start: s.start, end: s.end }))
+        );
+        setOriginalMarks(
+          assignmentSentences.map((s) => ({ start: s.start, end: s.end }))
+        );
+        setOriginalSentences(assignmentSentences);
       }
     };
     fetchData();
-  }, [uid, id]);
+  }, [uid, id, ondokuAssignment]);
 
   useEffect(() => {
     setHasChange(JSON.stringify(marks) !== JSON.stringify(originalMarks));

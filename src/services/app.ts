@@ -44,6 +44,7 @@ export const AppContext = createContext<{
   assignmentSentences: AssignmentSentence[];
   ondokuSentence: OndokuSentence;
   ondokuSentences: OndokuSentence[];
+  ondokuAssignment: Assignment;
   setOndokuId: (value: string) => void;
   setArticleId: (value: string) => void;
   setWorkoutId: (value: string) => void;
@@ -80,6 +81,7 @@ export const AppContext = createContext<{
   initializing: true,
   sentenceParseNews: [],
   assignmentSentences: [],
+  ondokuAssignment: INITIAL_ASSIGNMENT,
   setOndokuId: () => {},
   setArticleId: () => {},
   setWorkoutId: () => {},
