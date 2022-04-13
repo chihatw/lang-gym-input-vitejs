@@ -1,6 +1,7 @@
 import {
   doc,
   query,
+  addDoc,
   setDoc,
   updateDoc,
   Firestore,
@@ -102,6 +103,47 @@ export const updateDocumenValue = async <T>({
   return await updateDoc(doc(db, colId, docId), { value })
     .then(() => {
       return value;
+    })
+    .catch((e) => {
+      console.warn(e);
+      return null;
+    });
+};
+
+export const updateDocument = async <T extends { id: string }>({
+  db,
+  colId,
+  value,
+}: {
+  db: Firestore;
+  colId: string;
+  value: T;
+}): Promise<T | null> => {
+  const { id, ...omitted } = value;
+  console.log(`update doc of ${colId}.${id}`);
+  return await updateDoc(doc(db, colId, id), { ...omitted })
+    .then(() => {
+      return value;
+    })
+    .catch((e) => {
+      console.warn(e);
+      return null;
+    });
+};
+
+export const addDocument = async <T extends { id: string }>({
+  db,
+  colId,
+  value,
+}: {
+  db: Firestore;
+  colId: string;
+  value: Omit<T, 'id'>;
+}): Promise<T | null> => {
+  console.log(`add doc to ${colId}`);
+  return await addDoc(collection(db, colId), value)
+    .then((doc) => {
+      return { id: doc.id, ...value } as T;
     })
     .catch((e) => {
       console.warn(e);

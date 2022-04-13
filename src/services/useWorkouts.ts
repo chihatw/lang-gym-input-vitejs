@@ -1,3 +1,4 @@
+import { add } from 'date-fns';
 import {
   doc,
   limit,
@@ -12,7 +13,11 @@ import {
 } from 'firebase/firestore';
 import { useEffect, useMemo, useState } from 'react';
 import { db } from '../repositories/firebase';
-import { snapshotCollection } from '../repositories/utils';
+import {
+  addDocument,
+  snapshotCollection,
+  updateDocument,
+} from '../repositories/utils';
 
 export type WorkoutItem = {
   text: string;
@@ -101,28 +106,40 @@ export const useWorkouts = ({ workoutId }: { workoutId: string }) => {
   return { workout, workouts };
 };
 export const useHandleWorkouts = () => {
+  const _addDocument = useMemo(
+    () =>
+      async function <T extends { id: string }>(
+        value: Omit<T, 'id'>
+      ): Promise<T | null> {
+        return await addDocument({
+          db,
+          colId: COLLECTION,
+          value,
+        });
+      },
+    []
+  );
+
+  const _updateDocument = useMemo(
+    () =>
+      async function <T extends { id: string }>(value: T): Promise<T | null> {
+        return await updateDocument({
+          db,
+          colId: COLLECTION,
+          value,
+        });
+      },
+    []
+  );
+
   const createWorkout = async (
     workout: Omit<Workout, 'id'>
   ): Promise<Workout | null> => {
-    return await addDoc(colRef, workout)
-      .then((doc) => {
-        return { id: doc.id, ...workout };
-      })
-      .catch((e) => {
-        console.warn(e);
-        return null;
-      });
+    return await _addDocument(workout);
   };
+
   const updateWorkout = async (workout: Workout): Promise<Workout | null> => {
-    const { id, ...omitted } = workout;
-    return await updateDoc(doc(db, COLLECTION, id), { ...omitted })
-      .then(() => {
-        return workout;
-      })
-      .catch((e) => {
-        console.warn(e);
-        return null;
-      });
+    return await _updateDocument(workout);
   };
   const deleteWorkout = (id: string) => {
     deleteDoc(doc(db, COLLECTION, id)).catch((e) => console.warn(e));

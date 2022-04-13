@@ -1,7 +1,6 @@
 import {
   doc,
   deleteDoc,
-  collection,
   Unsubscribe,
   DocumentData,
   QueryConstraint,
@@ -22,7 +21,6 @@ export type AudioItem = {
 };
 
 const COLLECTION = 'audioItems';
-const colRef = collection(db, COLLECTION);
 
 const useAudioItems = () => {
   const [audioItems, setAudioItems] = useState<AudioItem[]>([]);

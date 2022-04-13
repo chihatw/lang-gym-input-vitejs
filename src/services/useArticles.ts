@@ -1,9 +1,7 @@
 import {
   doc,
   limit,
-  addDoc,
   orderBy,
-  updateDoc,
   deleteDoc,
   onSnapshot,
   collection,
@@ -13,7 +11,11 @@ import {
 } from '@firebase/firestore';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { db } from '../repositories/firebase';
-import { snapshotCollection } from '../repositories/utils';
+import {
+  addDocument,
+  updateDocument,
+  snapshotCollection,
+} from '../repositories/utils';
 
 export type Article = {
   id: string;
@@ -43,9 +45,7 @@ export const INITIAL_ARTICLE: Article = {
   userDisplayname: '',
 };
 
-const LIMIT = 6;
 const COLLECTION = 'articles';
-const colRef = collection(db, COLLECTION);
 
 /**
  * アプリ全体で使用
@@ -143,35 +143,46 @@ export const useArticles = ({
  * 単発のデータ操作用
  */
 export const useHandleArticles = () => {
+  const _addDocument = useMemo(
+    () =>
+      async function <T extends { id: string }>(
+        value: Omit<T, 'id'>
+      ): Promise<T | null> {
+        return await addDocument({
+          db,
+          colId: COLLECTION,
+          value,
+        });
+      },
+    []
+  );
+  const _updateDocument = useMemo(
+    () =>
+      async function <T extends { id: string }>(value: T): Promise<T | null> {
+        return await updateDocument({
+          db,
+          colId: COLLECTION,
+          value,
+        });
+      },
+    []
+  );
+
   const addArticle = async (
     article: Omit<Article, 'id'>
   ): Promise<{
     success: boolean;
     articleId?: string;
   }> => {
-    return await addDoc(colRef, article)
-      .then((doc) => {
-        return { success: true, articleId: doc.id };
-      })
-      .catch((e) => {
-        console.warn(e);
-        return { success: false };
-      });
+    const result = await _addDocument(article);
+    return { success: !!result, articleId: result?.id };
   };
 
   const updateArticle = async (
     article: Article
   ): Promise<{ success: boolean }> => {
-    const { id, ...omitted } = article;
-    console.log('update article');
-    return await updateDoc(doc(db, COLLECTION, id), { ...omitted })
-      .then(() => {
-        return { success: true };
-      })
-      .catch((e) => {
-        console.warn(e);
-        return { success: false };
-      });
+    const result = await _updateDocument(article);
+    return { success: !!result };
   };
   const deleteArticle = (id: string) => {
     console.log('delete article');
