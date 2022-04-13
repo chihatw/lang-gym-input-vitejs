@@ -1,12 +1,13 @@
 import { Container, Table, TableBody } from '@mui/material';
-import React, { useContext, useMemo } from 'react';
+import React, { useContext } from 'react';
 
-import { Player } from './classes/Player';
 import { AppContext } from '../../services/app';
 import AudioItemRow from './components/AudioItemRow';
+import { useHandleAudioItems } from '../../services/useAudioItems';
 
 const AudioItemsPage = () => {
-  const { audioItems, deleteAudioItem } = useContext(AppContext);
+  const { audioItems } = useContext(AppContext);
+  const { deleteAudioItem } = useHandleAudioItems();
   return (
     <Container maxWidth='sm'>
       <div style={{ height: 20 }} />

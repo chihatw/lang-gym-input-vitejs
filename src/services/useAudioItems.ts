@@ -1,13 +1,12 @@
 import {
-  doc,
-  deleteDoc,
   Unsubscribe,
   DocumentData,
   QueryConstraint,
 } from '@firebase/firestore';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
 import { db } from '../repositories/firebase';
-import { snapshotCollection } from '../repositories/utils';
+import { deleteDocument, snapshotCollection } from '../repositories/utils';
 
 export type AudioItem = {
   id: string;
@@ -22,7 +21,7 @@ export type AudioItem = {
 
 const COLLECTION = 'audioItems';
 
-const useAudioItems = () => {
+export const useAudioItems = () => {
   const [audioItems, setAudioItems] = useState<AudioItem[]>([]);
 
   const _snapshotCollection = useMemo(
@@ -56,16 +55,20 @@ const useAudioItems = () => {
     return () => unsub();
   }, []);
 
-  const deleteAudioItem = (id: string) => {
-    if (window.confirm('delete?')) {
-      deleteDoc(doc(db, COLLECTION, id));
-    }
-  };
-
-  return { audioItems, deleteAudioItem };
+  return { audioItems };
 };
 
-export default useAudioItems;
+export const useHandleAudioItems = () => {
+  const _deleteDocument = useCallback(async (id: string) => {
+    return await deleteDocument({ db, colId: COLLECTION, id });
+  }, []);
+  const deleteAudioItem = (id: string) => {
+    if (window.confirm('delete?')) {
+      _deleteDocument(id);
+    }
+  };
+  return { deleteAudioItem };
+};
 
 const buildAudioItem = (doc: DocumentData) => {
   const audioItem: AudioItem = {

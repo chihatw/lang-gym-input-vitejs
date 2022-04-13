@@ -4,7 +4,7 @@ import AppRoutes from './routes/AppRoutes';
 import { AppContext, useApp } from './services/app';
 import { useArticles } from './services/useArticles';
 import { useUsers } from './services/useUsers';
-import useAudioItems from './services/useAudioItems';
+import { useAudioItems } from './services/useAudioItems';
 import { useWorkouts } from './services/useWorkouts';
 import { useSentences } from './services/useSentences';
 import { useAssignments } from './services/useAssignments';
@@ -16,7 +16,7 @@ const App = () => {
   const [workoutId, setWorkoutId] = useState('');
   const [isFetching, setIsFetching] = useState(false);
   const { initializing, user, createRhythmsQuestion } = useApp();
-  const { audioItems, deleteAudioItem } = useAudioItems();
+  const { audioItems } = useAudioItems();
   const { article, articles } = useArticles({
     opened: true,
     articleId,
@@ -46,7 +46,6 @@ const App = () => {
         setArticleId,
         setWorkoutId,
         setIsFetching,
-        deleteAudioItem,
         createRhythmsQuestion,
       }}
     >

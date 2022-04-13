@@ -41,7 +41,6 @@ export const AppContext = createContext<{
   setArticleId: (value: string) => void;
   setWorkoutId: (value: string) => void;
   setIsFetching: (value: boolean) => void;
-  deleteAudioItem: (value: string) => void;
   createRhythmsQuestion: ({
     title,
     endArray,
@@ -72,7 +71,6 @@ export const AppContext = createContext<{
   setArticleId: () => {},
   setWorkoutId: () => {},
   setIsFetching: () => {},
-  deleteAudioItem: () => {},
   createRhythmsQuestion: async () => {},
 });
 
