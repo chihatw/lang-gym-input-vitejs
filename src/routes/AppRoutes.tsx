@@ -34,6 +34,7 @@ import AccentsQuestionPage from '../pages/Question/accentsQuestion/AccentsQuesti
 import RhythmsQuestionPage from '../pages/Question/rhythmsQuestion/RhythmsQuestionPage';
 import AccentsQuestionListPage from '../pages/Question/accentsQuestion/AccentsQuestionListPage';
 import RhythmsQuestionListPage from '../pages/Question/rhythmsQuestion/RhythmsQuestionListPage';
+import ArticlePage from '../pages/Article/ArticlePage';
 
 const AppRoutes = () => {
   return (
@@ -85,6 +86,7 @@ const AppRoutes = () => {
         <Route path='list' element={<ArticleListPage />} />
         {/* 作文入力作業 */}
         <Route path='input' element={<ArticleInputPage />} />
+        <Route path=':id' element={<ArticlePage />} />
         <Route path='' element={<EditArticlePage />} />
       </Route>
 

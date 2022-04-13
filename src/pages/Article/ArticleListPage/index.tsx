@@ -63,7 +63,7 @@ const ArticleListPage = () => {
     article: Article;
   }) => {
     setArticleId(_article.id);
-    navigate(`/article`);
+    navigate(`/article/${path}`);
   };
 
   const handleClickOpenCreateArticlePage = () => {
