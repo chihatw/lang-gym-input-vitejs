@@ -16,14 +16,8 @@ import EditAssignmentVoicePane from './components/EditAssignmentVoicePane';
 const EditArticlePage = () => {
   const navigate = useNavigate();
   const { addArticle, updateArticle } = useHandleArticles();
-  const {
-    users,
-    article,
-    sentences,
-    assignment,
-    isFetching,
-    assignmentSentences,
-  } = useContext(AppContext);
+  const { users, article, sentences, assignment, assignmentSentences } =
+    useContext(AppContext);
 
   const [uid, setUid] = useState('');
   const [date, setDate] = useState<Date>(new Date());
@@ -129,46 +123,42 @@ const EditArticlePage = () => {
     }
   };
 
-  if (isFetching) {
-    return <></>;
-  } else {
-    return (
-      <div style={{ display: 'grid', rowGap: 16, paddingBottom: 120 }}>
-        <EditArticlePageComponent
-          uid={uid}
-          date={date}
-          title={title}
-          users={users}
-          embedId={embedId}
-          articleId={article.id}
-          articleMarksString={articleMarksString}
-          handlePickDate={handlePickDate}
-          handleChangeUid={handleChangeUid}
-          handleClickSubmit={handleClickSubmit}
-          handleChangeTitle={handleChangeTitle}
-          handleChangeEmbedId={handleChangeEmbedId}
-          handleChangeArticleMarksString={handleChangeArticleMarksString}
-        />
-        {!!article.id && (
-          <>
-            <Divider />
-            <EditArticleVoicePane article={article} sentences={sentences} />
-          </>
-        )}
-        {!!article.id && (
-          <>
-            <Divider />
-            <EditAssignmentVoicePane
-              article={article}
-              sentences={sentences}
-              assignment={assignment}
-              assignmentSentences={assignmentSentences}
-            />
-          </>
-        )}
-      </div>
-    );
-  }
+  return (
+    <div style={{ display: 'grid', rowGap: 16, paddingBottom: 120 }}>
+      <EditArticlePageComponent
+        uid={uid}
+        date={date}
+        title={title}
+        users={users}
+        embedId={embedId}
+        articleId={article.id}
+        articleMarksString={articleMarksString}
+        handlePickDate={handlePickDate}
+        handleChangeUid={handleChangeUid}
+        handleClickSubmit={handleClickSubmit}
+        handleChangeTitle={handleChangeTitle}
+        handleChangeEmbedId={handleChangeEmbedId}
+        handleChangeArticleMarksString={handleChangeArticleMarksString}
+      />
+      {!!article.id && (
+        <>
+          <Divider />
+          <EditArticleVoicePane article={article} sentences={sentences} />
+        </>
+      )}
+      {!!article.id && (
+        <>
+          <Divider />
+          <EditAssignmentVoicePane
+            article={article}
+            sentences={sentences}
+            assignment={assignment}
+            assignmentSentences={assignmentSentences}
+          />
+        </>
+      )}
+    </div>
+  );
 };
 
 export default EditArticlePage;

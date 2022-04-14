@@ -1,109 +1,63 @@
-import {
-  query,
-  onSnapshot,
-  collection,
-  where,
-  orderBy,
-  limit,
-} from '@firebase/firestore';
-import { useEffect, useState } from 'react';
-import { getUser } from '../../../../../repositories/user';
+import { useContext, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { db } from '../../../../../repositories/firebase';
-import {
-  buildQuestionSet,
-  QuestionSet,
-} from '../../../../../entities/QuestionSet';
-import {
-  deleteQuestionGroup,
-  getQuestionGroup,
-} from '../../../../../repositories/questionGroup';
-import { deleteQuestions } from '../../../../../repositories/question';
-import { deleteQuestionSetScoresByQuestionSetID } from '../../../../../repositories/questionSetScore';
-import { deleteQuestionSet } from '../../../../../repositories/questionSet';
 
-const COLLECTION = 'questionSets';
-const LIMIT = 5;
-const colRef = collection(db, COLLECTION);
+import { useHandleQuestionGroups } from '../../../../../services/useQuestionGroups';
+import { useHandleQuestions } from '../../../../../services/useQuestions';
+import {
+  QuestionSet,
+  useHandleQuestionSets,
+} from '../../../../../services/useQuestionSets';
+import { AppContext } from '../../../../../services/app';
+import { useHandleQuestionSetScores } from '../../../../../services/useQuestionSetScores';
 
 export const useRhythmsQuestionListPage = () => {
   const navigate = useNavigate();
-  const [uids, setUids] = useState<string[]>([]);
-  const [questionSets, setQuestionSets] = useState<QuestionSet[]>([]);
-  const [userDisplaynames, setUserDisplaynames] = useState<{
-    [id: string]: string;
-  }>({});
-  useEffect(() => {
-    const q = query(
-      colRef,
-      where('type', '==', 'articleRhythms'),
-      orderBy('createdAt', 'desc'),
-      limit(LIMIT)
-    );
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        console.log('snapshot question set');
-        if (!snapshot.empty) {
-          const questionSets = snapshot.docs.map((doc) =>
-            buildQuestionSet(doc.id, doc.data())
-          );
-          setQuestionSets(questionSets);
-          setUids(
-            questionSets
-              .map((q) => q.uid)
-              .filter((item, index, self) => self.indexOf(item) === index)
-          );
-        }
-      },
-      (error) => {
-        console.warn(error);
-      }
-    );
 
-    return () => {
-      unsubscribe();
-    };
-  }, [navigate]);
+  const { rhythmsQuestionSets, users, setQuestionSetId } =
+    useContext(AppContext);
 
-  useEffect(() => {
-    if (!uids.length) return;
-    const fetchData = async () => {
-      const displaynames: { [uid: string]: string } = {};
-      await Promise.all(
-        uids.map(async (uid) => {
-          const user = await getUser(uid);
-          displaynames[uid] = !!user ? user.displayname : '';
-        })
-      );
-      setUserDisplaynames(displaynames);
-    };
+  const { deleteQuestionSet } = useHandleQuestionSets();
+  const { deleteQuestionGroup, getQuestionGroup } = useHandleQuestionGroups();
+  const { deleteQuestions } = useHandleQuestions();
+  const { deleteQuestionSetScoresByQuestionSetId } =
+    useHandleQuestionSetScores();
 
-    fetchData();
-    // eslint-disable-next-line
-  }, [uids]);
+  const userDisplaynames = useMemo(() => {
+    const userDisplaynames: { [key: string]: string } = {};
+    for (const user of users) {
+      userDisplaynames[user.id] = user.displayname;
+    }
+
+    return userDisplaynames;
+  }, [users]);
 
   const onEdit = (q: QuestionSet) => {
+    setQuestionSetId(q.id);
     navigate(`/rhythmsQuestion/${q.id}`);
   };
 
-  const onDelete = (q: QuestionSet) => async () => {
+  const onDelete = async (q: QuestionSet) => {
     if (window.confirm(`${q.title}を削除しますか`)) {
       const questionGroup = await getQuestionGroup(q.questionGroups[0]);
       if (!!questionGroup) {
-        const { success } = await deleteQuestions(questionGroup.questions);
-        if (success) {
-          const { success } = await deleteQuestionGroup(questionGroup.id);
-          if (success) {
-            await deleteQuestionSetScoresByQuestionSetID(q.id);
-            await deleteQuestionSet(q.id);
+        const result = await deleteQuestions(questionGroup.questions);
+        if (!!result) {
+          const result = await deleteQuestionGroup(questionGroup.id);
+          if (!!result) {
+            await deleteQuestionSetScoresByQuestionSetId(q.id);
+            deleteQuestionSet(q.id);
           }
         }
       } else {
-        await deleteQuestionSet(q.id);
+        deleteQuestionSet(q.id);
       }
     }
   };
 
-  return { questionSets, userDisplaynames, onEdit, onDelete };
+  return {
+    questionSets: rhythmsQuestionSets,
+    userDisplaynames,
+    onEdit,
+    onDelete,
+  };
 };

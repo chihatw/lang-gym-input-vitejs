@@ -1,13 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Sentence } from '../../../../entities/Sentence';
-
-import {
-  createSentenceParseNew,
-  getSentenceParseNew,
-  updateSentenceParseNew,
-} from '../../../../repositories/sentenceParseNew';
+import { AppContext } from '../../../../services/app';
 import { getUniqueStr } from '../../../../services/getUniqueStr';
 import { Article } from '../../../../services/useArticles';
 import {
@@ -17,14 +11,20 @@ import {
   Word,
   INITIAL_SENTENCE,
   Sentence as PSentence,
-  CreateSentenceParseNew,
+  useHandleSentenceParseNews,
 } from '../../../../services/useSentenceParseNews';
+import { Sentence } from '../../../../services/useSentences';
 
 export const useSentenceParseForm = (article: Article, sentence: Sentence) => {
   const navigate = useNavigate();
+
+  const { sentenceParseNew } = useContext(AppContext);
+
+  const { createSentenceParseNew, updateSentenceParseNew } =
+    useHandleSentenceParseNews();
+
   const sentenceID = getUniqueStr();
-  const [sentenceParseNew, setSentenceParseNew] =
-    useState<SentenceParseNew | null>(null);
+
   const [globalSentences, setGlobalSentences] = useState<{
     [id: string]: PSentence;
   }>({ [sentenceID]: { ...INITIAL_SENTENCE, id: sentenceID } });
@@ -44,22 +44,14 @@ export const useSentenceParseForm = (article: Article, sentence: Sentence) => {
     useState<string[]>([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const sentenceParseNew: SentenceParseNew | null =
-        await getSentenceParseNew(article.id, sentence.id);
-      if (!!sentenceParseNew) {
-        setSentenceParseNew(sentenceParseNew);
-        setGlobalUnits(sentenceParseNew.units);
-        setGlobalWords(sentenceParseNew.words);
-        setGlobalBranches(sentenceParseNew.branches);
-        setGlobalSentences(sentenceParseNew.sentences);
-        setGlobalSentenceArrays(sentenceParseNew.sentenceArrays);
-        setGlobalBranchInvisibilities(sentenceParseNew.branchInvisibilities);
-        setGlobalCommentInvisibilities(sentenceParseNew.commentInvisibilities);
-      }
-    };
-    fetchData();
-  }, [article, sentence]);
+    setGlobalUnits(sentenceParseNew.units);
+    setGlobalWords(sentenceParseNew.words);
+    setGlobalBranches(sentenceParseNew.branches);
+    setGlobalSentences(sentenceParseNew.sentences);
+    setGlobalSentenceArrays(sentenceParseNew.sentenceArrays);
+    setGlobalBranchInvisibilities(sentenceParseNew.branchInvisibilities);
+    setGlobalCommentInvisibilities(sentenceParseNew.commentInvisibilities);
+  }, [sentenceParseNew]);
 
   const onSubmit = async () => {
     if (!!sentenceParseNew) {
@@ -73,25 +65,25 @@ export const useSentenceParseForm = (article: Article, sentence: Sentence) => {
         branchInvisibilities: globalBranchInvisibilities,
         commentInvisibilities: globalCommentInvisibilities,
       };
-      const { success } = await updateSentenceParseNew(_updateSentenceParse);
-      if (success) {
+      const updatedItem = await updateSentenceParseNew(_updateSentenceParse);
+      if (!!updatedItem) {
         navigate(`/article/${article.id}`);
       }
     } else {
-      const newSentenceParse: CreateSentenceParseNew = {
+      const newSentenceParse: Omit<SentenceParseNew, 'id'> = {
         line: sentence.line,
         article: article.id,
         sentence: sentence.id,
-        units: JSON.stringify(globalUnits),
-        words: JSON.stringify(globalWords),
-        branches: JSON.stringify(globalBranches),
-        sentences: JSON.stringify(globalSentences),
-        sentenceArrays: JSON.stringify(globalSentenceArrays),
-        branchInvisibilities: JSON.stringify(globalBranchInvisibilities),
-        commentInvisibilities: JSON.stringify(globalCommentInvisibilities),
+        units: globalUnits,
+        words: globalWords,
+        branches: globalBranches,
+        sentences: globalSentences,
+        sentenceArrays: globalSentenceArrays,
+        branchInvisibilities: globalBranchInvisibilities,
+        commentInvisibilities: globalCommentInvisibilities,
       };
-      const { success } = await createSentenceParseNew(newSentenceParse);
-      if (success) {
+      const createdItem = await createSentenceParseNew(newSentenceParse);
+      if (!!createdItem) {
         navigate(`/article/${article.id}`);
       }
     }

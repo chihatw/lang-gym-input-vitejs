@@ -1,3 +1,5 @@
+### 1.1.0
+- refacoring: repositories
 ### 1.0.11
 - add Workout pages
 ### 1.0.10

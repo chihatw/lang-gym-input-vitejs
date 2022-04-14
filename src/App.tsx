@@ -14,25 +14,38 @@ import { useOndokus } from './services/useOndokus';
 import { useOndokuSentences } from './services/useOndokuSentences';
 import { useOndokuAssignments } from './services/useOndokuAssignments';
 import { useOndokuAssignmentSentences } from './services/useOndokuAssignmentSentences';
+import { useQuestionGroups } from './services/useQuestionGroups';
+import { useQuestionSets } from './services/useQuestionSets';
+import { useQuestions } from './services/useQuestions';
+import { useUidOndokus } from './services/useUidOndokus';
 
 const App = () => {
   const [articleId, setArticleId] = useState('');
   const [ondokuId, setOndokuId] = useState('');
+  const [sentenceId, setSentenceId] = useState('');
   const [workoutId, setWorkoutId] = useState('');
-  const [isFetching, setIsFetching] = useState(false);
   const [ondokuSentenceId, setOndokuSentenceId] = useState('');
-  const { initializing, user, createRhythmsQuestion } = useApp();
+  const [questionSetId, setQuestionSetId] = useState('');
+  const [questionGroupId, setQuestionGroupId] = useState('');
+  const [questionIds, setQuestionIds] = useState<string[]>([]);
+
+  const { initializing, user, createRhythmsQuestion } = useApp({
+    setQuestionSetId,
+  });
   const { audioItems } = useAudioItems();
   const { article, articles } = useArticles({
     opened: true,
     articleId,
   });
   const { users } = useUsers({ opened: true });
-  const { sentences } = useSentences({ article });
+  const { sentences } = useSentences(articleId);
   const { assignment } = useAssignments(articleId);
   const { ondokuAssignment } = useOndokuAssignments(ondokuId);
-  const { assignmentSentences } = useAssignmentSentences(article.id);
-  const { sentenceParseNews } = useSentenceParseNews({ article });
+  const { assignmentSentences } = useAssignmentSentences(articleId);
+  const { sentenceParseNew, sentenceParseNews } = useSentenceParseNews({
+    articleId,
+    sentenceId,
+  });
   const { workout, workouts } = useWorkouts({ workoutId });
   const { ondoku, ondokus } = useOndokus({ opened: true, ondokuId });
   const { ondokuSentence, ondokuSentences } = useOndokuSentences({
@@ -40,7 +53,14 @@ const App = () => {
     ondokuSentenceId,
   });
   const { ondokuAssignmentSentences } = useOndokuAssignmentSentences(ondokuId);
-
+  const { accentsQuestionSets, rhythmsQuestionSets, questionSet } =
+    useQuestionSets({ questionSetId, setQuestionGroupId });
+  const { questionGroup } = useQuestionGroups({
+    questionGroupId,
+    setQuestionIds,
+  });
+  const { questions } = useQuestions({ questionIds, questionGroupId });
+  const { uidOndokus } = useUidOndokus();
   return (
     <AppContext.Provider
       value={{
@@ -54,21 +74,28 @@ const App = () => {
         workouts,
         sentences,
         audioItems,
-        isFetching,
         assignment,
         initializing,
+        sentenceParseNew,
         sentenceParseNews,
         assignmentSentences,
         ondokuSentence,
         ondokuSentences,
         ondokuAssignment,
         ondokuAssignmentSentences,
+        accentsQuestionSets,
+        rhythmsQuestionSets,
+        questionSet,
+        questionGroup,
+        questions,
+        uidOndokus,
         setOndokuId,
         setArticleId,
         setWorkoutId,
-        setIsFetching,
+        setQuestionSetId,
         createRhythmsQuestion,
         setOndokuSentenceId,
+        setSentenceId,
       }}
     >
       <AppRoutes />

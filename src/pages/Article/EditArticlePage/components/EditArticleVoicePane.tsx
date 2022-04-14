@@ -170,8 +170,8 @@ const EditArticleVoicePane = ({
           end: 0,
           start: 0,
         }));
-        const { success } = await updateSentences(newSentences);
-        if (success) {
+        const result = await updateSentences(newSentences);
+        if (!!result) {
           const newArticle = { ...article, downloadURL: '' };
           updateArticle(newArticle);
         }
@@ -185,8 +185,8 @@ const EditArticleVoicePane = ({
       start: marks[index].start,
       end: marks[index].end,
     }));
-    const { success } = await updateSentences(newSentences);
-    if (success) {
+    const result = await updateSentences(newSentences);
+    if (!!result) {
       navigate(`/article/list`);
     }
   };

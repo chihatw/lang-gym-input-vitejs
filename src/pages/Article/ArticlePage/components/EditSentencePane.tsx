@@ -64,8 +64,8 @@ const EditSentencePane = ({
       japanese,
       original,
     };
-    const { success } = await updateSentence(newSentence);
-    if (success) {
+    const updatedItem = await updateSentence(newSentence);
+    if (!!updatedItem) {
       callback();
     }
   };

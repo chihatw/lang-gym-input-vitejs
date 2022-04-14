@@ -1,24 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  doc,
-  query,
   where,
-  getDocs,
   orderBy,
-  updateDoc,
-  writeBatch,
-  collection,
-  onSnapshot,
   DocumentData,
+  QueryConstraint,
+  Unsubscribe,
 } from '@firebase/firestore';
 
 import { db } from '../repositories/firebase';
 import { Tags } from '../entities/Tags';
 import { Accent } from '../entities/Accent';
 import { Article } from './useArticles';
+import {
+  batchAddDocuments,
+  batchDeleteDocuments,
+  batchUpdateDocuments,
+  getDocumentsByQuery,
+  snapshotCollection,
+  updateDocument,
+} from '../repositories/utils';
 
 const COLLECTION = 'sentences';
-const colRef = collection(db, COLLECTION);
 
 export type Sentence = {
   id: string;
@@ -54,115 +56,116 @@ export const INITIAL_SENTENCE: Sentence = {
   createdAt: 0,
 };
 
-export const useSentences = ({ article }: { article: Article }) => {
+export const useSentences = (articleId: string) => {
   const [sentences, setSentences] = useState<Sentence[]>([]);
-  useEffect(() => {
-    if (!article.id) return;
-    const q = query(
-      colRef,
-      where('article', '==', article.id),
-      orderBy('line')
-    );
-    const unsub = onSnapshot(
-      q,
-      (snapshot) => {
-        console.log('snapshot sentences');
-        const sentences: Sentence[] = [];
-        snapshot.forEach((doc) => {
-          const sentence = buildSentence(doc);
-          sentences.push(sentence);
+
+  const _snapshotCollection = useMemo(
+    () =>
+      function <T>({
+        queries,
+        setValues,
+        buildValue,
+      }: {
+        queries?: QueryConstraint[];
+        setValues: (value: T[]) => void;
+        buildValue: (value: DocumentData) => T;
+      }): Unsubscribe {
+        return snapshotCollection({
+          db,
+          colId: COLLECTION,
+          queries,
+          setValues,
+          buildValue,
         });
-        setSentences(sentences);
       },
-      (e) => {
-        console.warn(e);
-        setSentences([]);
-      }
-    );
+    []
+  );
+
+  useEffect(() => {
+    if (!articleId) return;
+    const unsub = _snapshotCollection({
+      queries: [where('article', '==', articleId), orderBy('line')],
+      buildValue: buildSentence,
+      setValues: setSentences,
+    });
     return () => {
       unsub();
     };
-  }, [article]);
+  }, [articleId]);
   return { sentences };
 };
 
 export const useHandleSentences = () => {
+  const _updateDocument = useMemo(
+    () =>
+      async function <T extends { id: string }>(value: T): Promise<T | null> {
+        return await updateDocument({
+          db,
+          colId: COLLECTION,
+          value,
+        });
+      },
+    []
+  );
+
+  const _batchAddDocuments = useMemo(
+    () =>
+      async function <T extends { id: string }>(
+        values: Omit<T, 'id'>[]
+      ): Promise<string[]> {
+        return await batchAddDocuments({ db, colId: COLLECTION, values });
+      },
+    []
+  );
+
+  const _batchUpdateDocuments = useMemo(
+    () =>
+      async function <T extends { id: string }>(values: T[]): Promise<boolean> {
+        return await batchUpdateDocuments({ db, colId: COLLECTION, values });
+      },
+    []
+  );
+
+  const _batchDeleteDocuments = useCallback(async (ids: string[]) => {
+    return await batchDeleteDocuments({ db, colId: COLLECTION, ids });
+  }, []);
+
+  const _getDocumentsByQuery = async <T>({
+    queries,
+    buildValue,
+  }: {
+    queries?: QueryConstraint[];
+    buildValue: (value: DocumentData) => T;
+  }): Promise<T[]> => {
+    return await getDocumentsByQuery({
+      db,
+      colId: COLLECTION,
+      queries,
+      buildValue,
+    });
+  };
+
   const updateSentence = async (
     sentence: Sentence
-  ): Promise<{ success: boolean }> => {
-    const { id, ...omitted } = sentence;
-    console.log('update sentence');
-    return await updateDoc(doc(db, COLLECTION, id), { ...omitted })
-      .then(() => {
-        return { success: true };
-      })
-      .catch((e) => {
-        console.warn(e);
-        return { success: false };
-      });
+  ): Promise<Sentence | null> => {
+    return await _updateDocument(sentence);
   };
 
   const createSentences = async (
     sentences: Omit<Sentence, 'id'>[]
-  ): Promise<{ success: boolean }> => {
-    const batch = writeBatch(db);
-
-    sentences.forEach((sentence) => {
-      const docRef = doc(colRef);
-      batch.set(docRef, sentence);
-    });
-    console.log('create sentences');
-    return await batch
-      .commit()
-      .then(() => {
-        return { success: true };
-      })
-      .catch((e) => {
-        console.warn(e);
-        return { success: false };
-      });
+  ): Promise<string[]> => {
+    return await _batchAddDocuments(sentences);
   };
 
-  const updateSentences = async (
-    sentences: Sentence[]
-  ): Promise<{ success: boolean }> => {
-    const batch = writeBatch(db);
-    sentences.forEach((sentence) => {
-      const { id, ...omitted } = sentence;
-      batch.update(doc(db, COLLECTION, id), { ...omitted });
-    });
-    console.log('update sentences');
-    return await batch
-      .commit()
-      .then(() => {
-        return { success: true };
-      })
-      .catch((e) => {
-        console.warn(e);
-        return { success: false };
-      });
+  const updateSentences = async (sentences: Sentence[]): Promise<boolean> => {
+    return await _batchUpdateDocuments(sentences);
   };
-  const deleteSentences = async (
-    articleId: string
-  ): Promise<{ success: boolean }> => {
-    console.log('get sentences');
-    const q = query(colRef, where('article', '==', articleId));
-    const snapshot = await getDocs(q);
-
-    const batch = writeBatch(db);
-    snapshot.forEach((doc) => {
-      batch.delete(doc.ref);
+  const deleteSentences = async (articleId: string): Promise<boolean> => {
+    const sentenceIds = await _getDocumentsByQuery({
+      queries: [where('article', '==', articleId)],
+      buildValue: (doc: DocumentData) => doc.id as string,
     });
-    console.log('delete sentences');
-    return await batch
-      .commit()
-      .then(() => {
-        return { success: true };
-      })
-      .catch((e) => {
-        console.warn(e);
-        return { success: false };
-      });
+    return await _batchDeleteDocuments(sentenceIds);
   };
   return { updateSentence, createSentences, updateSentences, deleteSentences };
 };

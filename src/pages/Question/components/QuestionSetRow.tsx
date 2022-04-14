@@ -13,7 +13,7 @@ const QuestionSetRow = ({
 }: {
   questionSet: QuestionSet;
   onEdit: (q: QuestionSet) => void;
-  onDelete: (q: QuestionSet) => () => Promise<void>;
+  onDelete: () => void;
 }) => {
   const { users } = useContext(AppContext);
   const displayname = useMemo(() => {
@@ -35,7 +35,7 @@ const QuestionSetRow = ({
       </TableCell>
 
       <TableCell padding='none'>
-        <IconButton size='small' onClick={() => onDelete(questionSet)}>
+        <IconButton size='small' onClick={onDelete}>
           <Delete />
         </IconButton>
       </TableCell>

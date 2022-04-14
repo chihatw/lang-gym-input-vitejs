@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 import Delete from '@mui/icons-material/Delete';
 import React from 'react';
-import { UidOndoku } from '../../../../entities/UidOndoku';
+import { UidOndoku } from '../../../../services/useUidOndokus';
 
 const UidOndokuTable: React.FC<{
   uidOndokus: UidOndoku[];
@@ -21,7 +21,7 @@ const UidOndokuTable: React.FC<{
         {uidOndokus.map((uidOndoku) => (
           <TableRow key={uidOndoku.id}>
             <TableCell>{displaynames[uidOndoku.uid]}</TableCell>
-            <TableCell>{titles[uidOndoku.ondoku.id]}</TableCell>
+            <TableCell>{titles[uidOndoku.ondoku!.id]}</TableCell>
             <TableCell padding='none'>
               <IconButton size='small' onClick={() => onDelete(uidOndoku)}>
                 <Delete />

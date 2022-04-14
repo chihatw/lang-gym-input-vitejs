@@ -18,13 +18,13 @@ const AccentsMonitor: React.FC<{
     <div style={{ fontSize: 12, color: '#555' }}>
       <div style={{ display: 'grid', rowGap: 8 }}>
         {lines.map((line, sentenceIndex) => {
-          const audio = audios[sentenceIndex];
+          const audio: Audio | null = audios[sentenceIndex];
           const pitchesArray = string2PitchesArray(line);
           return (
             <div key={sentenceIndex}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <div style={{ paddingRight: 16 }}>{sentenceIndex}</div>
-                {!!audio.downloadURL ? (
+                {!!audio?.downloadURL ? (
                   <Speaker
                     start={audio.start}
                     end={audio.end}

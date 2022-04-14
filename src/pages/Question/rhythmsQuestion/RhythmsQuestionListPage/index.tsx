@@ -14,7 +14,7 @@ const RhythmsQuestionListPage = () => {
         <TableBody>
           {questionSets.map((questionSet, index) => (
             <QuestionSetRow
-              onDelete={onDelete}
+              onDelete={() => onDelete(questionSet)}
               onEdit={onEdit}
               questionSet={questionSet}
               key={index}

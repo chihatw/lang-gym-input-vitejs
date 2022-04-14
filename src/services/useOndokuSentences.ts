@@ -12,7 +12,7 @@ import {
   batchAddDocuments,
   batchDeleteDocuments,
   batchUpdateDocuments,
-  getDocumentsByQuety,
+  getDocumentsByQuery,
   snapshotCollection,
   updateDocument,
 } from '../repositories/utils';
@@ -122,11 +122,26 @@ export const useHandleOndokuSentences = () => {
     () =>
       async function <T extends { id: string }>(
         values: Omit<T, 'id'>[]
-      ): Promise<boolean> {
+      ): Promise<string[]> {
         return await batchAddDocuments({ db, colId: COLLECTION, values });
       },
     []
   );
+
+  const _getDocumentsByQuery = async <T>({
+    queries,
+    buildValue,
+  }: {
+    queries?: QueryConstraint[];
+    buildValue: (value: DocumentData) => T;
+  }): Promise<T[]> => {
+    return await getDocumentsByQuery({
+      db,
+      colId: COLLECTION,
+      queries,
+      buildValue,
+    });
+  };
 
   const updateOndokuSentence = async (
     ondokuSentence: OndokuSentence
@@ -145,9 +160,7 @@ export const useHandleOndokuSentences = () => {
   };
 
   const deleteOndokuSentences = async (ondokuId: string) => {
-    const ids = await getDocumentsByQuety({
-      db,
-      colId: COLLECTION,
+    const ids = await _getDocumentsByQuery({
       queries: [where('ondoku', '==', ondokuId)],
       buildValue: (doc: DocumentData) => doc.id as string,
     });

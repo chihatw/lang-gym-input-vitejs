@@ -114,7 +114,7 @@ export const useHandleAssignmentSentences = () => {
     () =>
       async function <T extends { id: string }>(
         values: Omit<T, 'id'>[]
-      ): Promise<boolean> {
+      ): Promise<string[]> {
         return await batchAddDocuments({ db, colId: COLLECTION, values });
       },
     []
@@ -132,7 +132,7 @@ export const useHandleAssignmentSentences = () => {
 
   const createAssignmentSentences = async (
     assignmentSentences: Omit<AssignmentSentence, 'id'>[]
-  ): Promise<boolean> => {
+  ): Promise<string[]> => {
     return await _batchAddDocuments(assignmentSentences);
   };
 

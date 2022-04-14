@@ -1,8 +1,22 @@
-import { addDoc, collection } from '@firebase/firestore';
+import {
+  DocumentData,
+  QueryConstraint,
+  Unsubscribe,
+  where,
+  orderBy,
+  limit,
+} from '@firebase/firestore';
 
 import { db } from '../repositories/firebase';
 import { Accent } from '../entities/Accent';
-import { Sentence } from '../entities/Sentence';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  addDocument,
+  deleteDocument,
+  snapshotCollection,
+  updateDocument,
+} from '../repositories/utils';
+import { Sentence } from './useSentences';
 
 export type QuestionSet = {
   id: string;
@@ -33,12 +47,131 @@ export const INITIAL_QUESTION_SET: QuestionSet = {
 };
 
 const COLLECTION = 'questionSets';
-const colRef = collection(db, COLLECTION);
 
-export const useQuestionSets = () => {
-  // ...
+export const useQuestionSets = ({
+  questionSetId,
+  setQuestionGroupId,
+}: {
+  questionSetId: string;
+  setQuestionGroupId: (value: string) => void;
+}) => {
+  const [questionSet, setQuestionSet] =
+    useState<QuestionSet>(INITIAL_QUESTION_SET);
+  const [accentsQuestionSets, setAccentsQuestionSets] = useState<QuestionSet[]>(
+    []
+  );
+  const [rhythmsQuestionSets, setRhythmsQuestionSets] = useState<QuestionSet[]>(
+    []
+  );
+  const _snapshotCollection = useMemo(
+    () =>
+      function <T>({
+        queries,
+        setValues,
+        buildValue,
+      }: {
+        queries?: QueryConstraint[];
+        setValues: (value: T[]) => void;
+        buildValue: (value: DocumentData) => T;
+      }): Unsubscribe {
+        return snapshotCollection({
+          db,
+          colId: COLLECTION,
+          queries,
+          setValues,
+          buildValue,
+        });
+      },
+    []
+  );
+
+  const handleSetQuestionSet = useCallback((questionSet: QuestionSet) => {
+    setQuestionSet(questionSet);
+    setQuestionGroupId(questionSet.questionGroups[0] || '');
+  }, []);
+
+  useEffect(() => {
+    if (!questionSetId) {
+      handleSetQuestionSet(INITIAL_QUESTION_SET);
+    } else {
+      const accentsQuestionSet = accentsQuestionSets.filter(
+        (questionSet) => questionSet.id === questionSetId
+      )[0];
+      if (!!accentsQuestionSet) {
+        handleSetQuestionSet(accentsQuestionSet);
+      } else {
+        const rhythmsQuestionSet = rhythmsQuestionSets.filter(
+          (questionSet) => questionSet.id === questionSetId
+        )[0];
+        if (!!rhythmsQuestionSet) {
+          handleSetQuestionSet(rhythmsQuestionSet);
+        } else {
+          handleSetQuestionSet(INITIAL_QUESTION_SET);
+        }
+      }
+    }
+  }, [questionSetId, accentsQuestionSets, rhythmsQuestionSets]);
+
+  useEffect(() => {
+    const unsub = _snapshotCollection({
+      queries: [
+        where('type', '==', 'articleAccents'),
+        orderBy('createdAt', 'desc'),
+        limit(5),
+      ],
+      setValues: setAccentsQuestionSets,
+      buildValue: buildQuestionSet,
+    });
+    return () => {
+      unsub();
+    };
+  }, []);
+
+  useEffect(() => {
+    const unsub = _snapshotCollection({
+      queries: [
+        where('type', '==', 'articleRhythms'),
+        orderBy('createdAt', 'desc'),
+        limit(5),
+      ],
+      setValues: setRhythmsQuestionSets,
+      buildValue: buildQuestionSet,
+    });
+    return () => {
+      unsub();
+    };
+  }, []);
+
+  return { accentsQuestionSets, rhythmsQuestionSets, questionSet };
 };
 export const useHandleQuestionSets = () => {
+  const _addDocument = useMemo(
+    () =>
+      async function <T extends { id: string }>(
+        value: Omit<T, 'id'>
+      ): Promise<T | null> {
+        return await addDocument({
+          db,
+          colId: COLLECTION,
+          value,
+        });
+      },
+    []
+  );
+  const _updateDocument = useMemo(
+    () =>
+      async function <T extends { id: string }>(value: T): Promise<T | null> {
+        return await updateDocument({
+          db,
+          colId: COLLECTION,
+          value,
+        });
+      },
+    []
+  );
+  const _deleteDocument = useCallback(async (id: string) => {
+    return await deleteDocument({ db, colId: COLLECTION, id });
+  }, []);
   const createAccentsQuestionSet = async ({
     title,
     sentences,
@@ -47,7 +180,7 @@ export const useHandleQuestionSets = () => {
     title: string;
     sentences: Sentence[];
     questionGroupId: string;
-  }): Promise<string> => {
+  }): Promise<QuestionSet | null> => {
     let questionCount = 0;
     sentences.forEach((sentence) => {
       const accents = sentence.accents;
@@ -67,15 +200,7 @@ export const useHandleQuestionSets = () => {
       questionGroups: [questionGroupId],
       userDisplayname: '原田',
     };
-    console.log('create question set');
-    return await addDoc(colRef, questionSet)
-      .then((doc) => {
-        return doc.id;
-      })
-      .catch((e) => {
-        console.warn(e);
-        return '';
-      });
+    return _addDocument(questionSet);
   };
   const createRhythmQuestionSet = async ({
     title,
@@ -85,7 +210,7 @@ export const useHandleQuestionSets = () => {
     title: string;
     accentsArray: Accent[][];
     questionGroupId: string;
-  }): Promise<string> => {
+  }): Promise<QuestionSet | null> => {
     let questionCount = 0;
     accentsArray.forEach((accents) => {
       questionCount += accents.length;
@@ -102,15 +227,47 @@ export const useHandleQuestionSets = () => {
       questionGroups: [questionGroupId],
       userDisplayname: '原田',
     };
-    console.log('create question set');
-    return await addDoc(colRef, questionSet)
-      .then((doc) => {
-        return doc.id;
-      })
-      .catch((e) => {
-        console.warn(e);
-        return '';
-      });
+    return _addDocument(questionSet);
   };
-  return { createRhythmQuestionSet, createAccentsQuestionSet };
+
+  const createQuestionSet = async (
+    questionSet: Omit<QuestionSet, 'id'>
+  ): Promise<QuestionSet | null> => {
+    return await _addDocument(questionSet);
+  };
+
+  const updateQuestionSet = async (
+    questionSet: QuestionSet
+  ): Promise<QuestionSet | null> => {
+    return _updateDocument(questionSet);
+  };
+
+  const deleteQuestionSet = async (id: string): Promise<boolean> => {
+    return await _deleteDocument(id);
+  };
+
+  return {
+    createRhythmQuestionSet,
+    createAccentsQuestionSet,
+    deleteQuestionSet,
+    createQuestionSet,
+    updateQuestionSet,
+  };
+};
+
+const buildQuestionSet = (doc: DocumentData) => {
+  const questionSet: QuestionSet = {
+    id: doc.id,
+    answered: doc.data().answered,
+    createdAt: doc.data().createdAt,
+    hasFreeAnswers: doc.data().hasFreeAnswers,
+    questionCount: doc.data().questionCount,
+    questionGroups: doc.data().questionGroups,
+    title: doc.data().title,
+    type: doc.data().type,
+    uid: doc.data().uid,
+    unlockedAt: doc.data().unlockedAt,
+    userDisplayname: doc.data().userDisplayname,
+  };
+  return questionSet;
 };

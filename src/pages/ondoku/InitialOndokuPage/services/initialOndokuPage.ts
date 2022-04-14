@@ -58,8 +58,8 @@ export const useInitialOndokuPage = (id: string) => {
   }, [japanese, accentString, id]);
 
   const onSubmit = async () => {
-    const result = await addOndokuSentences(ondokuSentences);
-    if (!!result) {
+    const ids = await addOndokuSentences(ondokuSentences);
+    if (!!ids.length) {
       navigate(`/ondoku/list`);
     }
   };

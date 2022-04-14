@@ -1,10 +1,18 @@
 // https://firebase.google.com/docs/firestore/manage-data/add-data#web-version-9_7
-import { doc, collection, writeBatch } from '@firebase/firestore';
+import { Unsubscribe } from 'firebase/auth';
+import { DocumentData, QueryConstraint, where } from 'firebase/firestore';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Accent, buildAccentString } from '../entities/Accent';
 import { buildSentenceRhythm, getMoraString } from '../entities/Rhythm';
 
 import { Tags } from '../entities/Tags';
 import { db } from '../repositories/firebase';
+import {
+  batchAddDocuments,
+  batchDeleteDocuments,
+  batchUpdateDocuments,
+  snapshotCollection,
+} from '../repositories/utils';
 
 export const INITIAL_QUESTION = {
   id: '',
@@ -37,12 +45,83 @@ export type Question = {
 };
 
 const COLLECTION = 'questions';
-const colRef = collection(db, COLLECTION);
 
-export const useQuestions = () => {
-  // ...
+export const useQuestions = ({
+  questionIds,
+  questionGroupId,
+}: {
+  questionIds: string[];
+  questionGroupId: string;
+}) => {
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [unSortedQuestions, setUnSortedQuestions] = useState<Question[]>([]);
+
+  useEffect(() => {
+    const questions: Question[] = questionIds.map((questionId) => {
+      return unSortedQuestions.filter(
+        (question) => question.id === questionId
+      )[0];
+    });
+    setQuestions(questions);
+  }, [unSortedQuestions, questionIds]);
+
+  const _snapshotCollection = useMemo(
+    () =>
+      function <T>({
+        queries,
+        setValues,
+        buildValue,
+      }: {
+        queries?: QueryConstraint[];
+        setValues: (value: T[]) => void;
+        buildValue: (value: DocumentData) => T;
+      }): Unsubscribe {
+        return snapshotCollection({
+          db,
+          colId: COLLECTION,
+          queries,
+          setValues,
+          buildValue,
+        });
+      },
+    []
+  );
+
+  useEffect(() => {
+    const unsub = _snapshotCollection({
+      queries: [where('questionGroup', '==', questionGroupId)],
+      buildValue: buildQuestion,
+      setValues: setUnSortedQuestions,
+    });
+    return () => {
+      unsub();
+    };
+  }, [questionGroupId]);
+
+  return { questions };
 };
 export const useHandleQuestions = () => {
+  const _batchAddDocuments = useMemo(
+    () =>
+      async function <T extends { id: string }>(
+        values: Omit<T, 'id'>[]
+      ): Promise<string[]> {
+        return await batchAddDocuments({ db, colId: COLLECTION, values });
+      },
+    []
+  );
+  const _batchUpdateDocuments = useMemo(
+    () =>
+      async function <T extends { id: string }>(values: T[]): Promise<boolean> {
+        return await batchUpdateDocuments({ db, colId: COLLECTION, values });
+      },
+    []
+  );
+
+  const _batchDeleteDocuments = useCallback(async (ids: string[]) => {
+    return await batchDeleteDocuments({ db, colId: COLLECTION, ids });
+  }, []);
+
   const createAccentsQuestions = async ({
     sentences,
     questionGroupId,
@@ -57,23 +136,8 @@ export const useHandleQuestions = () => {
       sentences,
       questionGroupId,
     });
-    const docIds: string[] = [];
-    const batch = writeBatch(db);
-    questions.forEach((question) => {
-      const docRef = doc(colRef);
-      docIds.push(docRef.id);
-      batch.set(docRef, question);
-    });
-    console.log('create accents questions');
-    return await batch
-      .commit()
-      .then(() => {
-        return docIds;
-      })
-      .catch((e) => {
-        console.warn(e);
-        return [];
-      });
+
+    return await _batchAddDocuments(questions);
   };
   const createRhythmQuestions = async ({
     sentences,
@@ -93,24 +157,30 @@ export const useHandleQuestions = () => {
       downloadURL,
       questinGroupId,
     });
-    const docIds: string[] = [];
-    const batch = writeBatch(db);
-    questions.forEach((question) => {
-      const newDocRef = doc(colRef);
-      docIds.push(newDocRef.id);
-      batch.set(newDocRef, question);
-    });
-    return await batch
-      .commit()
-      .then(() => {
-        return docIds;
-      })
-      .catch((e) => {
-        console.warn(e);
-        return [];
-      });
+    return await _batchAddDocuments(questions);
   };
-  return { createRhythmQuestions, createAccentsQuestions };
+
+  const createQuestions = async (
+    questions: Omit<Question, 'id'>[]
+  ): Promise<string[]> => {
+    return await _batchAddDocuments(questions);
+  };
+
+  const updateQuestions = async (questions: Question[]): Promise<boolean> => {
+    return await _batchUpdateDocuments(questions);
+  };
+
+  const deleteQuestions = async (ids: string[]): Promise<boolean> => {
+    return await _batchDeleteDocuments(ids);
+  };
+
+  return {
+    createRhythmQuestions,
+    createAccentsQuestions,
+    deleteQuestions,
+    updateQuestions,
+    createQuestions,
+  };
 };
 
 const sentences2RhythmQuestions = ({
@@ -171,4 +241,22 @@ const sentences2AccentsQuestions = ({
     };
     return question;
   });
+};
+
+const buildQuestion = (doc: DocumentData) => {
+  const question: Question = {
+    id: doc.id,
+    answerExample: doc.data().answerExample,
+    answers: doc.data().answers,
+    choices: doc.data().choices,
+    createdAt: doc.data().createdAt,
+    feedback: doc.data().feedback,
+    memo: doc.data().memo,
+    note: doc.data().note,
+    question: doc.data().question,
+    questionGroup: doc.data().questionGroup,
+    tags: doc.data().tags,
+    type: doc.data().type,
+  };
+  return question;
 };

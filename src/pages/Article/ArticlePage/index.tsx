@@ -12,6 +12,7 @@ import { AppContext } from '../../../services/app';
 
 const ArticlePage = () => {
   const navigate = useNavigate();
+  const { setQuestionSetId } = useContext(AppContext);
 
   const { createAccentsQuestions, createRhythmQuestions } =
     useHandleQuestions();
@@ -23,10 +24,10 @@ const ArticlePage = () => {
   const {
     article,
     sentences,
-    isFetching,
     assignment,
     sentenceParseNews,
     assignmentSentences,
+    setSentenceId,
   } = useContext(AppContext);
 
   const [isSm, setIsSm] = useState(true);
@@ -83,15 +84,16 @@ const ArticlePage = () => {
           ...questionGroup,
           questions: docIds,
         };
-        const { success } = await updateQuestionGroup(updatedQuestionGroup);
-        if (success) {
-          const questionSetID = await createAccentsQuestionSet({
+        const result = await updateQuestionGroup(updatedQuestionGroup);
+        if (!!result) {
+          const createdQuestionSet = await createAccentsQuestionSet({
             title: article.title,
             questionGroupId: questionGroup.id,
             sentences,
           });
-          if (!!questionSetID) {
-            navigate(`/accentsQuestion/${questionSetID}`);
+          if (!!createdQuestionSet) {
+            setQuestionSetId(createdQuestionSet.id);
+            navigate(`/accentsQuestion/${createdQuestionSet.id}`);
           }
         }
       }
@@ -111,15 +113,16 @@ const ArticlePage = () => {
           ...questionGroup,
           questions: docIds,
         };
-        const { success } = await updateQuestionGroup(updatedQuestionGroup);
-        if (success) {
-          const questionSetId = await createRhythmQuestionSet({
+        const result = await updateQuestionGroup(updatedQuestionGroup);
+        if (!!result) {
+          const createdQuestionSet = await createRhythmQuestionSet({
             title: article.title,
             questionGroupId: questionGroup.id,
             accentsArray: sentences.map((sentence) => sentence.accents),
           });
-          if (!!questionSetId) {
-            navigate(`/rhythmsQuestion/${questionSetId}`);
+          if (!!createdQuestionSet) {
+            setQuestionSetId(createdQuestionSet.id);
+            navigate(`/rhythmsQuestion/${createdQuestionSet.id}`);
           }
         }
       }
@@ -131,30 +134,28 @@ const ArticlePage = () => {
   };
 
   // データ取得中
-  if (isFetching) {
-    return <></>;
-  } else {
-    if (!!article.id) {
-      return (
-        <ArticlePageComponent
-          isSm={isSm}
-          article={article}
-          sentences={sentences}
-          assignment={assignment}
-          sentenceParseNews={sentenceParseNews}
-          assignmentSentences={assignmentSentences}
-          openPage={openPage}
-          copySentenceParseNew={copySentenceParseNew}
-          createAccentsQuestion={createAccentsQuestion}
-          createRhythmsQuestion={createRhythmsQuestion}
-          handleClickWidthButton={handleClickWidthButton}
-        />
-      );
-    }
-    // article が 初期値
-    else {
-      return <Navigate to={'/article/list'} />;
-    }
+
+  if (!!article.id) {
+    return (
+      <ArticlePageComponent
+        isSm={isSm}
+        article={article}
+        sentences={sentences}
+        assignment={assignment}
+        sentenceParseNews={sentenceParseNews}
+        assignmentSentences={assignmentSentences}
+        openPage={openPage}
+        copySentenceParseNew={copySentenceParseNew}
+        createAccentsQuestion={createAccentsQuestion}
+        createRhythmsQuestion={createRhythmsQuestion}
+        handleClickWidthButton={handleClickWidthButton}
+        setSentenceId={setSentenceId}
+      />
+    );
+  }
+  // article が 初期値
+  else {
+    return <Navigate to={'/article/list'} />;
   }
 };
 

@@ -1,31 +1,25 @@
-import { useEffect, useState, createContext } from 'react';
+import { useEffect, useState, createContext, useContext } from 'react';
 import { Audio } from '../../../../../entities/Audio';
-import { QuestionSet } from '../../../../../entities/QuestionSet';
 
-import {
-  deleteQuestions,
-  getQuestion,
-  updateQuestions,
-} from '../../../../../repositories/question';
-import {
-  getQuestionGroup,
-  updateQuestionGroup,
-} from '../../../../../repositories/questionGroup';
-import {
-  getQuestionSet,
-  updateQuestionSet,
-} from '../../../../../repositories/questionSet';
-import { getUsers } from '../../../../../repositories/user';
-import { Question } from '../../../../../entities/Question';
 import { useNavigate } from 'react-router-dom';
 import {
   buildRhythmString,
   buildSentenceRhythm,
   Rhythm,
+  SentenceRhythm,
   WordRhythm,
 } from '../../../../../entities/Rhythm';
-import { QuestionGroup } from '../../../../../entities/QuestionGroup';
 import { User } from '../../../../../services/useUsers';
+import { useHandleQuestionGroups } from '../../../../../services/useQuestionGroups';
+import {
+  Question,
+  useHandleQuestions,
+} from '../../../../../services/useQuestions';
+import {
+  QuestionSet,
+  useHandleQuestionSets,
+} from '../../../../../services/useQuestionSets';
+import { AppContext } from '../../../../../services/app';
 
 export const RhythmsQuestionPageContext = createContext<{
   uid: string;
@@ -67,97 +61,67 @@ export const RhythmsQuestionPageContext = createContext<{
 
 export const useRhythmsQuestionPage = (id: string) => {
   const navigate = useNavigate();
-  const [initializing, setInitializing] = useState(true);
+
+  const { questionSet, users, questions, questionGroup } =
+    useContext(AppContext);
+
+  const { updateQuestionSet } = useHandleQuestionSets();
+  const { updateQuestionGroup } = useHandleQuestionGroups();
+  const { updateQuestions, deleteQuestions } = useHandleQuestions();
+
   const [title, setTitle] = useState('');
   const [uid, setUid] = useState('');
-  const [users, setUsers] = useState<User[]>([]);
+
   const [isAnswered, setIsAnswered] = useState(false);
-  const [questionGroupID, setQuestionGroupID] = useState('');
   const [questionIDs, setQuestionIDs] = useState<string[]>([]);
-  const [originalQuestionGroup, setOriginalQuestionGroup] =
-    useState<QuestionGroup | null>(null);
-  const [originalQuestionSet, setOriginalQuestionSet] =
-    useState<QuestionSet | null>(null);
   const [rhythmString, setRhythmString] = useState('');
   const [disabledsArray, setDisabledsArray] = useState<string[][][]>([]);
   const [audios, setAudios] = useState<Audio[]>([]);
-  const [originalQuestions, setOriginalQuestions] = useState<Question[]>([]);
   const [sentenceRhythmArray, setSentenceRhythmArray] = useState<Rhythm[][][]>(
     []
   );
 
   useEffect(() => {
-    const fetchData = async () => {
-      const users = await getUsers(5);
-      if (!!users) {
-        setUsers(users);
-      }
-    };
-    fetchData();
-  }, []);
+    setTitle(questionSet.title);
+    setUid(questionSet.uid);
+    setIsAnswered(questionSet.answered);
+  }, [questionSet]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const questionSet = await getQuestionSet(id);
-      if (!!questionSet) {
-        setTitle(questionSet.title);
-        setUid(questionSet.uid);
-        setIsAnswered(questionSet.answered);
-        setQuestionGroupID(questionSet.questionGroups[0]);
-        setOriginalQuestionSet(questionSet);
-      }
-      setInitializing(false);
-    };
-    fetchData();
-  }, [id]);
+    setQuestionIDs(questionGroup.questions);
+  }, [questionGroup]);
 
   useEffect(() => {
-    if (!questionGroupID) return;
-    const fetchData = async () => {
-      const questionGroup = await getQuestionGroup(questionGroupID);
-      if (!!questionGroup) {
-        setQuestionIDs(questionGroup.questions);
-        setOriginalQuestionGroup(questionGroup);
-      }
-    };
-    fetchData();
-  }, [questionGroupID]);
+    if (!questionIDs.length || !questions.length) return;
 
-  useEffect(() => {
-    if (!questionIDs.length) return;
-    const fetchData = async () => {
-      const rhythmStringsObj: { [id: string]: string } = {};
-      const disabledsArrays: { [id: string]: string[][] } = {};
-      const audios: { [id: string]: Audio } = {};
-      const originalQuestions: { [id: string]: Question } = {};
-      await Promise.all(
-        questionIDs.map(async (id) => {
-          const question = await getQuestion(id);
+    const rhythmStringsObj: string[] = [];
+    const disabledsArrays: string[][][] = [];
+    const audios: Audio[] = [];
 
-          if (!!question) {
-            rhythmStringsObj[id] = buildRhythmString(
-              JSON.parse(question.question).syllableUnits
-            );
-            disabledsArrays[id] = JSON.parse(
-              question.question
-            ).syllableUnits.map((wordRhythm: WordRhythm) =>
-              wordRhythm.map((r) => r.disabled)
-            );
-            audios[id] = JSON.parse(question.question).audio;
-            originalQuestions[id] = question;
-          }
-        })
+    questions.forEach((question) => {
+      const {
+        audio,
+        syllableUnits,
+      }: { audio: Audio; syllableUnits: SentenceRhythm } = JSON.parse(
+        question.question
       );
-      setSentenceRhythmArray(
-        questionIDs.map((id) => buildSentenceRhythm(rhythmStringsObj[id]))
+
+      audios.push(audio);
+      rhythmStringsObj.push(buildRhythmString(syllableUnits));
+      disabledsArrays.push(
+        syllableUnits.map((wordRhythm: WordRhythm) =>
+          wordRhythm.map((r) => r.disabled)
+        )
       );
-      setRhythmString(questionIDs.map((id) => rhythmStringsObj[id]).join('\n'));
-      setDisabledsArray(questionIDs.map((id) => disabledsArrays[id]));
-      setAudios(questionIDs.map((id) => audios[id]));
-      setOriginalQuestions(questionIDs.map((id) => originalQuestions[id]));
-    };
-    fetchData();
-  }, [questionIDs]);
+    });
+
+    setAudios(audios);
+    setRhythmString(rhythmStringsObj.join('\n'));
+    setDisabledsArray(disabledsArrays);
+    setSentenceRhythmArray(
+      rhythmStringsObj.map((item) => buildSentenceRhythm(item))
+    );
+  }, [questionIDs, questions]);
 
   const onChangeUid = (uid: string) => {
     setUid(uid);
@@ -274,31 +238,31 @@ export const useRhythmsQuestionPage = (id: string) => {
         }
       });
     });
-    const questionSet: QuestionSet = {
-      ...originalQuestionSet!,
+    const newQuestionSet: QuestionSet = {
+      ...questionSet,
       title,
       uid,
       questionCount,
       answered: isAnswered,
       userDisplayname: users.filter((user) => user.id === uid)[0].displayname,
     };
-    const { success } = await updateQuestionSet(questionSet);
-    if (success) {
-      const originalQuestionIDs = originalQuestions.map((q) => q.id);
-      const questionIDs = originalQuestionIDs.slice(0, sentenceRhythms.length);
-      const deleteQuestionIDs = originalQuestions
+    const updatedQuestionSet = await updateQuestionSet(newQuestionSet);
+    if (!!updatedQuestionSet) {
+      const originalQuestionIds = questions.map((q) => q.id);
+      const questionIds = originalQuestionIds.slice(0, sentenceRhythms.length);
+      const deleteQuestionIDs = questions
         .map((q) => q.id)
-        .filter((id) => !questionIDs.includes(id));
+        .filter((id) => !questionIds.includes(id));
 
-      const { success } = await deleteQuestions(deleteQuestionIDs);
-      if (success) {
-        const questionGroup = {
-          ...originalQuestionGroup!,
+      const result = await deleteQuestions(deleteQuestionIDs);
+      if (!!result) {
+        const newQuestionGroup = {
+          ...questionGroup,
           questions: questionIDs,
         };
-        const { success } = await updateQuestionGroup(questionGroup);
-        if (success) {
-          const questions: Question[] = sentenceRhythms.map(
+        const result = await updateQuestionGroup(newQuestionGroup);
+        if (!!result) {
+          const newQuestions: Question[] = sentenceRhythms.map(
             (sentenceRhythm, sentenceIndex) => {
               const question = JSON.stringify({
                 audio: audios[sentenceIndex],
@@ -313,14 +277,14 @@ export const useRhythmsQuestionPage = (id: string) => {
                 ),
               });
               return {
-                ...originalQuestions[sentenceIndex],
+                ...questions[sentenceIndex],
                 question,
               };
             }
           );
-          const { success } = await updateQuestions(questions);
+          const result = await updateQuestions(newQuestions);
 
-          if (success) {
+          if (!!result) {
             navigate(`/rhythmsQuestion/list`);
           }
         }
@@ -329,7 +293,7 @@ export const useRhythmsQuestionPage = (id: string) => {
   };
 
   return {
-    initializing,
+    initializing: false,
     title,
     uid,
     users,

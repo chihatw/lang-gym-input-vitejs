@@ -4,11 +4,11 @@ import { Button } from '@mui/material';
 import TableLayout from '../../../../components/templates/TableLayout';
 import SentenceRow from './SentenceRow';
 import { Article } from '../../../../services/useArticles';
-import { Sentence } from '../../../../entities/Sentence';
 import { Assignment } from '../../../../services/useAssignments';
 import { SentenceParseNew } from '../../../../services/useSentenceParseNews';
 import { AssignmentSentence } from '../../../../services/useAssignmentSentences';
 import InitializeSentencesPane from './InitializeSentencesPane';
+import { Sentence } from '../../../../services/useSentences';
 
 const ArticlePageComponent = ({
   isSm,
@@ -18,6 +18,7 @@ const ArticlePageComponent = ({
   sentenceParseNews,
   assignmentSentences,
   openPage,
+  setSentenceId,
   copySentenceParseNew,
   createAccentsQuestion,
   createRhythmsQuestion,
@@ -30,6 +31,7 @@ const ArticlePageComponent = ({
   sentenceParseNews: SentenceParseNew[];
   assignmentSentences: AssignmentSentence[];
   openPage: (path: string) => void;
+  setSentenceId: (value: string) => void;
   copySentenceParseNew: (value: number) => void;
   createAccentsQuestion: () => void;
   createRhythmsQuestion: () => void;
@@ -53,7 +55,10 @@ const ArticlePageComponent = ({
             sentence={sentence}
             downloadURL={article.downloadURL}
             sentenceParseNew={sentenceParseNews[index]}
-            openEditParsePage={() => openPage(`/parse/${index}`)}
+            openEditParsePage={() => {
+              setSentenceId(sentence.id);
+              openPage(`/parse/${index}`);
+            }}
             assignmentSentence={assignmentSentences[index]}
             assignmentDownloadURL={assignment.downloadURL}
             copySentenceParseNew={() => copySentenceParseNew(index)}

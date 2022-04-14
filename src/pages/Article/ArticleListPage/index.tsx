@@ -63,7 +63,10 @@ const ArticleListPage = () => {
     article: Article;
   }) => {
     setArticleId(_article.id);
-    navigate(`/article/${path}`);
+    setTimeout(() => {
+      navigate(`/article/${path}`);
+      // article が設定されるのを待つ
+    }, 100);
   };
 
   const handleClickOpenCreateArticlePage = () => {

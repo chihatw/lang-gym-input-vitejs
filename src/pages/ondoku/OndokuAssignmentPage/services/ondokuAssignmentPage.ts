@@ -87,8 +87,8 @@ export const useOndokuAssignmentPage = (id: string) => {
             line: s.line,
             mistakes: [],
           }));
-        const result = await createAssignmentSentences(assignmentSentences);
-        if (!!result) {
+        const ids = await createAssignmentSentences(assignmentSentences);
+        if (!!ids.length) {
           navigate(`/ondoku/${id}/assignment/uid/${uid}/voice`);
         }
       }
