@@ -59,7 +59,7 @@ export const RhythmsQuestionPageContext = createContext<{
   onChangeWordDisabled: () => {},
 });
 
-export const useRhythmsQuestionPage = (id: string) => {
+export const useRhythmsQuestionPage = () => {
   const navigate = useNavigate();
 
   const { questionSet, users, questions, questionGroup } =

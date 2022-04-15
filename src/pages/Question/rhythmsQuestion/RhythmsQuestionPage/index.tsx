@@ -1,5 +1,4 @@
 import React from 'react';
-import { useMatch } from 'react-router-dom';
 import {
   RhythmsQuestionPageContext,
   useRhythmsQuestionPage,
@@ -8,7 +7,6 @@ import RhythmsQuestionForm from './components/RhythmsQuestionForm';
 import TableLayout from '../../../../components/templates/TableLayout';
 
 const RhythmsQuestionPage = () => {
-  const match = useMatch('/rhythmsQuestion/:id');
   const {
     initializing,
     title,
@@ -27,7 +25,7 @@ const RhythmsQuestionPage = () => {
     onChangeRhythmString,
     onChangeWordDisabled,
     onDeleteSentence,
-  } = useRhythmsQuestionPage(match?.params.id || '');
+  } = useRhythmsQuestionPage();
   if (initializing) {
     return <></>;
   } else {

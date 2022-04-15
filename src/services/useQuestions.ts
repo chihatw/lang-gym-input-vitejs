@@ -57,11 +57,13 @@ export const useQuestions = ({
   const [unSortedQuestions, setUnSortedQuestions] = useState<Question[]>([]);
 
   useEffect(() => {
-    const questions: Question[] = questionIds.map((questionId) => {
-      return unSortedQuestions.filter(
-        (question) => question.id === questionId
-      )[0];
-    });
+    const questions: Question[] = questionIds
+      .map((questionId) => {
+        return unSortedQuestions.filter(
+          (question) => question.id === questionId
+        )[0];
+      })
+      .filter((i) => i);
     setQuestions(questions);
   }, [unSortedQuestions, questionIds]);
 
