@@ -31,7 +31,6 @@ const AudioItemRow = ({
     if (isPlaying) {
       player.stop();
     } else {
-      console.log(audioItem.id);
       player.play();
     }
     setIsPlaying(!isPlaying);

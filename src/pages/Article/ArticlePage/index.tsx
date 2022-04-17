@@ -66,7 +66,6 @@ const ArticlePage = () => {
         sentenceParseNew.commentInvisibilities
       ),
     };
-    console.log(JSON.stringify(item));
     await navigator.clipboard.writeText(JSON.stringify(item));
     console.log('copied!!');
   };

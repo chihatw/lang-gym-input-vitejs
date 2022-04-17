@@ -69,7 +69,6 @@ const WorkoutRow = ({ workout }: { workout: Workout }) => {
   );
 
   const handleClickEdit = () => {
-    console.log(workout.id);
     setWorkoutId(workout.id);
     navigate('/workout');
   };

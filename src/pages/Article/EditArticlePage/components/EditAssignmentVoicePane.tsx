@@ -168,7 +168,6 @@ const EditAssignmentVoicePane = ({
 
   // upload 時、 assignment 作成
   const handleUploadAudio = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('hello');
     if (!e.target.files) return;
     const file = e.target.files[0];
     const { success, snapshot } = await uploadFile(file, 'articles');

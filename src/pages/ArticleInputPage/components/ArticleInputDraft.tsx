@@ -26,7 +26,6 @@ const ArticleInputDraft = () => {
     });
     const text = selected.join('\n');
     await navigator.clipboard.writeText(text);
-    console.log(text);
   };
 
   const items: { label: string; type: 'original' | 'corrected' | 'chinese' }[] =

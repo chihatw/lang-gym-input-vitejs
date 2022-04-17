@@ -45,7 +45,6 @@ export const useArticleInputLines = () => {
     });
     const text = result.join('\n');
     await navigator.clipboard.writeText(text);
-    console.log(text);
   };
   return {
     chinese,

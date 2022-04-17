@@ -906,34 +906,7 @@ export const Taigendome = () => {
     sentenceCommentUnitIds,
   };
 
-  console.log(JSON.stringify(_props));
-
-  return (
-    <SentencePane
-      {..._props}
-      // sentenceArrayIndex={sentenceArrayIndex}
-      // sentenceId={sentenceId}
-      // bodyTexts={bodyTexts}
-      Cursor={Cursor}
-      // units={units}
-      // color={color}
-      // sentences={sentences}
-      // shuuJoshi={shuuJoshi}
-      // juntaiJoshi={juntaiJoshi}
-      // topicUnitId={topicUnitId}
-      // topicBranch={topicBranch}
-      // isTaigendome={isTaigendome}
-      // buntouSeibuns={buntouSeibuns}
-      // parentUnitIds={parentUnitIds}
-      // branchUnitIds={branchUnitIds}
-      // sentenceArray={sentenceArray}
-      // commentUnitIds={commentUnitIds}
-      // isMainSentence={isMainSentence}
-      // isMainSentenceArray={isMainSentenceArray}
-      // juntaiJoshiBunmatsu={juntaiJoshiBunmatsu}
-      // sentenceCommentUnitIds={sentenceCommentUnitIds}
-    />
-  );
+  return <SentencePane {..._props} Cursor={Cursor} />;
 };
 
 export const Comment = () => {

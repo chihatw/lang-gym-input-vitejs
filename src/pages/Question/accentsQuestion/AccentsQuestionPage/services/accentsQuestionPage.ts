@@ -23,8 +23,6 @@ export const useAccentsQuestionPage = (id: string) => {
   const { questionSet, users, questionGroup, questions } =
     useContext(AppContext);
 
-  console.log(questions);
-
   const { updateQuestionSet } = useHandleQuestionSets();
   const { updateQuestions } = useHandleQuestions();
 

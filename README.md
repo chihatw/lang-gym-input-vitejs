@@ -1,6 +1,7 @@
+### 1.1.2
+- bug fix リズム問題　questionGroup.question
 ### 1.1.1
 - bug fix
-
 ### 1.1.0
 - refacoring: repositories
 ### 1.0.11
