@@ -33,6 +33,7 @@ export const useSentenceParseForm = (article: Article, sentence: Sentence) => {
     [id: string]: Branch;
   }>({});
   const [globalWords, setGlobalWords] = useState<{ [id: string]: Word }>({});
+
   const [globalSentenceArrays, setGlobalSentenceArrays] = useState<string[][]>([
     [sentenceID],
   ]);
@@ -44,6 +45,7 @@ export const useSentenceParseForm = (article: Article, sentence: Sentence) => {
     useState<string[]>([]);
 
   useEffect(() => {
+    if (!sentenceParseNew.id) return;
     setGlobalUnits(sentenceParseNew.units);
     setGlobalWords(sentenceParseNew.words);
     setGlobalBranches(sentenceParseNew.branches);
@@ -54,7 +56,7 @@ export const useSentenceParseForm = (article: Article, sentence: Sentence) => {
   }, [sentenceParseNew]);
 
   const onSubmit = async () => {
-    if (!!sentenceParseNew) {
+    if (!!sentenceParseNew.id) {
       const _updateSentenceParse: SentenceParseNew = {
         ...sentenceParseNew,
         units: globalUnits,

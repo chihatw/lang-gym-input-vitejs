@@ -57,7 +57,9 @@ const ArticlePageComponent = ({
             sentenceParseNew={sentenceParseNews[index]}
             openEditParsePage={() => {
               setSentenceId(sentence.id);
-              openPage(`/parse/${index}`);
+              setTimeout(() => {
+                openPage(`/parse/${index}`);
+              }, 100);
             }}
             assignmentSentence={assignmentSentences[index]}
             assignmentDownloadURL={assignment.downloadURL}

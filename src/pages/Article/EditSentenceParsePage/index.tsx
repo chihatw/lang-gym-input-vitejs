@@ -10,7 +10,6 @@ const EditSentenceParsePage = () => {
   const index = Number(match?.params.index || '0');
   const { article, sentences } = useContext(AppContext);
   const sentence = useMemo(() => sentences[index], [sentences, index]);
-
   if (!!article) {
     return (
       <TableLayout

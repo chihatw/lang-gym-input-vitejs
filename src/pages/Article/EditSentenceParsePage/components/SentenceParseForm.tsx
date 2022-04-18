@@ -16,20 +16,20 @@ const SentenceParseForm: React.FC<{ article: Article; sentence: Sentence }> = ({
   sentence,
 }) => {
   const {
-    onSubmit,
     sentenceID,
     globalUnits,
     globalWords,
-    setGlobalUnits,
-    setGlobalWords,
     globalBranches,
     globalSentences,
     activeSentenceID,
     sentenceParseNew,
+    globalSentenceArrays,
+    onSubmit,
+    setGlobalUnits,
+    setGlobalWords,
     setGlobalBranches,
     setGlobalSentences,
     setActiveSentenceID,
-    globalSentenceArrays,
     setGlobalSentenceArrays,
   } = useSentenceParseForm(article, sentence);
   const [sentenceParseProps, setSentenceParseProps] = useState<
