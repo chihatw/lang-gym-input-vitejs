@@ -19,6 +19,7 @@ import { AssignmentSentence } from '../../../../services/useAssignmentSentences'
 import { ComplexSentencePane } from '../../../../components/complex-sentence-pane';
 
 const SentenceRow = ({
+  isSm,
   sentence,
   downloadURL,
   sentenceParseNew,
@@ -27,6 +28,7 @@ const SentenceRow = ({
   openEditParsePage,
   copySentenceParseNew,
 }: {
+  isSm: boolean;
   sentence: Sentence;
   downloadURL: string;
   sentenceParseNew: SentenceParseNew | null;
@@ -56,7 +58,10 @@ const SentenceRow = ({
             pitchesArray={accentsForPitchesArray(sentence.accents)}
           />
           {!!sentenceParseNew && (
-            <SentenceFormContainer sentenceParseNew={sentenceParseNew} />
+            <SentenceFormContainer
+              isSm={isSm}
+              sentenceParseNew={sentenceParseNew}
+            />
           )}
           {!!assignmentSentence && !!assignmentSentence.accents.length && (
             <div
@@ -95,8 +100,10 @@ const SentenceRow = ({
 export default SentenceRow;
 
 const SentenceFormContainer = ({
+  isSm,
   sentenceParseNew,
 }: {
+  isSm: boolean;
   sentenceParseNew: SentenceParseNew;
 }) => {
   const { units, sentences, sentenceArrays } = useMemo(
@@ -111,12 +118,14 @@ const SentenceFormContainer = ({
     [sentenceParseNew]
   );
   return (
-    <ComplexSentencePane
-      Cursor={null}
-      units={units}
-      sentences={sentences}
-      sentenceArrays={sentenceArrays}
-    />
+    <div style={{ maxWidth: isSm ? 500 : 800, overflowX: 'scroll' }}>
+      <ComplexSentencePane
+        Cursor={null}
+        units={units}
+        sentences={sentences}
+        sentenceArrays={sentenceArrays}
+      />
+    </div>
   );
 };
 

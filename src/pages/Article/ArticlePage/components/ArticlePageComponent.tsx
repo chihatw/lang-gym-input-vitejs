@@ -52,6 +52,7 @@ const ArticlePageComponent = ({
         {sentences.map((sentence, index) => (
           <SentenceRow
             key={index}
+            isSm={isSm}
             sentence={sentence}
             downloadURL={article.downloadURL}
             sentenceParseNew={sentenceParseNews[index]}
