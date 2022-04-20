@@ -8,7 +8,7 @@ import { Assignment } from '../../../../services/useAssignments';
 import { SentenceParseNew } from '../../../../services/useSentenceParseNews';
 import { AssignmentSentence } from '../../../../services/useAssignmentSentences';
 import InitializeSentencesPane from './InitializeSentencesPane';
-import { Sentence } from '../../../../services/useSentences';
+import { ArticleSentence } from '../../../../services/useSentences';
 
 const ArticlePageComponent = ({
   isSm,
@@ -26,7 +26,7 @@ const ArticlePageComponent = ({
 }: {
   isSm: boolean;
   article: Article;
-  sentences: Sentence[];
+  sentences: ArticleSentence[];
   assignment: Assignment;
   sentenceParseNews: SentenceParseNew[];
   assignmentSentences: AssignmentSentence[];

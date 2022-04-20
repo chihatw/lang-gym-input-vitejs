@@ -10,12 +10,15 @@ import {
   Unit,
   Word,
   INITIAL_SENTENCE,
-  Sentence as PSentence,
+  Sentence,
   useHandleSentenceParseNews,
 } from '../../../../services/useSentenceParseNews';
-import { Sentence } from '../../../../services/useSentences';
+import { ArticleSentence } from '../../../../services/useSentences';
 
-export const useSentenceParseForm = (article: Article, sentence: Sentence) => {
+export const useSentenceParseForm = (
+  article: Article,
+  sentence: ArticleSentence
+) => {
   const navigate = useNavigate();
 
   const { sentenceParseNew } = useContext(AppContext);
@@ -26,7 +29,7 @@ export const useSentenceParseForm = (article: Article, sentence: Sentence) => {
   const sentenceID = getUniqueStr();
 
   const [globalSentences, setGlobalSentences] = useState<{
-    [id: string]: PSentence;
+    [id: string]: Sentence;
   }>({ [sentenceID]: { ...INITIAL_SENTENCE, id: sentenceID } });
   const [globalUnits, setGlobalUnits] = useState<{ [id: string]: Unit }>({});
   const [globalBranches, setGlobalBranches] = useState<{

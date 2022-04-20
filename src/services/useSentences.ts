@@ -1,3 +1,5 @@
+import { mora2Vowel } from 'mora2vowel';
+
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   where,
@@ -10,7 +12,6 @@ import {
 import { db } from '../repositories/firebase';
 import { Tags } from '../entities/Tags';
 import { Accent } from '../entities/Accent';
-import { Article } from './useArticles';
 import {
   batchAddDocuments,
   batchDeleteDocuments,
@@ -19,10 +20,11 @@ import {
   snapshotCollection,
   updateDocument,
 } from '../repositories/utils';
+import getMoras from 'get-moras';
 
 const COLLECTION = 'sentences';
 
-export type Sentence = {
+export type ArticleSentence = {
   id: string;
   uid: string;
   end: number;
@@ -37,9 +39,10 @@ export type Sentence = {
   japanese: string;
   original: string;
   createdAt: number;
+  kanaAccentsStr: string;
 };
 
-export const INITIAL_SENTENCE: Sentence = {
+export const INITIAL_ARTICLE_SENTENCE: ArticleSentence = {
   id: '',
   uid: '',
   end: 0,
@@ -54,10 +57,11 @@ export const INITIAL_SENTENCE: Sentence = {
   japanese: '',
   original: '',
   createdAt: 0,
+  kanaAccentsStr: '',
 };
 
 export const useSentences = (articleId: string) => {
-  const [sentences, setSentences] = useState<Sentence[]>([]);
+  const [sentences, setSentences] = useState<ArticleSentence[]>([]);
 
   const _snapshotCollection = useMemo(
     () =>
@@ -146,18 +150,20 @@ export const useHandleSentences = () => {
   };
 
   const updateSentence = async (
-    sentence: Sentence
-  ): Promise<Sentence | null> => {
+    sentence: ArticleSentence
+  ): Promise<ArticleSentence | null> => {
     return await _updateDocument(sentence);
   };
 
   const createSentences = async (
-    sentences: Omit<Sentence, 'id'>[]
+    sentences: Omit<ArticleSentence, 'id'>[]
   ): Promise<string[]> => {
     return await _batchAddDocuments(sentences);
   };
 
-  const updateSentences = async (sentences: Sentence[]): Promise<boolean> => {
+  const updateSentences = async (
+    sentences: ArticleSentence[]
+  ): Promise<boolean> => {
     return await _batchUpdateDocuments(sentences);
   };
   const deleteSentences = async (articleId: string): Promise<boolean> => {
@@ -171,21 +177,107 @@ export const useHandleSentences = () => {
 };
 
 const buildSentence = (doc: DocumentData) => {
-  const sentence: Sentence = {
+  const sentence: ArticleSentence = {
     id: doc.id,
-    uid: doc.data().uid,
-    end: doc.data().end,
-    tags: doc.data().tags,
-    kana: doc.data().kana,
-    line: doc.data().line,
-    start: doc.data().start,
-    title: doc.data().title,
-    accents: doc.data().accents,
-    article: doc.data().article,
-    chinese: doc.data().chinese,
-    japanese: doc.data().japanese,
-    original: doc.data().original,
-    createdAt: doc.data().createdAt,
+    uid: doc.data().uid || '',
+    end: doc.data().end || 0,
+    tags: doc.data().tags || {},
+    kana: doc.data().kana || '',
+    line: doc.data().line || 0,
+    start: doc.data().start || 0,
+    title: doc.data().title || '',
+    accents: doc.data().accents || [],
+    article: doc.data().article || '',
+    chinese: doc.data().chinese || '',
+    japanese: doc.data().japanese || '',
+    original: doc.data().original || '',
+    createdAt: doc.data().createdAt || 0,
+    kanaAccentsStr: doc.data().kanaAccentsStr || '',
   };
   return sentence;
+};
+
+export const kanaAccentsStr2Kana = (value: string) => {
+  return kana2Hira(value.replace(/[　＼]/g, ''));
+};
+
+const kana2Hira = (str: string): string => {
+  return str.replace(/[\u30a1-\u30f6]/g, function (match) {
+    var chr = match.charCodeAt(0) - 0x60;
+    return String.fromCharCode(chr);
+  });
+};
+
+const REMOVE_MARKS_REG_EXP = /[、。「」]/g;
+
+export const kanaAccentsStr2AccentsString = (value: string) => {
+  let removedMarksStr = value.replace(REMOVE_MARKS_REG_EXP, '');
+
+  const words = removedMarksStr.split('　');
+  const newWords: string[] = [];
+  for (const word of words) {
+    const moraGroups = word.split('＼');
+    const newMoraGroups: string[] = [];
+    for (const moraGroup of moraGroups) {
+      const moras = getMoras(moraGroup);
+      const newMoras: string[] = [];
+      for (let i = 0; i < moras.length; i++) {
+        const newMora = getNewMora({
+          targetMora: moras[i],
+          preMora: moras[i - 1],
+        });
+        newMoras.push(newMora);
+      }
+      newMoraGroups.push(newMoras.join(''));
+    }
+    newWords.push(newMoraGroups.join('＼'));
+  }
+
+  return newWords.join('　');
+};
+
+const getNewMora = ({
+  targetMora,
+  preMora,
+}: {
+  targetMora: string;
+  preMora?: string;
+}) => {
+  if (!preMora) {
+    return targetMora;
+  }
+  const isLongVowel = checkLongVowel({ targetMora, preMora });
+  if (isLongVowel) {
+    return 'ー';
+  }
+  return targetMora;
+};
+
+const checkLongVowel = ({
+  targetMora,
+  preMora,
+}: {
+  targetMora: string;
+  preMora: string;
+}) => {
+  const preMoraVowel = mora2Vowel(preMora);
+  switch (targetMora) {
+    case 'あ':
+    case 'ア':
+      return preMoraVowel === 'a';
+    case 'い':
+    case 'イ':
+      return ['i', 'e'].includes(preMoraVowel);
+    case 'う':
+    case 'ウ':
+      return ['u', 'o'].includes(preMoraVowel);
+    case 'え':
+    case 'エ':
+      return preMoraVowel === 'e';
+    case 'お':
+    case 'オ':
+      return preMoraVowel === 'o';
+    default:
+      return false;
+  }
 };

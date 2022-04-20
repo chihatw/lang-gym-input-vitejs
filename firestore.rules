@@ -179,7 +179,7 @@ service cloud.firestore {
     }
 
     function isValidSentence(data){
-      return  data.size() == 13
+      return  data.size() == 14
         && 'accents' in data && data.accents is list
         && 'article' in data && data.article is string
         && 'chinese' in data && data.chinese is string
@@ -187,6 +187,7 @@ service cloud.firestore {
         && 'end' in data && data.end is number
         && 'japanese' in data && data.japanese is string
         && 'kana' in data && data.kana is string
+        && 'kanaAccentsStr' in data && data.kanaAccentsStr is string
         && 'line' in data && data.line is number
         && 'original' in data && data.original is string
         && 'start' in data && data.start is number
@@ -273,11 +274,13 @@ service cloud.firestore {
     }
 
     function isValidWorkout(data){
-      return  data.size() == 6
+      return  data.size() == 8
         && 'beatCount' in data && data.beatCount is number
         && 'createdAt' in data && data.createdAt is number
         && 'createdAtStr' in data && data.createdAtStr is string
         && 'dateId' in data && data.dateId is string
+        && 'hidden' in data && data.hidden is bool
+        && 'items' in data && data.items is list
         && 'label' in data && data.label is string
         && 'uid' in data && data.uid is string
     }

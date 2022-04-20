@@ -9,7 +9,7 @@ import { deleteFile, uploadFile } from '../../../../repositories/file';
 import EditArticleVoicePaneComponent from './EditArticleVoicePaneComponent';
 import { Article, useHandleArticles } from '../../../../services/useArticles';
 import {
-  Sentence,
+  ArticleSentence,
   useHandleSentences,
 } from '../../../../services/useSentences';
 
@@ -21,7 +21,7 @@ const EditArticleVoicePane = ({
   sentences,
 }: {
   article: Article;
-  sentences: Sentence[];
+  sentences: ArticleSentence[];
 }) => {
   const navigate = useNavigate();
 
@@ -180,11 +180,13 @@ const EditArticleVoicePane = ({
   };
 
   const updateMarks = async () => {
-    const newSentences: Sentence[] = sentences.map((senetence, index) => ({
-      ...senetence,
-      start: marks[index].start,
-      end: marks[index].end,
-    }));
+    const newSentences: ArticleSentence[] = sentences.map(
+      (senetence, index) => ({
+        ...senetence,
+        start: marks[index].start,
+        end: marks[index].end,
+      })
+    );
     const result = await updateSentences(newSentences);
     if (!!result) {
       navigate(`/article/list`);

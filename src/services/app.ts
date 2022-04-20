@@ -10,7 +10,7 @@ import { AudioItem } from './useAudioItems';
 import { getMoraString, buildSentenceRhythm } from '../entities/Rhythm';
 import { Article, INITIAL_ARTICLE } from './useArticles';
 import { User } from './useUsers';
-import { Sentence } from './useSentences';
+import { ArticleSentence } from './useSentences';
 import { Assignment, INITIAL_ASSIGNMENT } from './useAssignments';
 import { AssignmentSentence } from './useAssignmentSentences';
 import {
@@ -42,7 +42,7 @@ export const AppContext = createContext<{
   workout: Workout;
   articles: Article[];
   workouts: Workout[];
-  sentences: Sentence[];
+  sentences: ArticleSentence[];
   audioItems: AudioItem[];
   assignment: Assignment;
   initializing: boolean;

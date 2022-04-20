@@ -16,7 +16,7 @@ import {
   snapshotCollection,
   updateDocument,
 } from '../repositories/utils';
-import { Sentence } from './useSentences';
+import { ArticleSentence } from './useSentences';
 
 export type QuestionSet = {
   id: string;
@@ -178,7 +178,7 @@ export const useHandleQuestionSets = () => {
     questionGroupId,
   }: {
     title: string;
-    sentences: Sentence[];
+    sentences: ArticleSentence[];
     questionGroupId: string;
   }): Promise<QuestionSet | null> => {
     let questionCount = 0;

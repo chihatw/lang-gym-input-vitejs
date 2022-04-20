@@ -1,9 +1,11 @@
 import { Button, Divider, TextField } from '@mui/material';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import accentsForPitchesArray from 'accents-for-pitches-array';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
-  Sentence,
+  ArticleSentence,
+  kanaAccentsStr2AccentsString,
+  kanaAccentsStr2Kana,
   useHandleSentences,
 } from '../../../../services/useSentences';
 import { AppContext } from '../../../../services/app';
@@ -15,21 +17,43 @@ const EditSentencePane = ({
   sentence,
   callback,
 }: {
-  sentence: Sentence;
+  sentence: ArticleSentence;
   callback: () => void;
 }) => {
   const { article } = useContext(AppContext);
   const { updateSentence } = useHandleSentences();
 
-  const [end, setEnd] = useState(sentence.end);
-  const [kana, setKana] = useState(sentence.kana);
-  const [start, setStart] = useState(sentence.start);
-  const [chinese, setChinese] = useState(sentence.chinese);
-  const [japanese, setJapanese] = useState(sentence.japanese);
-  const [original, setOriginal] = useState(sentence.original);
-  const [accentString, setAccentString] = useState(
-    buildAccentString(sentence.accents)
-  );
+  const [end, setEnd] = useState(0);
+  const [kana, setKana] = useState('');
+  const [start, setStart] = useState(0);
+  const [chinese, setChinese] = useState('');
+  const [japanese, setJapanese] = useState('');
+  const [original, setOriginal] = useState('');
+  const [accentString, setAccentString] = useState('');
+  const [kanaAccentsStr, setKanaAccentsStr] = useState('');
+
+  useEffect(() => {
+    if (!sentence.id) return;
+    const {
+      end,
+      kana,
+      start,
+      chinese,
+      japanese,
+      original,
+      accents,
+      kanaAccentsStr,
+    } = sentence;
+    setEnd(end);
+    setKana(kana);
+    setStart(start);
+    setChinese(chinese);
+    setJapanese(japanese);
+    setOriginal(original);
+    const accentString = buildAccentString(accents);
+    setAccentString(accentString);
+    setKanaAccentsStr(kanaAccentsStr);
+  }, [sentence]);
 
   const onChangeJapanese = (japanese: string) => {
     setJapanese(japanese);
@@ -52,8 +76,17 @@ const EditSentencePane = ({
   const onChangeEnd = (end: number) => {
     setEnd(end);
   };
+
+  const onChangeKanaAccentsStr = (value: string) => {
+    setKanaAccentsStr(value);
+    const kana = kanaAccentsStr2Kana(value);
+    const accentString = kanaAccentsStr2AccentsString(value);
+    setKana(kana);
+    setAccentString(accentString);
+  };
+
   const handleClickUpdate = async () => {
-    const newSentence: Sentence = {
+    const newSentence: ArticleSentence = {
       ...sentence,
       end,
       kana,
@@ -63,6 +96,7 @@ const EditSentencePane = ({
       chinese,
       japanese,
       original,
+      kanaAccentsStr,
     };
     const updatedItem = await updateSentence(newSentence);
     if (!!updatedItem) {
@@ -92,6 +126,13 @@ const EditSentencePane = ({
         label='chinese'
         value={chinese}
         onChange={(e) => onChangeChinese(e.target.value)}
+      />
+      <TextField
+        variant='outlined'
+        size='small'
+        label='kanaAccentsStr'
+        value={kanaAccentsStr}
+        onChange={(e) => onChangeKanaAccentsStr(e.target.value)}
       />
       <TextField
         variant='outlined'

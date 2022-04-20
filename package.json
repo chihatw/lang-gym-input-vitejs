@@ -38,6 +38,7 @@
     "hinshi-colors": "^1.0.2",
     "hinshi-texts": "^1.0.0",
     "kana-romaji-map": "^2.0.8",
+    "mora2vowel": "^1.0.1",
     "pitches-array2string": "^1.0.0",
     "prop-types": "^15.8.1",
     "react": "^18.0.0",

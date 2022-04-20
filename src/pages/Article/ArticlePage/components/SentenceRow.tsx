@@ -12,7 +12,7 @@ import {
 
 import EditSentencePane from './EditSentencePane';
 import EditAssignmentPane from './EditAssignmentPane';
-import { Sentence } from '../../../../services/useSentences';
+import { ArticleSentence } from '../../../../services/useSentences';
 import { SentenceParseNew } from '../../../../services/useSentenceParseNews';
 import { AssignmentSentence } from '../../../../services/useAssignmentSentences';
 import { ComplexSentencePane } from '../../../../components/complex-sentence-pane';
@@ -29,7 +29,7 @@ const SentenceRow = ({
   copySentenceParseNew,
 }: {
   isSm: boolean;
-  sentence: Sentence;
+  sentence: ArticleSentence;
   downloadURL: string;
   sentenceParseNew: SentenceParseNew | null;
   assignmentSentence: AssignmentSentence | null;
@@ -137,7 +137,7 @@ const CardFooter = ({
   openEditParsePage,
   copySentenceParseNew,
 }: {
-  sentence: Sentence;
+  sentence: ArticleSentence;
   downloadURL: string;
   assignmentSentence: AssignmentSentence | null;
   assignmentDownloadURL: string;

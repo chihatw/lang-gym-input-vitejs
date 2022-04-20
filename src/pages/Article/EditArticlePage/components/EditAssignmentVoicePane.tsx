@@ -16,7 +16,7 @@ import {
   INITIAL_ASSINGMENT_SENTENCE,
   useHandleAssignmentSentences,
 } from '../../../../services/useAssignmentSentences';
-import { Sentence } from '../../../../services/useSentences';
+import { ArticleSentence } from '../../../../services/useSentences';
 import EditAudioPane from './EditAudioPane';
 
 const CANVAS_WIDTH = 550;
@@ -29,7 +29,7 @@ const EditAssignmentVoicePane = ({
   assignmentSentences,
 }: {
   article: Article;
-  sentences: Sentence[];
+  sentences: ArticleSentence[];
   assignment: Assignment;
   assignmentSentences: AssignmentSentence[];
 }) => {

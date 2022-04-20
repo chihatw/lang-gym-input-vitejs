@@ -9,12 +9,12 @@ import {
   ComplexSentencePaneProps,
 } from '../../../../components/complex-sentence-pane';
 import { Article } from '../../../../services/useArticles';
-import { Sentence } from '../../../../services/useSentences';
+import { ArticleSentence } from '../../../../services/useSentences';
 
-const SentenceParseForm: React.FC<{ article: Article; sentence: Sentence }> = ({
-  article,
-  sentence,
-}) => {
+const SentenceParseForm: React.FC<{
+  article: Article;
+  sentence: ArticleSentence;
+}> = ({ article, sentence }) => {
   const {
     sentenceID,
     globalUnits,
