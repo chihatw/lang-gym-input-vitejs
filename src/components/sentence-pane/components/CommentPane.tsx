@@ -39,6 +39,7 @@ export default CommentPane;
 
 const DashedBorder: React.FC<{
   hasMultipleComments: boolean;
+  children: React.ReactNode;
 }> = ({ children, hasMultipleComments }) => {
   if (hasMultipleComments) {
     return (

@@ -1,6 +1,5 @@
-import Speaker from '@bit/chihatw.lang-gym.speaker';
 import React, { useState } from 'react';
-import { Button, Divider, TextField } from '@mui/material';
+import { Button, TextField } from '@mui/material';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import accentsForPitchesArray from 'accents-for-pitches-array';
 
@@ -9,6 +8,7 @@ import {
   AssignmentSentence,
   useHandleAssignmentSentences,
 } from '../../../../services/useAssignmentSentences';
+import Speaker from '../../../../components/Speaker';
 
 const EditAssignmentPane = ({
   assignmentSentence,

@@ -1,7 +1,7 @@
 import React from 'react';
-import SignInForm from '@bit/chihatw.lang-gym.sign-in-form'; // TODO 内部化
 import { useSignInPage } from './services/signInPage';
 import { Container } from '@mui/material';
+import SignInForm from '../../components/SignInForm';
 
 const SignInPage = () => {
   const { emailErrMsg, passwordErrMsg, resetErrMsg, onSignIn } =

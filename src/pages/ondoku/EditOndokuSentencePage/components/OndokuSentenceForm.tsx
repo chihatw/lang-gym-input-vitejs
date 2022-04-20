@@ -1,10 +1,11 @@
 import React from 'react';
-import Speaker from '@bit/chihatw.lang-gym.speaker';
+
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import accentsForPitchesArray from 'accents-for-pitches-array';
 import { Box, Grid, Button, TextField } from '@mui/material';
 
 import { buildAccents } from '../../../../entities/Accent';
+import Speaker from '../../../../components/Speaker';
 
 const OndokuSentenceForm: React.FC<{
   japanese: string;

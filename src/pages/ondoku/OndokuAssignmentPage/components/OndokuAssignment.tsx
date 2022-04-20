@@ -1,6 +1,5 @@
 import Edit from '@mui/icons-material/Edit';
 import React from 'react';
-import Speaker from '@bit/chihatw.lang-gym.speaker';
 
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import accentsForPitchesArray from 'accents-for-pitches-array';
@@ -13,6 +12,7 @@ import SelectUser from '../../../../components/SelectUser';
 import { User } from '../../../../services/useUsers';
 import { AssignmentSentence } from '../../../../services/useAssignmentSentences';
 import { OndokuSentence } from '../../../../services/useOndokuSentences';
+import Speaker from '../../../../components/Speaker';
 
 const OndokuAssignment: React.FC<{
   users: User[];

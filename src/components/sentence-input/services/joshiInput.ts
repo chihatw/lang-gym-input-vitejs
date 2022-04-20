@@ -55,7 +55,7 @@ export const useJoshiInput = ({
           joshis = ['', 'to', 'wo', 'ni', 'ga'];
           break;
         case 'doushi':
-          joshis = ['', 'ni', 'kara', 'made', 'madeni'];
+          joshis = ['', 'to', 'ni', 'kara', 'made', 'madeni'];
           break;
         case 'hukushi':
           joshis = ['', 'to'];

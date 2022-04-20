@@ -1,6 +1,8 @@
 import React from 'react';
 
-const BunmatsuSeibun: React.FC = ({ children }) => {
+const BunmatsuSeibun: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   return (
     <div
       style={{

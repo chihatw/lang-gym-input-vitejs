@@ -54,10 +54,10 @@ const MeishikuUnitPane: React.FC<{
 
 export default MeishikuUnitPane;
 
-const MeishikuDashedBorder: React.FC<{ open: boolean }> = ({
-  children,
-  open,
-}) => {
+const MeishikuDashedBorder: React.FC<{
+  open: boolean;
+  children: React.ReactNode;
+}> = ({ children, open }) => {
   if (open) {
     return (
       <div
@@ -88,7 +88,7 @@ const ExpandButton: React.FC<{
       }}
     >
       <IconButton
-        size="small"
+        size='small'
         style={{ color: '#FF4E62' }}
         onClick={() => handleCollapse(unitId)}
         onMouseDown={(e) => e.stopPropagation()}

@@ -5,6 +5,7 @@ const DraggableWrapper: React.FC<{
   isDraggable: boolean;
   draggableID: string;
   index: number;
+  children: React.ReactNode;
 }> = ({ children, isDraggable, draggableID, index }) => {
   if (isDraggable) {
     return (

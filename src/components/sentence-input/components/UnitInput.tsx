@@ -43,10 +43,10 @@ const UnitInput: React.FC<{ unitID: string }> = ({ unitID }) => {
 
         {isCommentUnit && !!word && !!word.text && (
           <div style={{ marginLeft: 4 }}>
-            <Tooltip title="接続助詞" placement="right-end">
+            <Tooltip title='接続助詞' placement='right-end'>
               <Select
-                size="small"
-                variant="standard"
+                size='small'
+                variant='standard'
                 value={setsuzokuJoshi}
                 onChange={(e) =>
                   onChangeSetsuzokuJoshi(e.target.value as string)
@@ -72,10 +72,10 @@ const UnitInput: React.FC<{ unitID: string }> = ({ unitID }) => {
 
 export default UnitInput;
 
-const MeishiKuBorder: React.FC<{ isMeishiku: boolean }> = ({
-  children,
-  isMeishiku,
-}) => {
+const MeishiKuBorder: React.FC<{
+  isMeishiku: boolean;
+  children: React.ReactNode;
+}> = ({ children, isMeishiku }) => {
   if (isMeishiku) {
     return (
       <div

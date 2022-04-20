@@ -1,4 +1,4 @@
-import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { User } from '../../services/useUsers';
@@ -19,10 +19,7 @@ const SelectUser: React.FC<{
   return (
     <FormControl fullWidth>
       <InputLabel>User</InputLabel>
-      <Select
-        value={value}
-        onChange={(e) => onChangeValue(e.target.value as string)}
-      >
+      <Select value={value} onChange={(e) => onChangeValue(e.target.value)}>
         {users.map((u) => (
           <MenuItem key={u.id} value={u.id}>
             {u.displayname}

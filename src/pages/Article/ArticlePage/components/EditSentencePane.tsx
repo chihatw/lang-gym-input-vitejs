@@ -1,4 +1,3 @@
-import Speaker from '@bit/chihatw.lang-gym.speaker';
 import { Button, Divider, TextField } from '@mui/material';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import accentsForPitchesArray from 'accents-for-pitches-array';
@@ -10,6 +9,7 @@ import {
 import { AppContext } from '../../../../services/app';
 import { buildAccents, buildAccentString } from '../../../../entities/Accent';
 import { buildTags } from '../../../../entities/Tags';
+import Speaker from '../../../../components/Speaker';
 
 const EditSentencePane = ({
   sentence,

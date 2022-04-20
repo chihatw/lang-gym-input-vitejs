@@ -7,7 +7,7 @@ const TopPage = () => {
   return (
     <Container maxWidth='sm'>
       <div style={{ paddingTop: 16 }}>
-        <VersionPane>{`ver. 1.1.2`}</VersionPane>
+        <VersionPane>{`ver. 1.2.0`}</VersionPane>
         <div style={{ height: 4 }} />
         {itemsArray.map((row, rowIndex) => (
           <div key={rowIndex}>
@@ -35,7 +35,7 @@ const TopPage = () => {
 
 export default TopPage;
 
-const RowBorder: React.FC = ({ children }) => {
+const RowBorder: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div
       style={{
@@ -49,7 +49,7 @@ const RowBorder: React.FC = ({ children }) => {
   );
 };
 
-const VersionPane: React.FC = ({ children }) => {
+const VersionPane: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div
       style={{

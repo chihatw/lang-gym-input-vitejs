@@ -1,5 +1,5 @@
-import AudioEdit from '@bit/chihatw.lang-gym.audio-edit';
 import React from 'react';
+import AudioEdit from '../../../../components/AudioEdit';
 import { Mark } from '../../../../entities/Mark';
 
 const OndokuAssignmentVoice: React.FC<{

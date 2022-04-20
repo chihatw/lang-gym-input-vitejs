@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate, useMatch } from 'react-router-dom';
+import AudioEdit from '../../../components/AudioEdit';
 
-import AudioEdit from '@bit/chihatw.lang-gym.audio-edit'; // TODO 内部化
 import TableLayout from '../../../components/templates/TableLayout';
 import { useEditOndokuVoicePage } from './services/editOndokuVoicePage';
 

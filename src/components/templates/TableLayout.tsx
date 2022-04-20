@@ -7,6 +7,7 @@ const TableLayout: React.FC<{
   backURL?: string;
   onCreate?: () => void;
   maxWidth?: 'sm' | 'xs' | 'md' | 'lg' | 'xl';
+  children: React.ReactNode;
 }> = ({ children, title, backURL = '/', onCreate, maxWidth }) => {
   return (
     <Container maxWidth={maxWidth || 'sm'}>

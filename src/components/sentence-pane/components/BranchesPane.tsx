@@ -114,6 +114,7 @@ const BranchContainer: React.FC<{
 
 const DroppableAreaBorderWrapper: React.FC<{
   snapshot: DroppableStateSnapshot;
+  children: React.ReactNode;
 }> = ({ children, snapshot }) => {
   return (
     <div

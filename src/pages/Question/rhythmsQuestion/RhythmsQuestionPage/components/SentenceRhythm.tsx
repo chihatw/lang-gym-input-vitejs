@@ -1,10 +1,10 @@
-import Speaker from '@bit/chihatw.lang-gym.speaker';
 import { IconButton } from '@mui/material';
 import React, { useContext } from 'react';
 import Delete from '@mui/icons-material/Delete';
 import VolumeOff from '@mui/icons-material/VolumeOff';
 import WordRhythm from './WordRhythm';
 import { RhythmsQuestionPageContext } from '../services/rhythmsQuestionPage';
+import Speaker from '../../../../../components/Speaker';
 
 const SentenceRhythm: React.FC<{
   sentenceIndex: number;

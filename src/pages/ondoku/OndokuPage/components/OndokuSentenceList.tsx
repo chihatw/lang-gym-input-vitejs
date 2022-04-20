@@ -1,12 +1,12 @@
 import Edit from '@mui/icons-material/Edit';
 import React from 'react';
-import Speaker from '@bit/chihatw.lang-gym.speaker';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import accentsForPitchesArray from 'accents-for-pitches-array';
 import { Card, IconButton, Button } from '@mui/material';
 
 import { Ondoku } from '../../../../services/useOndokus';
 import { OndokuSentence } from '../../../../services/useOndokuSentences';
+import Speaker from '../../../../components/Speaker';
 
 const OndokuSentenceList: React.FC<{
   ondoku: Ondoku;

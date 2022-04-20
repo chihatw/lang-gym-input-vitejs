@@ -1,5 +1,5 @@
+import Speaker from '../../../../components/Speaker';
 import React from 'react';
-import Speaker from '@bit/chihatw.lang-gym.speaker';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import { Button, TextField } from '@mui/material';
 import accentsForPitchesArray from 'accents-for-pitches-array';

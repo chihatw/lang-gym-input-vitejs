@@ -1,6 +1,8 @@
 import React from 'react';
 
-const BranchBorder: React.FC = ({ children }) => {
+const BranchBorder: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   return (
     <div
       style={{

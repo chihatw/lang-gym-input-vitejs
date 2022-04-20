@@ -5,6 +5,7 @@ const SentenceHeaderTail: React.FC<{
   isTaigendome: boolean;
   headerHeight: number;
   color: string;
+  children: React.ReactNode;
 }> = ({ children, isTaigendome, headerHeight, color }) => {
   if (!isTaigendome) {
     return (

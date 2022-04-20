@@ -1,11 +1,11 @@
 import React from 'react';
-import Speaker from '@bit/chihatw.lang-gym.speaker';
 import VolumeOff from '@mui/icons-material/VolumeOff';
 import { Checkbox } from '@mui/material';
 import { PitchLine } from '@chihatw/pitch-line.pitch-line';
 import string2PitchesArray from 'string2pitches-array';
 
 import { Audio } from '../../../../../entities/Audio';
+import Speaker from '../../../../../components/Speaker';
 
 const AccentsMonitor: React.FC<{
   audios: Audio[];

@@ -63,6 +63,7 @@ export default SentenceBody;
 const CommentsBorder: React.FC<{
   color: string;
   isTaigendome: boolean;
+  children: React.ReactNode;
 }> = ({ children, isTaigendome, color }) => {
   if (!isTaigendome) {
     return (

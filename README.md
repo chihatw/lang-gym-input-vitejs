@@ -1,3 +1,5 @@
+### 1.2.0
+- react v18
 ### 1.1.2
 - bug fix リズム問題　questionGroup.question
 ### 1.1.1

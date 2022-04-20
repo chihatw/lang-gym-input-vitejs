@@ -1,4 +1,3 @@
-import Speaker from '@bit/chihatw.lang-gym.speaker';
 import { Card, IconButton } from '@mui/material';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import accentsForPitchesArray from 'accents-for-pitches-array';
@@ -17,6 +16,7 @@ import { Sentence } from '../../../../services/useSentences';
 import { SentenceParseNew } from '../../../../services/useSentenceParseNews';
 import { AssignmentSentence } from '../../../../services/useAssignmentSentences';
 import { ComplexSentencePane } from '../../../../components/complex-sentence-pane';
+import Speaker from '../../../../components/Speaker';
 
 const SentenceRow = ({
   isSm,
