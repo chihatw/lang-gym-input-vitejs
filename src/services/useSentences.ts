@@ -216,18 +216,25 @@ export const kanaAccentsStr2AccentsString = (value: string) => {
   const words = removedMarksStr.split('　');
   const newWords: string[] = [];
   for (const word of words) {
+    // 「＼」で分割
     const moraGroups = word.split('＼');
     const newMoraGroups: string[] = [];
-    for (const moraGroup of moraGroups) {
+    let preMoras: string[] = [];
+    for (let i = 0; i < moraGroups.length; i++) {
+      const moraGroup = moraGroups[i];
       const moras = getMoras(moraGroup);
       const newMoras: string[] = [];
-      for (let i = 0; i < moras.length; i++) {
+      for (let j = 0; j < moras.length; j++) {
         const newMora = getNewMora({
-          targetMora: moras[i],
-          preMora: moras[i - 1],
+          targetMora: moras[j],
+          // moras の先頭は、「＼」で区切られたひとつ前のモーラと長音関係かどうかをチェックする
+          // じゆ＼う　　moras = ['じゆ', 'う'] 「う」の時、「ゆ」と長音関係かどうかをチェック
+          preMora: moras[j - 1] || preMoras.slice(-1)[0],
         });
         newMoras.push(newMora);
       }
+      // 現在のモーラを、preMoras に代入
+      preMoras = moras;
       newMoraGroups.push(newMoras.join(''));
     }
     newWords.push(newMoraGroups.join('＼'));
