@@ -12,6 +12,7 @@ import {
   batchDeleteDocuments,
   batchUpdateDocuments,
   snapshotCollection,
+  updateDocument,
 } from '../repositories/utils';
 
 export const INITIAL_QUESTION = {
@@ -103,6 +104,18 @@ export const useQuestions = ({
   return { questions };
 };
 export const useHandleQuestions = () => {
+  const _updateDocument = useMemo(
+    () =>
+      async function <T extends { id: string }>(value: T): Promise<T | null> {
+        return await updateDocument({
+          db,
+          colId: COLLECTION,
+          value,
+        });
+      },
+    []
+  );
+
   const _batchAddDocuments = useMemo(
     () =>
       async function <T extends { id: string }>(
@@ -168,6 +181,10 @@ export const useHandleQuestions = () => {
     return await _batchAddDocuments(questions);
   };
 
+  const updateQuestion = async (question: Question) => {
+    return _updateDocument(question);
+  };
+
   const updateQuestions = async (questions: Question[]): Promise<boolean> => {
     return await _batchUpdateDocuments(questions);
   };
@@ -177,6 +194,7 @@ export const useHandleQuestions = () => {
   };
 
   return {
+    updateQuestion,
     createRhythmQuestions,
     createAccentsQuestions,
     deleteQuestions,

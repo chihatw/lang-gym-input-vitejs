@@ -289,6 +289,7 @@ const RhythmsQuestionPage = () => {
           disabledsArray={disabledsArray}
           audios={audios}
           onSubmit={onSubmit}
+          questions={questions}
         />
       </RhythmsQuestionPageContext.Provider>
     </TableLayout>

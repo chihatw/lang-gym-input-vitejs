@@ -10,6 +10,7 @@ import {
 import React from 'react';
 
 import { Audio } from '../../../../../entities/Audio';
+import { Question } from '../../../../../services/useQuestions';
 import { User } from '../../../../../services/useUsers';
 import RhythmsMonitor from './RhythmsMonitor';
 
@@ -21,6 +22,7 @@ const RhythmsQuestionForm: React.FC<{
   rhythmString: string;
   disabledsArray: string[][][];
   audios: Audio[];
+  questions: Question[];
   onSubmit: () => void;
   onChangeUid: (uid: string) => void;
   onChangeTitle: (title: string) => void;
@@ -34,6 +36,7 @@ const RhythmsQuestionForm: React.FC<{
   rhythmString,
   disabledsArray,
   audios,
+  questions,
   onSubmit,
   onChangeUid,
   onChangeTitle,
@@ -41,23 +44,20 @@ const RhythmsQuestionForm: React.FC<{
   onChangeRhythmString,
 }) => {
   return (
-    <div>
+    <div style={{ display: 'grid', rowGap: 16 }}>
       {!!users.length && (
-        <>
-          <FormControl fullWidth>
-            <Select
-              value={uid}
-              onChange={(e) => onChangeUid(e.target.value as string)}
-            >
-              {users.map((u) => (
-                <MenuItem key={u.id} value={u.id}>
-                  {u.displayname}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>{' '}
-          <div style={{ height: 16 }} />
-        </>
+        <FormControl fullWidth>
+          <Select
+            value={uid}
+            onChange={(e) => onChangeUid(e.target.value as string)}
+          >
+            {users.map((u) => (
+              <MenuItem key={u.id} value={u.id}>
+                {u.displayname}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       )}
 
       <TextField
@@ -68,7 +68,6 @@ const RhythmsQuestionForm: React.FC<{
         value={title}
         onChange={(e) => onChangeTitle(e.target.value)}
       />
-      <div style={{ height: 16 }} />
 
       <FormControlLabel
         label='answered'
@@ -81,8 +80,6 @@ const RhythmsQuestionForm: React.FC<{
         }
       />
 
-      <div style={{ height: 16 }} />
-
       <TextField
         variant='outlined'
         size='small'
@@ -94,12 +91,8 @@ const RhythmsQuestionForm: React.FC<{
         onChange={(e) => onChangeRhythmString(e.target.value)}
       />
 
-      <div style={{ height: 16 }} />
       {!!rhythmString && !!audios.length && !!disabledsArray.length && (
-        <>
-          <RhythmsMonitor />
-          <div style={{ height: 16 }} />
-        </>
+        <RhythmsMonitor questions={questions} />
       )}
 
       <Button fullWidth variant='contained' onClick={onSubmit}>
