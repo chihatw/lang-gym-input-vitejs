@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Delete } from '@mui/icons-material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { IconButton, TextField, Tooltip } from '@mui/material';
 
 import { Sentence } from '../entities/Sentence';
@@ -28,8 +28,8 @@ const JuntaiJoshiBunmatsuInput = () => {
             <div style={{ display: 'flex' }}>
               <TextField
                 id={`juntaiJoshiBunmatsu_${sentence.id}`}
-                variant="outlined"
-                size="small"
+                variant='outlined'
+                size='small'
                 value={text}
                 onChange={(e) => onChangeText(e.target.value.trim())}
               />
@@ -46,12 +46,12 @@ const JuntaiJoshiBunmatsuInput = () => {
                 }}
               ></span>
               <IconButton
-                size="small"
+                size='small'
                 style={{ color: '#ccc' }}
                 onClick={onRemoveJuntaiJoshiBunmatsu}
               >
-                <Tooltip title="準体助詞文末削除">
-                  <Delete />
+                <Tooltip title='準体助詞文末削除'>
+                  <DeleteIcon />
                 </Tooltip>
               </IconButton>
             </div>

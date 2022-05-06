@@ -1,7 +1,7 @@
 import { Button, Collapse, IconButton, TextField } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
-import Delete from '@mui/icons-material/Delete';
-import VolumeOff from '@mui/icons-material/VolumeOff';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import WordRhythm from './WordRhythm';
 import { RhythmsQuestionPageContext } from '../services/rhythmsQuestionPage';
 import Speaker from '../../../../../components/Speaker';
@@ -9,7 +9,7 @@ import {
   Question,
   useHandleQuestions,
 } from '../../../../../services/useQuestions';
-import { Edit } from '@mui/icons-material';
+import EditIcon from '@mui/icons-material/Edit';
 
 const SentenceRhythm: React.FC<{
   question: Question | null;
@@ -62,7 +62,7 @@ const IndexSpeaker: React.FC<{ sentenceIndex: number }> = ({
             downloadURL={audio.downloadURL}
           />
         ) : (
-          <VolumeOff color='primary' />
+          <VolumeOffIcon color='primary' />
         )}
       </div>
     </div>
@@ -84,14 +84,14 @@ const Footer: React.FC<{
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         {!!question && (
           <IconButton onClick={() => setOpen(!open)}>
-            <Edit />
+            <EditIcon />
           </IconButton>
         )}
         <IconButton
           size='small'
           onClick={() => onDeleteSentence(sentenceIndex)}
         >
-          <Delete />
+          <DeleteIcon />
         </IconButton>
       </div>
     </div>

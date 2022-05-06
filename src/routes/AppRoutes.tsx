@@ -35,6 +35,7 @@ import RhythmsQuestionPage from '../pages/Question/rhythmsQuestion/RhythmsQuesti
 import AccentsQuestionListPage from '../pages/Question/accentsQuestion/AccentsQuestionListPage';
 import RhythmsQuestionListPage from '../pages/Question/rhythmsQuestion/RhythmsQuestionListPage';
 import ArticlePage from '../pages/Article/ArticlePage';
+import EditArticleSentenceFormPane from '../pages/Article/EditArticleSentenceFormPage';
 
 const AppRoutes = () => {
   return (
@@ -93,6 +94,9 @@ const AppRoutes = () => {
       {/* parse */}
       <Route path='/parse/:index' element={<EditSentenceParsePage />} />
 
+      {/* form */}
+      <Route path='/form/:index' element={<EditArticleSentenceFormPane />} />
+
       <Route path='/uidOndoku/*'>
         <Route path='list' element={<UidOndokuListPage />} />
         <Route path=':id' element={<CreateUidOndokuPage />} />
@@ -109,10 +113,6 @@ const AppRoutes = () => {
       <Route path='*' element={<Navigate to='/' />} />
     </Routes>
   );
-};
-const PrivateRoute = ({ children }: { children: JSX.Element }) => {
-  const { user, initializing } = useContext(AppContext);
-  return !initializing ? user ? children : <Navigate to='/login' /> : <></>;
 };
 
 const GuestRoute = ({ children }: { children: JSX.Element }) => {

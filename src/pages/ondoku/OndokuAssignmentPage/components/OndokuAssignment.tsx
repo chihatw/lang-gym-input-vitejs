@@ -135,7 +135,7 @@ const AssignmentSentenceFooter: React.FC<{
           )
         }
       >
-        <Edit />
+        <EditIcon />
       </IconButton>
     </div>
   );

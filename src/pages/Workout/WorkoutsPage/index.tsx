@@ -1,9 +1,8 @@
-import {
-  Delete,
-  Edit,
-  VisibilityOffOutlined,
-  VisibilityOutlined,
-} from '@mui/icons-material';
+import DeleteIcon from '@mui/icons-material/Delete';
+
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import EditIcon from '@mui/icons-material/Edit';
 import {
   Button,
   Container,
@@ -16,11 +15,7 @@ import {
 import React, { useContext, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../../services/app';
-import {
-  useHandleWorkouts,
-  useWorkouts,
-  Workout,
-} from '../../../services/useWorkouts';
+import { useHandleWorkouts, Workout } from '../../../services/useWorkouts';
 
 const WorkoutsPage = () => {
   const navigate = useNavigate();
@@ -86,17 +81,21 @@ const WorkoutRow = ({ workout }: { workout: Workout }) => {
       <TableCell>{workout.beatCount}</TableCell>
       <TableCell>
         <IconButton onClick={handleClickEdit}>
-          <Edit />
+          <EditIcon />
         </IconButton>
       </TableCell>
       <TableCell>
         <IconButton onClick={handleClickVisibility}>
-          {workout.hidden ? <VisibilityOffOutlined /> : <VisibilityOutlined />}
+          {workout.hidden ? (
+            <VisibilityOffOutlinedIcon />
+          ) : (
+            <VisibilityOutlinedIcon />
+          )}
         </IconButton>
       </TableCell>
       <TableCell>
         <IconButton onClick={handleClickDelete}>
-          <Delete />
+          <DeleteIcon />
         </IconButton>
       </TableCell>
     </TableRow>

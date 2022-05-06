@@ -32,6 +32,10 @@ import {
   useHandleQuestionSets,
 } from './useQuestionSets';
 import { UidOndoku } from './useUidOndokus';
+import {
+  ArticleSentenceForm,
+  INITIAL_ARTICLE_SENTENCE_FORM,
+} from './useArticleSentenceForms';
 
 export const AppContext = createContext<{
   user: _User | null;
@@ -59,6 +63,7 @@ export const AppContext = createContext<{
   questionGroup: QuestionGroup;
   questions: Question[];
   uidOndokus: UidOndoku[];
+  articleSentenceForms: ArticleSentenceForm[];
   setOndokuId: (value: string) => void;
   setArticleId: (value: string) => void;
   setWorkoutId: (value: string) => void;
@@ -104,6 +109,7 @@ export const AppContext = createContext<{
   questionGroup: INITIAL_QUESTION_GROUP,
   questions: [],
   uidOndokus: [],
+  articleSentenceForms: [],
   setOndokuId: () => {},
   setQuestionSetId: () => {},
   setArticleId: () => {},

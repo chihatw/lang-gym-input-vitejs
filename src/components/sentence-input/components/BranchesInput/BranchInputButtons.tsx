@@ -1,4 +1,4 @@
-import { Delete } from '@mui/icons-material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import React, { useContext } from 'react';
 import { IconButton, Tooltip } from '@mui/material';
 
@@ -27,8 +27,8 @@ const BranchInputButtons: React.FC<{
           }}
         >
           {branchIDs.length > 1 && (
-            <Tooltip title="順序固定">
-              <IconButton size="small" onClick={() => onToggleLock(branchID)}>
+            <Tooltip title='順序固定'>
+              <IconButton size='small' onClick={() => onToggleLock(branchID)}>
                 <div
                   style={{
                     width: 24,
@@ -52,7 +52,7 @@ const BranchInputButtons: React.FC<{
           )}
         </div>
         <IconButton
-          size="small"
+          size='small'
           style={{
             color: isRentaiBranch ? '#FF4E62' : 'yellowgreen',
             opacity: isRentaiBranch ? 0.8 : 0.4,
@@ -66,7 +66,7 @@ const BranchInputButtons: React.FC<{
               isRentaiBranch ? '名詞修飾語' : isTopicBranch ? '主題' : '補足語'
             }削除`}
           >
-            <Delete />
+            <DeleteIcon />
           </Tooltip>
         </IconButton>
       </div>

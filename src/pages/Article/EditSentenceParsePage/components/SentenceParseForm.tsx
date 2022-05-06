@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button } from '@mui/material';
 
-import { useSentenceParseForm } from '../services/sentenceParseForm';
 import sentenceParseNew2SentenceParseProps from 'sentence-parse-new2sentence-parse-props';
 import { ComplexSentenceInput } from '../../../../components/complex-sentence-input';
 import {
@@ -10,28 +9,50 @@ import {
 } from '../../../../components/complex-sentence-pane';
 import { Article } from '../../../../services/useArticles';
 import { ArticleSentence } from '../../../../services/useSentences';
+import { useNavigate } from 'react-router-dom';
+import { AppContext } from '../../../../services/app';
+import {
+  Branch,
+  INITIAL_SENTENCE,
+  Sentence,
+  SentenceParseNew,
+  Unit,
+  useHandleSentenceParseNews,
+  Word,
+} from '../../../../services/useSentenceParseNews';
+import { getUniqueStr } from '../../../../services/getUniqueStr';
 
 const SentenceParseForm: React.FC<{
   article: Article;
   sentence: ArticleSentence;
 }> = ({ article, sentence }) => {
-  const {
-    sentenceID,
-    globalUnits,
-    globalWords,
-    globalBranches,
-    globalSentences,
-    activeSentenceID,
-    sentenceParseNew,
-    globalSentenceArrays,
-    onSubmit,
-    setGlobalUnits,
-    setGlobalWords,
-    setGlobalBranches,
-    setGlobalSentences,
-    setActiveSentenceID,
-    setGlobalSentenceArrays,
-  } = useSentenceParseForm(article, sentence);
+  const navigate = useNavigate();
+  const sentenceID = getUniqueStr();
+
+  // useSentenceParseNews の snapshot を filter して取得、なければ初期値
+  const { sentenceParseNew } = useContext(AppContext);
+
+  const { createSentenceParseNew, updateSentenceParseNew } =
+    useHandleSentenceParseNews();
+
+  const [globalSentences, setGlobalSentences] = useState<{
+    [id: string]: Sentence;
+  }>({ [sentenceID]: { ...INITIAL_SENTENCE, id: sentenceID } });
+  const [globalUnits, setGlobalUnits] = useState<{ [id: string]: Unit }>({});
+  const [globalBranches, setGlobalBranches] = useState<{
+    [id: string]: Branch;
+  }>({});
+  const [globalWords, setGlobalWords] = useState<{ [id: string]: Word }>({});
+  const [globalSentenceArrays, setGlobalSentenceArrays] = useState<string[][]>([
+    [sentenceID],
+  ]);
+  const [activeSentenceID, setActiveSentenceID] = useState(sentenceID);
+  const [globalBranchInvisibilities, setGlobalBranchInvisibilities] = useState<
+    string[]
+  >([]);
+  const [globalCommentInvisibilities, setGlobalCommentInvisibilities] =
+    useState<string[]>([]);
+
   const [sentenceParseProps, setSentenceParseProps] = useState<
     Omit<ComplexSentencePaneProps, 'Cursor'>
   >({
@@ -39,6 +60,18 @@ const SentenceParseForm: React.FC<{
     sentences: {},
     sentenceArrays: [],
   });
+
+  useEffect(() => {
+    if (!sentenceParseNew.id) return;
+    setGlobalUnits(sentenceParseNew.units);
+    setGlobalWords(sentenceParseNew.words);
+    setGlobalBranches(sentenceParseNew.branches);
+    setGlobalSentences(sentenceParseNew.sentences);
+    setGlobalSentenceArrays(sentenceParseNew.sentenceArrays);
+    setGlobalBranchInvisibilities(sentenceParseNew.branchInvisibilities);
+    setGlobalCommentInvisibilities(sentenceParseNew.commentInvisibilities);
+  }, [sentenceParseNew]);
+
   useEffect(() => {
     const sentenceParseProps = sentenceParseNew2SentenceParseProps({
       words: globalWords,
@@ -55,6 +88,46 @@ const SentenceParseForm: React.FC<{
     globalSentences,
     globalSentenceArrays,
   ]);
+
+  const onSubmit = async () => {
+    // 初期値でない場合
+    if (!!sentenceParseNew.id) {
+      const _updateSentenceParse: SentenceParseNew = {
+        ...sentenceParseNew,
+        units: globalUnits,
+        words: globalWords,
+        branches: globalBranches,
+        sentences: globalSentences,
+        sentenceArrays: globalSentenceArrays,
+        branchInvisibilities: globalBranchInvisibilities,
+        commentInvisibilities: globalCommentInvisibilities,
+      };
+      const updatedItem = await updateSentenceParseNew(_updateSentenceParse);
+      if (!!updatedItem) {
+        navigate(`/article/${article.id}`);
+      }
+    }
+    // 初期値の場合
+    else {
+      const newSentenceParse: Omit<SentenceParseNew, 'id'> = {
+        line: sentence.line,
+        article: article.id,
+        sentence: sentence.id,
+        units: globalUnits,
+        words: globalWords,
+        branches: globalBranches,
+        sentences: globalSentences,
+        sentenceArrays: globalSentenceArrays,
+        branchInvisibilities: globalBranchInvisibilities,
+        commentInvisibilities: globalCommentInvisibilities,
+      };
+      const createdItem = await createSentenceParseNew(newSentenceParse);
+      if (!!createdItem) {
+        navigate(`/article/${article.id}`);
+      }
+    }
+  };
+
   return (
     <div>
       <div style={{ fontSize: 12, color: '#555', paddingLeft: 8 }}>

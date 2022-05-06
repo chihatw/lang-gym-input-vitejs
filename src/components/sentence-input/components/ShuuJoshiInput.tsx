@@ -1,4 +1,4 @@
-import { Delete } from '@mui/icons-material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import shuuJoshiTexts from 'shuujoshi-texts';
 import React, { useContext } from 'react';
 import { IconButton, MenuItem, Select, Tooltip } from '@mui/material';
@@ -20,10 +20,10 @@ const ShuuJoshiInput: React.FC = () => {
             border: `1px solid #52a2aa`,
           }}
         >
-          <Tooltip title="終助詞類" placement="right">
+          <Tooltip title='終助詞類' placement='right'>
             <Select
-              size="small"
-              variant="standard"
+              size='small'
+              variant='standard'
               value={value}
               onChange={(e) => onChangeValue(e.target.value as string)}
             >
@@ -35,12 +35,12 @@ const ShuuJoshiInput: React.FC = () => {
             </Select>
           </Tooltip>
           <IconButton
-            size="small"
+            size='small'
             style={{ color: '#ccc' }}
             onClick={onRemoveShuuJoshi}
           >
-            <Tooltip title="終助詞類削除">
-              <Delete />
+            <Tooltip title='終助詞類削除'>
+              <DeleteIcon />
             </Tooltip>
           </IconButton>
         </div>

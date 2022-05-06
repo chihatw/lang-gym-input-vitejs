@@ -6,15 +6,13 @@ import {
   TableCell,
   TableRow,
 } from '@mui/material';
-import Delete from '@mui/icons-material/Delete';
-import Edit from '@mui/icons-material/Edit';
-import {
-  PersonAdd,
-  Subject,
-  VisibilityOffOutlined,
-  VisibilityOutlined,
-} from '@mui/icons-material';
-import Person from '@mui/icons-material/Person';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import SubjectIcon from '@mui/icons-material/Subject';
+import PersonIcon from '@mui/icons-material/Person';
 import Mic from '@mui/icons-material/Mic';
 import React from 'react';
 
@@ -60,12 +58,12 @@ const OndokuTable: React.FC<{
               </TableCell>
               <TableCell padding='none'>
                 <IconButton size='small' onClick={() => onEdit(ondoku)}>
-                  <Edit />
+                  <EditIcon />
                 </IconButton>
               </TableCell>
               <TableCell padding='none'>
                 <IconButton size='small' onClick={() => onAddUidOndoku(ondoku)}>
-                  <PersonAdd />
+                  <PersonAddIcon />
                 </IconButton>
               </TableCell>
               <TableCell padding='none'>
@@ -74,9 +72,9 @@ const OndokuTable: React.FC<{
                   onClick={() => onToggleShowAccents(ondoku)}
                 >
                   {ondoku.isShowAccents ? (
-                    <VisibilityOutlined />
+                    <VisibilityOutlinedIcon />
                   ) : (
-                    <VisibilityOffOutlined />
+                    <VisibilityOffOutlinedIcon />
                   )}
                 </IconButton>
               </TableCell>
@@ -85,7 +83,7 @@ const OndokuTable: React.FC<{
                   size='small'
                   onClick={() => onShowSentences(ondoku)}
                 >
-                  <Subject />
+                  <SubjectIcon />
                 </IconButton>
               </TableCell>
               <TableCell padding='none'>
@@ -99,12 +97,12 @@ const OndokuTable: React.FC<{
                   disabled={!ondoku.downloadURL}
                   onClick={() => onShowAssignment(ondoku)}
                 >
-                  <Person />
+                  <PersonIcon />
                 </IconButton>
               </TableCell>
               <TableCell padding='none'>
                 <IconButton size='small' onClick={() => onDelete(ondoku)}>
-                  <Delete />
+                  <DeleteIcon />
                 </IconButton>
               </TableCell>
             </TableRow>

@@ -1,6 +1,6 @@
-import Delete from '@mui/icons-material/Delete';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Stop from '@mui/icons-material/Stop';
-import PlayArrow from '@mui/icons-material/PlayArrow';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { TableRow, TableCell, IconButton } from '@mui/material';
 import React, { useMemo, useState } from 'react';
 import { Player } from '../classes/Player';
@@ -46,12 +46,12 @@ const AudioItemRow = ({
       </TableCell>
       <TableCell>
         <IconButton onClick={handleClick}>
-          {isPlaying ? <Stop /> : <PlayArrow />}
+          {isPlaying ? <Stop /> : <PlayArrowIcon />}
         </IconButton>
       </TableCell>
       <TableCell>
         <IconButton onClick={deleteRow}>
-          <Delete />
+          <DeleteIcon />
         </IconButton>
       </TableCell>
     </TableRow>

@@ -21,14 +21,7 @@ const ArticlePage = () => {
   const { createAccentsQuestionSet, createRhythmQuestionSet } =
     useHandleQuestionSets();
 
-  const {
-    article,
-    sentences,
-    assignment,
-    sentenceParseNews,
-    assignmentSentences,
-    setSentenceId,
-  } = useContext(AppContext);
+  const { article, sentences, sentenceParseNews } = useContext(AppContext);
 
   const [isSm, setIsSm] = useState(true);
 
@@ -138,17 +131,11 @@ const ArticlePage = () => {
     return (
       <ArticlePageComponent
         isSm={isSm}
-        article={article}
-        sentences={sentences}
-        assignment={assignment}
-        sentenceParseNews={sentenceParseNews}
-        assignmentSentences={assignmentSentences}
         openPage={openPage}
         copySentenceParseNew={copySentenceParseNew}
         createAccentsQuestion={createAccentsQuestion}
         createRhythmsQuestion={createRhythmsQuestion}
         handleClickWidthButton={handleClickWidthButton}
-        setSentenceId={setSentenceId}
       />
     );
   }

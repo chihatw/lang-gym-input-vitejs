@@ -1,4 +1,5 @@
-import { Pause, PlayArrow } from '@mui/icons-material';
+import PauseIcon from '@mui/icons-material/Pause';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { IconButton } from '@mui/material';
 import React from 'react';
 
@@ -11,7 +12,7 @@ const PlayButtonPane: React.FC<{
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <IconButton size='small' color='primary' onClick={handlePlay}>
-        {isPlaying ? <Pause /> : <PlayArrow />}
+        {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
       </IconButton>
       <div style={{ display: 'flex', alignItems: 'center', color: '#555' }}>
         <Time seconds={currentTime} />

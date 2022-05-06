@@ -1,5 +1,5 @@
 import { IconButton, Tooltip } from '@mui/material';
-import { Delete } from '@mui/icons-material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import React from 'react';
 import { useCommentInput } from '../services/commentInput';
 import UnitInput from './UnitInput';
@@ -28,7 +28,7 @@ const CommentInput: React.FC<{
           }}
         >
           <Tooltip title='説明削除'>
-            <Delete />
+            <DeleteIcon />
           </Tooltip>
         </IconButton>
       </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Check } from '@mui/icons-material';
+import CheckIcon from '@mui/icons-material/Check';
 import { Button } from '@mui/material';
 
 import { Mark } from '../../../../entities/Mark';
@@ -90,7 +90,7 @@ const EditAudioPane = ({
 
   return (
     <div style={{ display: 'grid', rowGap: 16 }}>
-      <div style={{ color: 'green' }}>{hasMarks ? <Check /> : ''}</div>
+      <div style={{ color: 'green' }}>{hasMarks ? <CheckIcon /> : ''}</div>
       <PlayButtonPane
         duration={duration}
         isPlaying={isPlaying}

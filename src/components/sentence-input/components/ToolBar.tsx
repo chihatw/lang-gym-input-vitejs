@@ -1,6 +1,6 @@
 import { Button, IconButton, Tooltip } from '@mui/material';
-
-import { Delete, InfoRounded } from '@mui/icons-material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
 import React from 'react';
 import { useToolBar } from '../services/toolBar';
 
@@ -62,7 +62,7 @@ const ToolBar: React.FC = () => {
               onClick={onDeleteSentence}
               style={{ marginTop: -6, marginBottom: -6 }}
             >
-              <Delete />
+              <DeleteIcon />
               <span
                 style={{
                   color: '#777',
@@ -95,7 +95,7 @@ const ToolBar: React.FC = () => {
             }
           >
             <IconButton size='small'>
-              <InfoRounded />
+              <InfoRoundedIcon />
             </IconButton>
           </Tooltip>
         </div>

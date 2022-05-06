@@ -1,4 +1,5 @@
-import { Pause, PlayArrow } from '@mui/icons-material';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PauseIcon from '@mui/icons-material/Pause';
 import {
   Box,
   Button,
@@ -278,7 +279,7 @@ const MarkTable: React.FC<{
           <TableRow key={index}>
             <TableCell padding='none'>
               <IconButton color='primary' onClick={() => onPlay(index)}>
-                {isPlayings[index] ? <Pause /> : <PlayArrow />}
+                {isPlayings[index] ? <PauseIcon /> : <PlayArrowIcon />}
               </IconButton>
             </TableCell>
             <TableCell>{s.slice(0, 20)}</TableCell>
@@ -366,7 +367,7 @@ const AudioEditHeader: React.FC<{
     <div style={{ color: '#555' }}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <IconButton size='small' color='primary' onClick={onPlay}>
-          {isPlaying ? <Pause /> : <PlayArrow />}
+          {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
         </IconButton>
 
         <div style={{ width: 16 }} />

@@ -18,6 +18,7 @@ import { useQuestionGroups } from './services/useQuestionGroups';
 import { useQuestionSets } from './services/useQuestionSets';
 import { useQuestions } from './services/useQuestions';
 import { useUidOndokus } from './services/useUidOndokus';
+import { useArticleSentenceForms } from './services/useArticleSentenceForms';
 
 const App = () => {
   const [articleId, setArticleId] = useState('');
@@ -46,6 +47,7 @@ const App = () => {
     articleId,
     sentenceId,
   });
+  const { articleSentenceForms } = useArticleSentenceForms(articleId);
   const { workout, workouts } = useWorkouts({ workoutId });
   const { ondoku, ondokus } = useOndokus({ opened: true, ondokuId });
   const { ondokuSentence, ondokuSentences } = useOndokuSentences({
@@ -89,6 +91,7 @@ const App = () => {
         questionGroup,
         questions,
         uidOndokus,
+        articleSentenceForms,
         setOndokuId,
         setArticleId,
         setWorkoutId,

@@ -1,4 +1,4 @@
-import { Add } from '@mui/icons-material';
+import AddIcon from '@mui/icons-material/Add';
 import React, { useContext } from 'react';
 import { IconButton, Tooltip } from '@mui/material';
 
@@ -27,7 +27,7 @@ const RenyouBranchesInput: React.FC<{
         )}
         {!disabledAddBranch && (
           <IconButton
-            size="small"
+            size='small'
             onClick={() =>
               onAddMeishiRenyouBranch({
                 unitID,
@@ -37,8 +37,8 @@ const RenyouBranchesInput: React.FC<{
             }
             style={{ color: 'yellowgreen' }}
           >
-            <Tooltip title="補足語追加">
-              <Add />
+            <Tooltip title='補足語追加'>
+              <AddIcon />
             </Tooltip>
           </IconButton>
         )}

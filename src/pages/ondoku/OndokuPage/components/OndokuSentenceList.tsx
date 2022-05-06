@@ -1,4 +1,4 @@
-import Edit from '@mui/icons-material/Edit';
+import EditIcon from '@mui/icons-material/Edit';
 import React from 'react';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import accentsForPitchesArray from 'accents-for-pitches-array';
@@ -51,7 +51,7 @@ const OndokuSentenceList: React.FC<{
                       size='small'
                       onClick={() => onEdit(ondokuSentence)}
                     >
-                      <Edit />
+                      <EditIcon />
                     </IconButton>
                   </div>
                 </div>

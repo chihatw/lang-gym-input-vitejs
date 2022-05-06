@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Delete } from '@mui/icons-material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { IconButton, Tooltip } from '@mui/material';
 
 import { Sentence } from '../entities/Sentence';
@@ -28,12 +28,12 @@ const BuntouSeibunsInput: React.FC = () => {
                 >
                   <BuntouWordInput wordID={wordID} />
                   <IconButton
-                    size="small"
+                    size='small'
                     style={{ color: '#ccc' }}
                     onClick={() => onRemoveBuntouSeibun(wordID)}
                   >
-                    <Tooltip title="文頭削除">
-                      <Delete />
+                    <Tooltip title='文頭削除'>
+                      <DeleteIcon />
                     </Tooltip>
                   </IconButton>
                 </div>

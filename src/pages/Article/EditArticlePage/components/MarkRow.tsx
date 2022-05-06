@@ -1,4 +1,5 @@
-import { Pause, PlayArrow } from '@mui/icons-material';
+import PauseIcon from '@mui/icons-material/Pause';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import React, { useEffect, useMemo, useState } from 'react';
 import { IconButton, TableCell, TableRow, TextField } from '@mui/material';
 
@@ -70,7 +71,7 @@ const MarkRow = ({
     <TableRow>
       <TableCell padding='none'>
         <IconButton color='primary' onClick={handleClickPlay}>
-          {isPlaying ? <Pause /> : <PlayArrow />}
+          {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
         </IconButton>
       </TableCell>
       <TableCell>{label}</TableCell>

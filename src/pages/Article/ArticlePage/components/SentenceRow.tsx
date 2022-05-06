@@ -1,22 +1,22 @@
+import EditIcon from '@mui/icons-material/Edit';
+import PersonIcon from '@mui/icons-material/Person';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import FileCopyOutlinedIcon from '@mui/icons-material/FileCopyOutlined';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+
 import { Card, IconButton } from '@mui/material';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import accentsForPitchesArray from 'accents-for-pitches-array';
 import React, { useMemo, useState } from 'react';
 import sentenceParseNew2SentenceParseProps from 'sentence-parse-new2sentence-parse-props';
-import {
-  Edit,
-  Person,
-  FileCopyOutlined,
-  SettingsOutlined,
-} from '@mui/icons-material';
 
+import Speaker from '../../../../components/Speaker';
 import EditSentencePane from './EditSentencePane';
 import EditAssignmentPane from './EditAssignmentPane';
 import { ArticleSentence } from '../../../../services/useSentences';
 import { SentenceParseNew } from '../../../../services/useSentenceParseNews';
 import { AssignmentSentence } from '../../../../services/useAssignmentSentences';
 import { ComplexSentencePane } from '../../../../components/complex-sentence-pane';
-import Speaker from '../../../../components/Speaker';
 
 const SentenceRow = ({
   isSm,
@@ -27,6 +27,7 @@ const SentenceRow = ({
   assignmentDownloadURL,
   openEditParsePage,
   copySentenceParseNew,
+  openEditArticleSentenceFormPane,
 }: {
   isSm: boolean;
   sentence: ArticleSentence;
@@ -36,6 +37,7 @@ const SentenceRow = ({
   assignmentDownloadURL: string;
   openEditParsePage: () => void;
   copySentenceParseNew: () => void;
+  openEditArticleSentenceFormPane: () => void;
 }) => {
   return (
     <Card>
@@ -91,6 +93,7 @@ const SentenceRow = ({
           assignmentDownloadURL={assignmentDownloadURL}
           openEditParsePage={openEditParsePage}
           copySentenceParseNew={copySentenceParseNew}
+          openEditArticleSentenceFormPane={openEditArticleSentenceFormPane}
         />
       </div>
     </Card>
@@ -136,6 +139,7 @@ const CardFooter = ({
   assignmentDownloadURL,
   openEditParsePage,
   copySentenceParseNew,
+  openEditArticleSentenceFormPane,
 }: {
   sentence: ArticleSentence;
   downloadURL: string;
@@ -143,6 +147,7 @@ const CardFooter = ({
   assignmentDownloadURL: string;
   openEditParsePage: () => void;
   copySentenceParseNew: () => void;
+  openEditArticleSentenceFormPane: () => void;
 }) => {
   const [openEditSentencePane, setOpenEditSentencePane] = useState(false);
   const [openEditAssignmentPane, setOpenEditAssignmentPane] = useState(false);
@@ -158,7 +163,7 @@ const CardFooter = ({
           size='small'
           onClick={() => setOpenEditSentencePane(!openEditSentencePane)}
         >
-          <Edit />
+          <EditIcon />
         </IconButton>
         {!!downloadURL && sentence.end - sentence.start > 0 && (
           <Speaker
@@ -169,18 +174,25 @@ const CardFooter = ({
         )}
 
         <IconButton size='small' onClick={openEditParsePage}>
-          <SettingsOutlined />
+          <SettingsOutlinedIcon />
         </IconButton>
 
         <IconButton size='small' onClick={copySentenceParseNew}>
-          <FileCopyOutlined />
+          <FileCopyOutlinedIcon />
+        </IconButton>
+        <span style={{ width: '2em' }} />
+        <IconButton size='small' onClick={openEditArticleSentenceFormPane}>
+          <AccountTreeIcon />
+        </IconButton>
+        <IconButton size='small'>
+          <FileCopyOutlinedIcon />
         </IconButton>
         {!!assignmentSentence && (
           <IconButton
             size='small'
             onClick={() => setOpenEditAssignmentPane(!openEditAssignmentPane)}
           >
-            <Person />
+            <PersonIcon />
           </IconButton>
         )}
       </div>

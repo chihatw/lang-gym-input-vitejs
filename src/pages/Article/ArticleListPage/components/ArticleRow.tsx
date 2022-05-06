@@ -1,15 +1,13 @@
+import EditIcon from '@mui/icons-material/Edit';
 import React from 'react';
-import {
-  Edit,
-  MicOff,
-  Delete,
-  Subject,
-  FlashOn,
-  MicNone,
-  FlashOff,
-  VisibilityOutlined,
-  VisibilityOffOutlined,
-} from '@mui/icons-material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import SubjectIcon from '@mui/icons-material/Subject';
+import MicOffIcon from '@mui/icons-material/MicOff';
+import FlashOnIcon from '@mui/icons-material/FlashOn';
+import MicNoneIcon from '@mui/icons-material/MicNone';
+import FlashOffIcon from '@mui/icons-material/FlashOff';
 import { TableRow, TableCell } from '@mui/material';
 
 import { Article } from '../../../../services/useArticles';
@@ -39,27 +37,27 @@ const ArticleRow = ({
         {article.userDisplayname}
       </TableCell>
       <TitleDateCell title={article.title} createdAt={article.createdAt} />
-      <IconButtonCell icon={<Edit />} onClick={openArticleEditPage} />
-      <IconButtonCell icon={<Subject />} onClick={openArticlePage} />
+      <IconButtonCell icon={<EditIcon />} onClick={openArticleEditPage} />
+      <IconButtonCell icon={<SubjectIcon />} onClick={openArticlePage} />
       <IconButtonCell
         icon={
           article.isShowAccents ? (
-            <VisibilityOutlined />
+            <VisibilityOutlinedIcon />
           ) : (
-            <VisibilityOffOutlined />
+            <VisibilityOffOutlinedIcon />
           )
         }
         onClick={handleClickShowAccents}
       />
       <IconButtonCell
-        icon={article.isShowParse ? <FlashOn /> : <FlashOff />}
+        icon={article.isShowParse ? <FlashOnIcon /> : <FlashOffIcon />}
         onClick={handleClickShowParses}
       />
       <IconButtonCell
-        icon={article.hasRecButton ? <MicNone /> : <MicOff />}
+        icon={article.hasRecButton ? <MicNoneIcon /> : <MicOffIcon />}
         onClick={handleClickShowRecButton}
       />
-      <IconButtonCell icon={<Delete />} onClick={handleClickDelete} />
+      <IconButtonCell icon={<DeleteIcon />} onClick={handleClickDelete} />
     </TableRow>
   );
 };

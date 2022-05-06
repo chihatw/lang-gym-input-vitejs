@@ -1,6 +1,6 @@
-import { Check } from '@mui/icons-material';
-import Delete from '@mui/icons-material/Delete';
-import Edit from '@mui/icons-material/Edit';
+import CheckIcon from '@mui/icons-material/Check';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import { IconButton, TableCell, TableRow } from '@mui/material';
 import React, { useContext, useMemo } from 'react';
 import { AppContext } from '../../../services/app';
@@ -27,16 +27,16 @@ const QuestionSetRow = ({
         <span style={{ whiteSpace: 'nowrap' }}>{displayname}</span>
       </TableCell>
       <TableCell>{questionSet.title}</TableCell>
-      <TableCell>{questionSet.answered && <Check />}</TableCell>
+      <TableCell>{questionSet.answered && <CheckIcon />}</TableCell>
       <TableCell padding='none'>
         <IconButton size='small' onClick={() => onEdit(questionSet)}>
-          <Edit />
+          <EditIcon />
         </IconButton>
       </TableCell>
 
       <TableCell padding='none'>
         <IconButton size='small' onClick={onDelete}>
-          <Delete />
+          <DeleteIcon />
         </IconButton>
       </TableCell>
     </TableRow>

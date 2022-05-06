@@ -1,5 +1,5 @@
 import React from 'react';
-import VolumeOff from '@mui/icons-material/VolumeOff';
+import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import { Checkbox } from '@mui/material';
 import { PitchLine } from '@chihatw/pitch-line.pitch-line';
 import string2PitchesArray from 'string2pitches-array';
@@ -31,7 +31,7 @@ const AccentsMonitor: React.FC<{
                     downloadURL={audio.downloadURL}
                   />
                 ) : (
-                  <VolumeOff color='primary' />
+                  <VolumeOffIcon color='primary' />
                 )}
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap' }}>

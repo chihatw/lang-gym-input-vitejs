@@ -207,7 +207,7 @@ export const useHandleSentenceParseNews = () => {
       commentInvisibilities: JSON.stringify(value.commentInvisibilities),
     };
 
-    return _addDocument(stringified);
+    return await _addDocument(stringified);
   };
 
   const updateSentenceParseNew = async (value: SentenceParseNew) => {

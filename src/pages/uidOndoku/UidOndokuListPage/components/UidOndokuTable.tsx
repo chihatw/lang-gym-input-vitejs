@@ -5,7 +5,7 @@ import {
   TableCell,
   TableRow,
 } from '@mui/material';
-import Delete from '@mui/icons-material/Delete';
+import DeleteIcon from '@mui/icons-material/Delete';
 import React from 'react';
 import { UidOndoku } from '../../../../services/useUidOndokus';
 
@@ -24,7 +24,7 @@ const UidOndokuTable: React.FC<{
             <TableCell>{titles[uidOndoku.ondoku!.id]}</TableCell>
             <TableCell padding='none'>
               <IconButton size='small' onClick={() => onDelete(uidOndoku)}>
-                <Delete />
+                <DeleteIcon />
               </IconButton>
             </TableCell>
           </TableRow>
