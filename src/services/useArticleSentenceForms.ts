@@ -45,7 +45,6 @@ export const useArticleSentenceForms = (articleId: string) => {
         setValues: (value: T[]) => void;
         buildValue: (value: DocumentData) => T;
       }): Unsubscribe {
-        console.log('@@');
         return snapshotCollection({
           db,
           colId: COLLECTION,

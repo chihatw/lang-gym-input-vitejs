@@ -70,7 +70,9 @@ const SentenceRow = ({
             />
           )}
           {!!Object.keys(sentences).length && (
-            <SentenceFormPane sentences={sentences} />
+            <div style={{ maxWidth: isSm ? 500 : 800, overflowX: 'scroll' }}>
+              <SentenceFormPane sentences={sentences} />
+            </div>
           )}
           {!!assignmentSentence && !!assignmentSentence.accents.length && (
             <div
