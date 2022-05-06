@@ -5,6 +5,7 @@ import TableLayout from '../../../../components/templates/TableLayout';
 import SentenceRow from './SentenceRow';
 import InitializeSentencesPane from './InitializeSentencesPane';
 import { AppContext } from '../../../../services/app';
+import { INITIAL_ARTICLE_SENTENCE_FORM } from '../../../../services/useArticleSentenceForms';
 
 const ArticlePageComponent = ({
   isSm,
@@ -27,6 +28,7 @@ const ArticlePageComponent = ({
     assignment,
     sentenceParseNews,
     assignmentSentences,
+    articleSentenceForms,
     setSentenceId,
   } = useContext(AppContext);
   return (
@@ -46,29 +48,34 @@ const ArticlePageComponent = ({
       </div>
       {!!sentences.length ? (
         <div style={{ display: 'grid', rowGap: 16 }}>
-          {sentences.map((sentence, index) => (
-            <SentenceRow
-              key={index}
-              isSm={isSm}
-              sentence={sentence}
-              downloadURL={article.downloadURL}
-              sentenceParseNew={sentenceParseNews[index]}
-              openEditParsePage={() => {
-                setSentenceId(sentence.id);
-                setTimeout(() => {
-                  openPage(`/parse/${index}`);
-                }, 100);
-              }}
-              openEditArticleSentenceFormPane={() => {
-                setTimeout(() => {
-                  openPage(`/form/${index}`);
-                }, 100);
-              }}
-              assignmentSentence={assignmentSentences[index]}
-              assignmentDownloadURL={assignment.downloadURL}
-              copySentenceParseNew={() => copySentenceParseNew(index)}
-            />
-          ))}
+          {sentences.map((sentence, index) => {
+            const articleSentenceForm =
+              articleSentenceForms[index] || INITIAL_ARTICLE_SENTENCE_FORM;
+            return (
+              <SentenceRow
+                key={index}
+                isSm={isSm}
+                sentence={sentence}
+                downloadURL={article.downloadURL}
+                sentenceParseNew={sentenceParseNews[index]}
+                openEditParsePage={() => {
+                  setSentenceId(sentence.id);
+                  setTimeout(() => {
+                    openPage(`/parse/${index}`);
+                  }, 100);
+                }}
+                sentences={articleSentenceForm.sentences}
+                openEditArticleSentenceFormPane={() => {
+                  setTimeout(() => {
+                    openPage(`/form/${index}`);
+                  }, 100);
+                }}
+                assignmentSentence={assignmentSentences[index]}
+                assignmentDownloadURL={assignment.downloadURL}
+                copySentenceParseNew={() => copySentenceParseNew(index)}
+              />
+            );
+          })}
 
           <Button variant='contained' onClick={createAccentsQuestion}>
             アクセント問題作成

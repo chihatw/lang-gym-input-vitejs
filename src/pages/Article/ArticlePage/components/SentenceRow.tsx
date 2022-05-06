@@ -1,3 +1,4 @@
+import { SentenceFormPane } from '@chihatw/sentence-form.sentence-form-pane';
 import EditIcon from '@mui/icons-material/Edit';
 import PersonIcon from '@mui/icons-material/Person';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
@@ -17,10 +18,12 @@ import { ArticleSentence } from '../../../../services/useSentences';
 import { SentenceParseNew } from '../../../../services/useSentenceParseNews';
 import { AssignmentSentence } from '../../../../services/useAssignmentSentences';
 import { ComplexSentencePane } from '../../../../components/complex-sentence-pane';
+import { FSentences } from 'fsentence-types';
 
 const SentenceRow = ({
   isSm,
   sentence,
+  sentences,
   downloadURL,
   sentenceParseNew,
   assignmentSentence,
@@ -31,6 +34,7 @@ const SentenceRow = ({
 }: {
   isSm: boolean;
   sentence: ArticleSentence;
+  sentences: FSentences;
   downloadURL: string;
   sentenceParseNew: SentenceParseNew | null;
   assignmentSentence: AssignmentSentence | null;
@@ -64,6 +68,9 @@ const SentenceRow = ({
               isSm={isSm}
               sentenceParseNew={sentenceParseNew}
             />
+          )}
+          {!!Object.keys(sentences).length && (
+            <SentenceFormPane sentences={sentences} />
           )}
           {!!assignmentSentence && !!assignmentSentence.accents.length && (
             <div
