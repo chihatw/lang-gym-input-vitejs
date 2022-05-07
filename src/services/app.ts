@@ -32,10 +32,7 @@ import {
   useHandleQuestionSets,
 } from './useQuestionSets';
 import { UidOndoku } from './useUidOndokus';
-import {
-  ArticleSentenceForm,
-  INITIAL_ARTICLE_SENTENCE_FORM,
-} from './useArticleSentenceForms';
+import { ArticleSentenceForm } from './useArticleSentenceForms';
 
 export const AppContext = createContext<{
   user: _User | null;
