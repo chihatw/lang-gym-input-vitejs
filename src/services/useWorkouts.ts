@@ -7,6 +7,7 @@ import {
   QueryConstraint,
 } from 'firebase/firestore';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { WorkoutItem } from 'workout-items';
 import { db } from '../repositories/firebase';
 import {
   addDocument,
@@ -14,18 +15,6 @@ import {
   updateDocument,
   snapshotCollection,
 } from '../repositories/utils';
-
-export type WorkoutItem = {
-  text: string;
-  chinese: string;
-  pitchesArray: string;
-};
-
-export const INITIAL_WORKOUT_ITEM: WorkoutItem = {
-  text: '',
-  chinese: '',
-  pitchesArray: '',
-};
 
 export type Workout = {
   id: string;

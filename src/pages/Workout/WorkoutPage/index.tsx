@@ -4,12 +4,13 @@ import { Button, Container, MenuItem, Select, TextField } from '@mui/material';
 
 import { AppContext } from '../../../services/app';
 import WorkoutItemRow from './components/WorkoutItemRow';
+import { Workout, useHandleWorkouts } from '../../../services/useWorkouts';
 import {
-  Workout,
+  calcBeatCount,
+  string2WorkoutItems,
   WorkoutItem,
-  useHandleWorkouts,
-} from '../../../services/useWorkouts';
-import string2PitchesArray from 'string2pitches-array';
+  workoutItems2String,
+} from 'workout-items';
 
 const WorkoutPage = () => {
   const navigate = useNavigate();
@@ -132,48 +133,3 @@ const WorkoutPage = () => {
 };
 
 export default WorkoutPage;
-
-const string2WorkoutItems = (value: string) => {
-  const workoutItems: WorkoutItem[] = [];
-  const lines = value.split('\n').filter((i) => i);
-  for (let i = 0; i < lines.length; i = i + 3) {
-    const text = lines[i] || '';
-    const chinese = lines[i + 1] || '';
-    const pitchesArray = lines[i + 2] || '';
-    const workoutItem: WorkoutItem = {
-      text,
-      chinese,
-      pitchesArray,
-    };
-    workoutItems.push(workoutItem);
-  }
-  return workoutItems;
-};
-
-const workoutItems2String = (workoutItems: WorkoutItem[]) => {
-  const lines: string[] = [];
-  for (const workoutItem of workoutItems) {
-    const { text, chinese, pitchesArray } = workoutItem;
-    lines.push(text);
-    lines.push(chinese);
-    lines.push(pitchesArray);
-  }
-  return lines.join('\n');
-};
-
-const calcBeatCount = (workoutItems: WorkoutItem[]) => {
-  let moraCount = 0;
-  for (const workoutItem of workoutItems) {
-    let { pitchesArray: pitchesArrayStr } = workoutItem;
-    const pitchesArray = string2PitchesArray(pitchesArrayStr);
-    const tmp: string[] = [];
-    for (const pitches of pitchesArray) {
-      for (const pitch of pitches) {
-        tmp.push('dummy');
-      }
-    }
-    const itemMoraCount = tmp.length;
-    moraCount += itemMoraCount;
-  }
-  return Math.ceil(moraCount / 2);
-};

@@ -1,7 +1,7 @@
 import React from 'react';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import string2PitchesArray from 'string2pitches-array';
-import { WorkoutItem } from '../../../../services/useWorkouts';
+import { WorkoutItem } from 'workout-items';
 
 const WorkoutItemRow = ({
   index,
