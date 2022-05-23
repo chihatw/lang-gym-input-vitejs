@@ -1,7 +1,13 @@
 import PauseIcon from '@mui/icons-material/Pause';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import React, { useEffect, useMemo, useState } from 'react';
-import { IconButton, TableCell, TableRow, TextField } from '@mui/material';
+import {
+  Button,
+  IconButton,
+  TableCell,
+  TableRow,
+  TextField,
+} from '@mui/material';
 
 const MarkRow = ({
   label,
@@ -66,7 +72,17 @@ const MarkRow = ({
       audioElement.pause();
     }
   };
-
+  const handleClickPlayTail = () => {
+    audioElement.currentTime = end - 1;
+    audioElement.ontimeupdate = () => {
+      setCurrentTime(audioElement.currentTime);
+      if (audioElement.currentTime > end) {
+        audioElement.pause();
+        setIsPlaying(false);
+      }
+    };
+    audioElement.play();
+  };
   return (
     <TableRow>
       <TableCell padding='none'>
@@ -84,6 +100,11 @@ const MarkRow = ({
           inputProps={{ step: 0.1 }}
           onChange={(e) => handleChangeStart(Number(e.target.value))}
         />
+      </TableCell>
+      <TableCell padding='none' width={'10%'}>
+        <Button color='primary' size='small' onClick={handleClickPlayTail}>
+          -1.0
+        </Button>
       </TableCell>
       <TableCell sx={{ width: 80 }}>
         <TextField
