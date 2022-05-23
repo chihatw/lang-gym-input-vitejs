@@ -52,6 +52,9 @@ const ArticleListPageComponent = ({
               openArticleEditPage={() => openPage({ article, path: `` })}
               handleClickShowAccents={() => handleClickShowAccents(article)}
               handleClickShowRecButton={() => handleClickShowRecButton(article)}
+              openPrintPitchesPage={() =>
+                openPage({ article, path: `print/${article.id}` })
+              }
             />
           ))}
         </TableBody>

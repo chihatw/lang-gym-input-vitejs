@@ -13,12 +13,14 @@ import { TableRow, TableCell } from '@mui/material';
 import { Article } from '../../../../services/useArticles';
 import TitleDateCell from './TitleDateCell';
 import IconButtonCell from './IconButtonCell';
+import PrintIcon from '@mui/icons-material/Print';
 
 const ArticleRow = ({
   article,
   openArticlePage,
   handleClickDelete,
   openArticleEditPage,
+  openPrintPitchesPage,
   handleClickShowParses,
   handleClickShowAccents,
   handleClickShowRecButton,
@@ -27,6 +29,7 @@ const ArticleRow = ({
   openArticlePage: () => void;
   handleClickDelete: () => void;
   openArticleEditPage: () => void;
+  openPrintPitchesPage: () => void;
   handleClickShowParses: () => void;
   handleClickShowAccents: () => void;
   handleClickShowRecButton: () => void;
@@ -39,6 +42,7 @@ const ArticleRow = ({
       <TitleDateCell title={article.title} createdAt={article.createdAt} />
       <IconButtonCell icon={<EditIcon />} onClick={openArticleEditPage} />
       <IconButtonCell icon={<SubjectIcon />} onClick={openArticlePage} />
+      <IconButtonCell icon={<PrintIcon />} onClick={openPrintPitchesPage} />
       <IconButtonCell
         icon={
           article.isShowAccents ? (

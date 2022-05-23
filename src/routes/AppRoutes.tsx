@@ -36,6 +36,7 @@ import AccentsQuestionListPage from '../pages/Question/accentsQuestion/AccentsQu
 import RhythmsQuestionListPage from '../pages/Question/rhythmsQuestion/RhythmsQuestionListPage';
 import ArticlePage from '../pages/Article/ArticlePage';
 import EditArticleSentenceFormPane from '../pages/Article/EditArticleSentenceFormPage';
+import PrintPitchesPage from '../pages/Article/PrintPitchesPage';
 
 const AppRoutes = () => {
   return (
@@ -82,11 +83,11 @@ const AppRoutes = () => {
       </Route>
 
       {/* article */}
-
       <Route path='/article/*'>
         <Route path='list' element={<ArticleListPage />} />
         {/* 作文入力作業 */}
         <Route path='input' element={<ArticleInputPage />} />
+        <Route path='print/:id' element={<PrintPitchesPage />} />
         <Route path=':id' element={<ArticlePage />} />
         <Route path='' element={<EditArticlePage />} />
       </Route>
