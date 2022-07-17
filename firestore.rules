@@ -179,7 +179,7 @@ service cloud.firestore {
     }
 
     function isValidSentence(data){
-      return  data.size() == 14
+      return  data.size() == 16
         && 'accents' in data && data.accents is list
         && 'article' in data && data.article is string
         && 'chinese' in data && data.chinese is string
@@ -194,6 +194,8 @@ service cloud.firestore {
         && 'tags' in data && data.tags is map
         && 'title' in data && data.title is string
         && 'uid' in data && data.uid is string
+        && 'storagePath' in data && data.storagePath is string 
+        && 'storageDuration' in data && data.storageDuration is number 
     }
 
     match /sentences/{sentence} {

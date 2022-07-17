@@ -40,6 +40,8 @@ export type ArticleSentence = {
   original: string;
   createdAt: number;
   kanaAccentsStr: string;
+  storagePath: string;
+  storageDuration: number;
 };
 
 export const INITIAL_ARTICLE_SENTENCE: ArticleSentence = {
@@ -58,6 +60,8 @@ export const INITIAL_ARTICLE_SENTENCE: ArticleSentence = {
   original: '',
   createdAt: 0,
   kanaAccentsStr: '',
+  storagePath: '',
+  storageDuration: 0,
 };
 
 export const useSentences = (articleId: string) => {
@@ -193,6 +197,8 @@ const buildSentence = (doc: DocumentData) => {
     original: doc.data().original || '',
     createdAt: doc.data().createdAt || 0,
     kanaAccentsStr: doc.data().kanaAccentsStr || '',
+    storagePath: doc.data().storagePath || '',
+    storageDuration: doc.data().storageDuration || 0,
   };
   return sentence;
 };
