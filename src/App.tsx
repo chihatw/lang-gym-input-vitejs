@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import AppRoutes from './routes/AppRoutes';
 import { AppContext, useApp } from './services/app';
@@ -29,6 +29,7 @@ const App = () => {
   const [questionSetId, setQuestionSetId] = useState('');
   const [questionGroupId, setQuestionGroupId] = useState('');
   const [questionIds, setQuestionIds] = useState<string[]>([]);
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
 
   const { initializing, user, createRhythmsQuestion } = useApp({
     setQuestionSetId,
@@ -39,7 +40,7 @@ const App = () => {
     articleId,
   });
   const { users } = useUsers({ opened: true });
-  const { sentences } = useSentences(articleId);
+  const { sentences, assignmentBlobs } = useSentences(articleId);
   const { assignment } = useAssignments(articleId);
   const { ondokuAssignment } = useOndokuAssignments(ondokuId);
   const { assignmentSentences } = useAssignmentSentences(articleId);
@@ -63,6 +64,19 @@ const App = () => {
   });
   const { questions } = useQuestions({ questionIds, questionGroupId });
   const { uidOndokus } = useUidOndokus();
+
+  useEffect(() => {
+    const createAudioContext = () => {
+      const factory = new AudioContextFactory();
+      const _audioContext = factory.create();
+      setAudioContext(_audioContext);
+      window.removeEventListener('click', createAudioContext);
+    };
+    if (!audioContext) {
+      window.addEventListener('click', createAudioContext);
+    }
+  }, [audioContext]);
+
   return (
     <AppContext.Provider
       value={{
@@ -92,6 +106,8 @@ const App = () => {
         questions,
         uidOndokus,
         articleSentenceForms,
+        assignmentBlobs,
+        audioContext,
         setOndokuId,
         setArticleId,
         setWorkoutId,
@@ -107,3 +123,18 @@ const App = () => {
 };
 
 export default App;
+
+class AudioContextFactory {
+  create() {
+    console.log('create audioContext');
+    const audioContext = new window.AudioContext();
+    const osc = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    osc.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    gainNode.gain.value = 0;
+    osc.start(audioContext.currentTime);
+    osc.stop(audioContext.currentTime + 0.1);
+    return audioContext;
+  }
+}

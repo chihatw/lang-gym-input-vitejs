@@ -19,26 +19,31 @@ import { SentenceParseNew } from '../../../../services/useSentenceParseNews';
 import { AssignmentSentence } from '../../../../services/useAssignmentSentences';
 import { ComplexSentencePane } from '../../../../components/complex-sentence-pane';
 import { FSentences } from 'fsentence-types';
+import AudioSliderBlob from './AudioSliderBlob';
 
 const SentenceRow = ({
   isSm,
+  blob,
   sentence,
   sentences,
   downloadURL,
   sentenceParseNew,
   assignmentSentence,
   assignmentDownloadURL,
+  storageDuration,
   openEditParsePage,
   copySentenceParseNew,
   openEditArticleSentenceFormPane,
 }: {
   isSm: boolean;
+  blob: Blob | null;
   sentence: ArticleSentence;
   sentences: FSentences;
   downloadURL: string;
   sentenceParseNew: SentenceParseNew | null;
   assignmentSentence: AssignmentSentence | null;
   assignmentDownloadURL: string;
+  storageDuration: number;
   openEditParsePage: () => void;
   copySentenceParseNew: () => void;
   openEditArticleSentenceFormPane: () => void;
@@ -73,6 +78,13 @@ const SentenceRow = ({
             <div style={{ maxWidth: isSm ? 500 : 800, overflowX: 'scroll' }}>
               <SentenceFormPane sentences={sentences} />
             </div>
+          )}
+          {!!blob && (
+            <AudioSliderBlob
+              blob={blob}
+              duration={storageDuration}
+              spacer={5}
+            />
           )}
           {!!assignmentSentence && !!assignmentSentence.accents.length && (
             <div

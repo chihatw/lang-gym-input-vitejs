@@ -26,6 +26,7 @@ const ArticlePageComponent = ({
     article,
     sentences,
     assignment,
+    assignmentBlobs,
     sentenceParseNews,
     assignmentSentences,
     articleSentenceForms,
@@ -49,17 +50,21 @@ const ArticlePageComponent = ({
       {!!sentences.length ? (
         <div style={{ display: 'grid', rowGap: 16 }}>
           {sentences.map((sentence, index) => {
+            const { id, storageDuration } = sentence;
             const articleSentenceForm =
               articleSentenceForms[index] || INITIAL_ARTICLE_SENTENCE_FORM;
+            const blob = assignmentBlobs[id] || null;
             return (
               <SentenceRow
                 key={index}
                 isSm={isSm}
                 sentence={sentence}
+                blob={blob}
+                storageDuration={storageDuration}
                 downloadURL={article.downloadURL}
                 sentenceParseNew={sentenceParseNews[index]}
                 openEditParsePage={() => {
-                  setSentenceId(sentence.id);
+                  setSentenceId(id);
                   setTimeout(() => {
                     openPage(`/parse/${index}`);
                   }, 100);

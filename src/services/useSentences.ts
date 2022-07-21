@@ -8,8 +8,9 @@ import {
   QueryConstraint,
   Unsubscribe,
 } from '@firebase/firestore';
+import { ref, getDownloadURL } from 'firebase/storage';
 
-import { db } from '../repositories/firebase';
+import { db, storage } from '../repositories/firebase';
 import { Tags } from '../entities/Tags';
 import { Accent } from '../entities/Accent';
 import {
@@ -64,8 +65,11 @@ export const INITIAL_ARTICLE_SENTENCE: ArticleSentence = {
   storageDuration: 0,
 };
 
+export type AssignmentBlobs = { [key: string]: Blob | null };
+
 export const useSentences = (articleId: string) => {
   const [sentences, setSentences] = useState<ArticleSentence[]>([]);
+  const [assignmentBlobs, setAssignmentBlobs] = useState<AssignmentBlobs>({});
 
   const _snapshotCollection = useMemo(
     () =>
@@ -100,7 +104,37 @@ export const useSentences = (articleId: string) => {
       unsub();
     };
   }, [articleId]);
-  return { sentences };
+
+  useEffect(() => {
+    const filterdSentences = sentences.filter(
+      (sentence) => !!sentence.storagePath
+    );
+
+    const fetchData = async () => {
+      // sentence の storagePath から storageAudio を作成
+      const assignmentBlobs: AssignmentBlobs = {};
+      await Promise.all(
+        filterdSentences.map(async (sentence) => {
+          const { id, storagePath } = sentence;
+          if (!!storagePath) {
+            // ダウンロード URL を取得
+            const url = await getDownloadURL(ref(storage, storagePath));
+            console.log('create assignmentAudio');
+            // HTTP レスポンスを取得
+            const response = await fetch(url);
+            // HTTP レスポンス全体から Blob を取得
+            const blob = await response.blob();
+            assignmentBlobs[id] = blob;
+          }
+        })
+      );
+      console.log({ assignmentBlobs });
+      setAssignmentBlobs(assignmentBlobs);
+    };
+    fetchData();
+  }, [sentences]);
+
+  return { sentences, assignmentBlobs };
 };
 
 export const useHandleSentences = () => {

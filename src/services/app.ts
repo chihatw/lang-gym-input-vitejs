@@ -10,7 +10,7 @@ import { AudioItem } from './useAudioItems';
 import { getMoraString, buildSentenceRhythm } from '../entities/Rhythm';
 import { Article, INITIAL_ARTICLE } from './useArticles';
 import { User } from './useUsers';
-import { ArticleSentence } from './useSentences';
+import { ArticleSentence, AssignmentBlobs } from './useSentences';
 import { Assignment, INITIAL_ASSIGNMENT } from './useAssignments';
 import { AssignmentSentence } from './useAssignmentSentences';
 import {
@@ -61,6 +61,8 @@ export const AppContext = createContext<{
   questions: Question[];
   uidOndokus: UidOndoku[];
   articleSentenceForms: ArticleSentenceForm[];
+  assignmentBlobs: AssignmentBlobs;
+  audioContext: AudioContext | null;
   setOndokuId: (value: string) => void;
   setArticleId: (value: string) => void;
   setWorkoutId: (value: string) => void;
@@ -107,6 +109,7 @@ export const AppContext = createContext<{
   questions: [],
   uidOndokus: [],
   articleSentenceForms: [],
+  assignmentBlobs: {},
   setOndokuId: () => {},
   setQuestionSetId: () => {},
   setArticleId: () => {},
@@ -114,6 +117,7 @@ export const AppContext = createContext<{
   setSentenceId: () => {},
   setOndokuSentenceId: () => {},
   createRhythmsQuestion: async () => {},
+  audioContext: null,
 });
 
 export const useApp = ({
