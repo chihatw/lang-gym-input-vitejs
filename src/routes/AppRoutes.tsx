@@ -4,7 +4,6 @@ import { Route, Routes, Navigate } from 'react-router-dom';
 import { AppContext } from '../services/app';
 
 import TopPage from '../pages/TopPage';
-import BatchPage from '../pages/BatchPage';
 import SignInPage from '../pages/SignInPage';
 import AudioItemsPage from '../pages/AudioItemsPage';
 import ArticleInputPage from '../pages/ArticleInputPage';
@@ -28,7 +27,6 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path='/' element={<TopPage />} />
-      <Route path='/batch' element={<BatchPage />} />
       <Route path='/workout' element={<WorkoutPage />} />
       <Route path='/workouts' element={<WorkoutsPage />} />
 
