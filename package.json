@@ -44,6 +44,7 @@
     "mora2vowel": "^1.0.1",
     "pitches-array2string": "^1.0.0",
     "prop-types": "^15.8.1",
+    "ramda": "^0.28.0",
     "react": "^18.0.0",
     "react-beautiful-dnd": "^13.1.0",
     "react-dom": "^18.0.0",
@@ -57,6 +58,7 @@
     "workout-items": "^1.0.0"
   },
   "devDependencies": {
+    "@types/ramda": "^0.28.15",
     "@types/react": "^18.0.5",
     "@types/react-beautiful-dnd": "^13.1.2",
     "@types/react-dom": "^18.0.1",

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 
 import AppRoutes from './routes/AppRoutes';
 import { AppContext, useApp } from './services/app';
@@ -19,8 +19,11 @@ import { useQuestionSets } from './services/useQuestionSets';
 import { useQuestions } from './services/useQuestions';
 import { useUidOndokus } from './services/useUidOndokus';
 import { useArticleSentenceForms } from './services/useArticleSentenceForms';
+import { reducer } from './Update';
+import { INITIAL_STATE } from './Model';
 
 const App = () => {
+  const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
   const [articleId, setArticleId] = useState('');
   const [ondokuId, setOndokuId] = useState('');
   const [sentenceId, setSentenceId] = useState('');

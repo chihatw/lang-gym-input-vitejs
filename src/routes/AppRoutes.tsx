@@ -11,8 +11,6 @@ import ArticleInputPage from '../pages/ArticleInputPage';
 
 import WorkoutPage from '../pages/Workout/WorkoutPage';
 import WorkoutsPage from '../pages/Workout/WorkoutsPage';
-import UidOndokuListPage from '../pages/uidOndoku/UidOndokuListPage';
-import CreateUidOndokuPage from '../pages/uidOndoku/CreateUidOndokuPage';
 
 import OndokuPage from '../pages/ondoku/OndokuPage';
 import OndokuListPage from '../pages/ondoku/OndokuListPage';
@@ -46,28 +44,6 @@ const AppRoutes = () => {
       <Route path='/workout' element={<WorkoutPage />} />
       <Route path='/workouts' element={<WorkoutsPage />} />
 
-      {/* ondoku */}
-
-      <Route path='/ondoku/*'>
-        <Route path='' element={<CreateOndokuPage />} />
-        <Route path='list' element={<OndokuListPage />} />
-        <Route path='edit/:id' element={<EditOndokuPage />} />
-        <Route path='sentence/:id' element={<EditOndokuSentencePage />} />
-        <Route path=':id/initial' element={<InitialOndokuPage />} />
-        <Route path=':id/voice/initial' element={<InitialOndokuVoicePage />} />
-        <Route path=':id/voice' element={<EditOndokuVoicePage />} />
-        <Route
-          path=':id/assignment/uid/:uid/voice/'
-          element={<EditOndokuAssignmentVoicePage />}
-        />
-        <Route
-          path=':id/assignment/uid/:uid/line/:line'
-          element={<EditOndokuAssignmentPage />}
-        />
-        <Route path=':id/assignment' element={<OndokuAssignmentPage />} />
-        <Route path=':id' element={<OndokuPage />} />
-      </Route>
-
       {/* accentsQuestion */}
 
       <Route path='/accentsQuestion/*'>
@@ -98,10 +74,6 @@ const AppRoutes = () => {
       {/* form */}
       <Route path='/form/:index' element={<EditArticleSentenceFormPane />} />
 
-      <Route path='/uidOndoku/*'>
-        <Route path='list' element={<UidOndokuListPage />} />
-        <Route path=':id' element={<CreateUidOndokuPage />} />
-      </Route>
       <Route path='/audioItems' element={<AudioItemsPage />} />
       <Route
         path='/login'

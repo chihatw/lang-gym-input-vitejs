@@ -1,9 +1,32 @@
 import React from 'react';
 import { Button, Container } from '@mui/material';
-import { useTopPage } from './services/topPage';
+import { useNavigate } from 'react-router-dom';
+import { auth } from '../../repositories/firebase';
 
 const TopPage = () => {
-  const { itemsArray } = useTopPage();
+  const navigate = useNavigate();
+  const itemsArray: { label: string; onClick: () => void }[][] = [
+    [
+      { label: '作文一覧', onClick: () => navigate('/article/list') },
+      { label: '作文処理', onClick: () => navigate('/article/input') },
+    ],
+    [
+      {
+        label: 'アクセント問題一覧',
+        onClick: () => navigate('/accentsQuestion/list'),
+      },
+      {
+        label: 'リズム問題一覧',
+        onClick: () => navigate('/rhythmsQuestion/list'),
+      },
+    ],
+    [
+      { label: '練習一覧', onClick: () => navigate('/workouts') },
+      { label: 'audioItems', onClick: () => navigate('/audioItems') },
+    ],
+    [{ label: 'バッチ処理', onClick: () => navigate('/batch') }],
+    [{ label: 'Sign Out', onClick: () => auth.signOut() }],
+  ];
   return (
     <Container maxWidth='sm'>
       <div style={{ paddingTop: 16 }}>
