@@ -12,18 +12,6 @@ import ArticleInputPage from '../pages/ArticleInputPage';
 import WorkoutPage from '../pages/Workout/WorkoutPage';
 import WorkoutsPage from '../pages/Workout/WorkoutsPage';
 
-import OndokuPage from '../pages/ondoku/OndokuPage';
-import OndokuListPage from '../pages/ondoku/OndokuListPage';
-import EditOndokuPage from '../pages/ondoku/EditOndokuPage';
-import CreateOndokuPage from '../pages/ondoku/CreateOndokuPage';
-import InitialOndokuPage from '../pages/ondoku/InitialOndokuPage';
-import EditOndokuVoicePage from '../pages/ondoku/EditOndokuVoicePage';
-import OndokuAssignmentPage from '../pages/ondoku/OndokuAssignmentPage';
-import InitialOndokuVoicePage from '../pages/ondoku/InitialOndokuVoicePage';
-import EditOndokuSentencePage from '../pages/ondoku/EditOndokuSentencePage';
-import EditOndokuAssignmentPage from '../pages/ondoku/EditOndokuAssignmentPage';
-import EditOndokuAssignmentVoicePage from '../pages/ondoku/EditOngokuAssignmentVoicePage';
-
 import ArticleListPage from '../pages/Article/ArticleListPage';
 import EditArticlePage from '../pages/Article/EditArticlePage';
 import EditSentenceParsePage from '../pages/Article/EditSentenceParsePage';
