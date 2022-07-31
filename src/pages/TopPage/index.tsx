@@ -20,10 +20,7 @@ const TopPage = () => {
         onClick: () => navigate('/rhythmsQuestion/list'),
       },
     ],
-    [
-      { label: '練習一覧', onClick: () => navigate('/workouts') },
-      { label: 'audioItems', onClick: () => navigate('/audioItems') },
-    ],
+    [{ label: '練習一覧', onClick: () => navigate('/workouts') }],
     [{ label: 'Sign Out', onClick: () => auth.signOut() }],
   ];
   return (

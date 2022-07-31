@@ -5,7 +5,6 @@ import { AppContext } from '../services/app';
 
 import TopPage from '../pages/TopPage';
 import SignInPage from '../pages/SignInPage';
-import AudioItemsPage from '../pages/AudioItemsPage';
 import ArticleInputPage from '../pages/ArticleInputPage';
 
 import WorkoutPage from '../pages/Workout/WorkoutPage';
@@ -60,7 +59,6 @@ const AppRoutes = () => {
       {/* form */}
       <Route path='/form/:index' element={<EditArticleSentenceFormPane />} />
 
-      <Route path='/audioItems' element={<AudioItemsPage />} />
       <Route
         path='/login'
         element={
