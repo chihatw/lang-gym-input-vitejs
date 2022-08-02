@@ -1,4 +1,4 @@
-import { Mark } from '../entities/Mark';
+import { Mark } from '../Model';
 
 const STEP = 0.01; // 0.01秒毎にchannelDataをチェックする
 const ACCURANCY = 1000;

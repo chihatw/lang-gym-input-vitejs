@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Container } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { auth } from '../../repositories/firebase';
 import { State } from '../../Model';
 import { Action, ActionTypes } from '../../Update';
@@ -12,7 +12,9 @@ const TopPage = ({
   state: State;
   dispatch: React.Dispatch<Action>;
 }) => {
+  const { user } = state;
   const navigate = useNavigate();
+  if (!user) return <Navigate to='/login' />;
   return (
     <Container maxWidth='sm' sx={{ paddingTop: 2 }}>
       <div style={{ display: 'grid', rowGap: 16 }}>

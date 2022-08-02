@@ -10,7 +10,7 @@ import React, { useState } from 'react';
 import Speaker from '../../../../components/Speaker';
 import EditSentencePane from './EditSentencePane';
 
-import { State } from '../../../../Model';
+import { INITIAL_ARTICLE_SENTENCE_FORM, State } from '../../../../Model';
 import { Action } from '../../../../Update';
 
 const SentenceRow = ({
@@ -28,7 +28,8 @@ const SentenceRow = ({
   const sentence = articleSentences[sentenceIndex];
   const { line, original, chinese, accents, japanese } = sentence;
 
-  const articleSentenceForm = articleSentenceForms[sentenceIndex];
+  const articleSentenceForm =
+    articleSentenceForms[sentenceIndex] || INITIAL_ARTICLE_SENTENCE_FORM;
   const { sentences } = articleSentenceForm;
   return (
     <Card>

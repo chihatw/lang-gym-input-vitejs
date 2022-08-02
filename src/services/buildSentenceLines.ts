@@ -1,4 +1,4 @@
-import { Mark } from '../entities/Mark';
+import { Mark } from '../Model';
 
 export const buildSentenceLines = ({
   marks,

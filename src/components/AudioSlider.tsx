@@ -2,24 +2,24 @@ import PauseIcon from '@mui/icons-material/Pause';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { IconButton, Slider, useTheme } from '@mui/material';
 import React, { useRef, useState } from 'react';
-import { State } from '../../../../Model';
+import { createSourceNode } from '../services/utils';
 
-import { createSourceNode } from '../../../../services/utils';
-
-const AudioSliderBlob = ({
+const AudioSlider = ({
+  end,
   blob,
+  start,
   spacer,
-  duration,
-  state,
+  audioContext,
 }: {
-  state: State;
+  end: number;
   blob: Blob;
+  start: number;
   spacer: number;
-  duration: number;
+  audioContext: AudioContext;
 }) => {
-  const theme = useTheme();
+  const duration = end - start;
 
-  const { audioContext } = state;
+  const theme = useTheme();
 
   const [currentTime, setCurrentTime] = useState(0);
   const [sliderValue, setSliderValue] = useState(0);
@@ -29,12 +29,19 @@ const AudioSliderBlob = ({
   const spacerRef = useRef(0);
   const sourseNodeRef = useRef<AudioBufferSourceNode | null>(null);
   const startTimeRef = useRef(0);
-  const offsetTimeRef = useRef(0);
+  const offsetTimeRef = useRef(start); // 開始時間を start に合わせる
   const pausedRef = useRef(false);
 
   const play = async () => {
     if (!blob || !audioContext) return;
     const sourceNode = await createSourceNode(blob, audioContext);
+
+    let offset = offsetTimeRef.current; // 開始位置を秒で指定
+    // 再生開始時間が start, end の範囲外の場合、start の時間に合わせる
+    if (offset < start || offset > end) {
+      offset = start;
+      offsetTimeRef.current = start;
+    }
 
     // 停止された場合
     sourceNode.onended = () => {
@@ -44,12 +51,12 @@ const AudioSliderBlob = ({
       if (!pausedRef.current) {
         setCurrentTime(0);
         setSliderValue(0);
-        offsetTimeRef.current = 0;
+        offsetTimeRef.current = start;
       }
     };
 
-    const offset = offsetTimeRef.current; // 開始位置を秒で指定
-    sourceNode.start(0, offset);
+    const duration = end - offset;
+    sourceNode.start(0, offset, duration);
 
     setIsPlaying(true);
     sourseNodeRef.current = sourceNode;
@@ -59,15 +66,15 @@ const AudioSliderBlob = ({
   };
   const loop = () => {
     if (!audioContext) return;
-    const startTime = startTimeRef.current;
+
     const currentTime =
-      audioContext.currentTime - startTime + offsetTimeRef.current;
+      audioContext.currentTime - startTimeRef.current + offsetTimeRef.current;
 
     setCurrentTime(currentTime);
 
     // 間引かないと slider の描画が更新されない
     if (spacerRef.current % spacer === 0) {
-      setSliderValue(currentTimeToSliderValue(currentTime, duration));
+      setSliderValue(currentTimeToSliderValue(currentTime, duration, start));
     }
 
     rafIdRef.current = window.requestAnimationFrame(loop);
@@ -79,8 +86,10 @@ const AudioSliderBlob = ({
     sourceNode && sourceNode.stop(0);
     // AudioBufferSourceNodeは使い捨て
     sourseNodeRef.current = null;
+
     setIsPlaying(false);
     window.cancelAnimationFrame(rafIdRef.current);
+
     if (!audioContext) return;
     const offsetTime = audioContext.currentTime - startTimeRef.current;
     offsetTimeRef.current = offsetTime;
@@ -89,7 +98,7 @@ const AudioSliderBlob = ({
 
   const handleChangeSliderValue = (value: number) => {
     setSliderValue(value);
-    const currentTime = sliderValueToCurrentTime(value, duration);
+    const currentTime = sliderValueToCurrentTime(value, duration, start);
     setCurrentTime(currentTime);
     offsetTimeRef.current = currentTime;
   };
@@ -110,7 +119,10 @@ const AudioSliderBlob = ({
       >
         {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
       </IconButton>
-      <TimePane current={currentTime} duration={duration} />
+      <TimePane
+        current={Math.min(Math.max(currentTime - start, 0), duration)}
+        duration={duration}
+      />
       <Slider
         sx={{ paddingTop: '14px', marginRight: '6px' }}
         color='primary'
@@ -123,21 +135,23 @@ const AudioSliderBlob = ({
   );
 };
 
-export default AudioSliderBlob;
+export default AudioSlider;
 
 const currentTimeToSliderValue = (
   currentTime: number,
-  duration: number
+  duration: number,
+  start: number
 ): number => {
-  const value = duration ? (currentTime / duration) * 100 : 0;
+  const value = duration ? ((currentTime - start) / duration) * 100 : 0;
   return Math.min(Math.max(value, 0), 100);
 };
 
 const sliderValueToCurrentTime = (
   sliderValue: number,
-  duration: number
+  duration: number,
+  start?: number
 ): number => {
-  return (duration * sliderValue) / 100;
+  return (duration * sliderValue) / 100 + (start || 0);
 };
 
 const TimePane = ({

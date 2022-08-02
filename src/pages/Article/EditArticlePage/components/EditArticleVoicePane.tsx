@@ -2,14 +2,13 @@ import { useNavigate } from 'react-router-dom';
 import { getDownloadURL } from 'firebase/storage';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Mark } from '../../../../entities/Mark';
 import { buildPeaks } from '../../../../services/buildPeaks';
 import { buildMarks } from '../../../../services/buildMarks';
 import { deleteFile, uploadFile } from '../../../../repositories/file';
 import EditArticleVoicePaneComponent from './EditArticleVoicePaneComponent';
 import { useHandleArticles } from '../../../../services/useArticles';
 import { useHandleSentences } from '../../../../services/useSentences';
-import { Article, ArticleSentence, State } from '../../../../Model';
+import { Article, ArticleSentence, Mark, State } from '../../../../Model';
 import { Action } from '../../../../Update';
 
 const CANVAS_WIDTH = 550;
@@ -22,10 +21,8 @@ const EditArticleVoicePane = ({
   state: State;
   dispatch: React.Dispatch<Action>;
 }) => {
-  const { article, sentences } = state;
+  const { article, sentences, audioContext } = state;
   const navigate = useNavigate();
-
-  const audioContext = useMemo(() => new AudioContext(), []);
 
   const { updateArticle } = useHandleArticles();
   const { updateSentences } = useHandleSentences();
@@ -52,6 +49,7 @@ const EditArticleVoicePane = ({
    */
   useEffect(() => {
     if (
+      !audioContext ||
       !article.downloadURL ||
       !sentences.length ||
       sentences[0].article !== article.id ||
@@ -89,7 +87,7 @@ const EditArticleVoicePane = ({
       channelData: Float32Array | null;
     }) => {
       let _peaks: number[] = [];
-      if (!!_channelData) {
+      if (!!_channelData && !!audioContext) {
         const _scale =
           (CANVAS_WIDTH * audioContext.sampleRate) / _channelData.length;
         setScale(_scale);
@@ -117,7 +115,7 @@ const EditArticleVoicePane = ({
   );
 
   const handleChangeBlankDuration = (blankDuration: number) => {
-    if (!channelData) return;
+    if (!channelData || !audioContext) return;
     const marks = buildMarks({
       channelData,
       blankDuration,

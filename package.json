@@ -42,6 +42,7 @@
     "hinshi-texts": "^2.0.0",
     "kana-romaji-map": "^2.0.8",
     "mora2vowel": "^1.0.1",
+    "nanoid": "^4.0.0",
     "pitches-array2string": "^1.0.0",
     "prop-types": "^15.8.1",
     "ramda": "^0.28.0",

@@ -1,62 +1,35 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useReducer } from 'react';
 
 import AppRoutes from './routes/AppRoutes';
-import { AppContext, useApp } from './services/app';
-import { useQuestionGroups } from './services/useQuestionGroups';
-import { useQuestionSets } from './services/useQuestionSets';
-import { useQuestions } from './services/useQuestions';
-import { reducer } from './Update';
+
+import { ActionTypes, reducer } from './Update';
 import { INITIAL_STATE } from './Model';
+import { auth } from './repositories/firebase';
 
 const App = () => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
-  const [questionSetId, setQuestionSetId] = useState('');
-  const [questionGroupId, setQuestionGroupId] = useState('');
-  const [questionIds, setQuestionIds] = useState<string[]>([]);
-  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
-
-  const { initializing, user, createRhythmsQuestion } = useApp({
-    setQuestionSetId,
-  });
-
-  const { questionSet } = useQuestionSets({
-    questionSetId,
-    setQuestionGroupId,
-  });
-  const { questionGroup } = useQuestionGroups({
-    questionGroupId,
-    setQuestionIds,
-  });
-  const { questions } = useQuestions({ questionIds, questionGroupId });
 
   useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      dispatch({ type: ActionTypes.setUser, payload: user });
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const { audioContext } = state;
     const createAudioContext = () => {
       const factory = new AudioContextFactory();
       const _audioContext = factory.create();
-      setAudioContext(_audioContext);
+      dispatch({ type: ActionTypes.setAudioContext, payload: _audioContext });
       window.removeEventListener('click', createAudioContext);
     };
     if (!audioContext) {
       window.addEventListener('click', createAudioContext);
     }
-  }, [audioContext]);
+  }, [state]);
 
-  return (
-    <AppContext.Provider
-      value={{
-        user,
-        initializing,
-        questionSet,
-        questionGroup,
-        questions,
-        audioContext,
-        setQuestionSetId,
-        createRhythmsQuestion,
-      }}
-    >
-      <AppRoutes state={state} dispatch={dispatch} />
-    </AppContext.Provider>
-  );
+  return <AppRoutes state={state} dispatch={dispatch} />;
 };
 
 export default App;

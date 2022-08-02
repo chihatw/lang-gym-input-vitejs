@@ -11,7 +11,7 @@ import {
 import { Action, ActionTypes } from '../../../Update';
 import {
   buildAccents,
-  buildInitialValues,
+  buildAccentInitialValues,
   getQuiz,
 } from '../../../services/quiz';
 import { getUsers } from '../../../services/user';
@@ -46,27 +46,40 @@ const AccentQuizPage = ({
       if (!questionSetId) {
         dispatch({
           type: ActionTypes.setQuiz,
-          payload: { quiz: INITIAL_QUESTION_SET, users: _users, questions: [] },
+          payload: {
+            quiz: INITIAL_QUESTION_SET,
+            users: _users,
+            questions: [],
+            quizBlob: null,
+          },
         });
         return;
       }
       let _quiz = INITIAL_QUESTION_SET;
       let _questions: Question[] = [];
-
+      let _quizBlob: Blob | null = null;
       const memoQuiz = memo.quizzes[questionSetId];
       const memoQuestions = memo.questions[questionSetId];
-      if (memoQuiz && memoQuestions) {
+      const memoQuizBlob = memo.quizBlobs[questionSetId];
+      if (memoQuiz && memoQuestions && memoQuizBlob !== undefined) {
         _quiz = memoQuiz;
         _questions = memoQuestions;
+        _quizBlob = memoQuizBlob;
       } else {
-        const { quiz, questions } = await getQuiz(questionSetId);
+        const { quiz, questions, quizBlob } = await getQuiz(questionSetId);
         _quiz = quiz;
         _questions = questions;
+        _quizBlob = quizBlob;
       }
-      console.log({ _questions });
+
       dispatch({
         type: ActionTypes.setQuiz,
-        payload: { quiz: _quiz, users: _users, questions: _questions },
+        payload: {
+          quiz: _quiz,
+          users: _users,
+          questions: _questions,
+          quizBlob: _quizBlob,
+        },
       });
     };
     fetchData();
@@ -87,7 +100,7 @@ const AccentQuizPage = ({
     setTitle(title);
     setIsAnswered(answered);
     const { audios, japanese, accentString, disabledsArray } =
-      buildInitialValues(questions);
+      buildAccentInitialValues(questions);
     setAudios(audios);
     setJapanese(japanese);
     setAccentString(accentString);

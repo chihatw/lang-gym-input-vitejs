@@ -2,12 +2,12 @@ import React, { useEffect, useMemo, useState } from 'react';
 import CheckIcon from '@mui/icons-material/Check';
 import { Button } from '@mui/material';
 
-import { Mark } from '../../../../entities/Mark';
 import MarkTable from './MarkTable';
 import WaveCanvas from './WaveCanvas';
 import MarksSlider from './MarksSlider';
 import PlayButtonPane from './PlayButtonPane';
 import { buildSentenceLines } from '../../../../services/buildSentenceLines';
+import { Mark } from '../../../../Model';
 
 const WAVE_COLOR = 'pink';
 const HEIGHT = 100;

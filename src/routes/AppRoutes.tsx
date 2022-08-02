@@ -1,7 +1,5 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
-
-import { AppContext } from '../services/app';
 
 import TopPage from '../pages/TopPage';
 import SignInPage from '../pages/SignInPage';
@@ -14,7 +12,7 @@ import ArticleListPage from '../pages/Article/ArticleListPage';
 import EditArticlePage from '../pages/Article/EditArticlePage';
 
 import AccentQuizPage from '../pages/Quiz/AccentQuizPage';
-import RhythmsQuestionPage from '../pages/Quiz/rhythmsQuestion/RhythmsQuestionPage';
+import RhythmQuizPage from '../pages/Quiz/RhythmQuizPage';
 import QuizListPage from '../pages/Quiz/QuizListPage';
 import ArticlePage from '../pages/Article/ArticlePage';
 import EditArticleSentenceFormPane from '../pages/Article/EditArticleSentenceFormPage';
@@ -93,8 +91,8 @@ const AppRoutes = ({
 
       <Route path='/rhythmsQuestion/*'>
         <Route
-          path=':id'
-          element={<RhythmsQuestionPage state={state} dispatch={dispatch} />}
+          path=':questionSetId'
+          element={<RhythmQuizPage state={state} dispatch={dispatch} />}
         />
       </Route>
 
@@ -109,7 +107,7 @@ const AppRoutes = ({
       <Route
         path='/login'
         element={
-          <GuestRoute>
+          <GuestRoute state={state}>
             <SignInPage state={state} dispatch={dispatch} />
           </GuestRoute>
         }
@@ -119,8 +117,14 @@ const AppRoutes = ({
   );
 };
 
-const GuestRoute = ({ children }: { children: JSX.Element }) => {
-  const { user, initializing } = useContext(AppContext);
+const GuestRoute = ({
+  children,
+  state,
+}: {
+  state: State;
+  children: JSX.Element;
+}) => {
+  const { initializing, user } = state;
   return !initializing ? user ? <Navigate to='/' /> : children : <></>;
 };
 

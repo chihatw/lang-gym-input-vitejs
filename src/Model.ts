@@ -1,4 +1,20 @@
+import { User as FirebaseUser } from 'firebase/auth';
 import { FSentences } from 'fsentence-types';
+
+export type Mark = {
+  start: number;
+  end: number;
+};
+
+export type SpecialMora = 'っ' | 'ん' | 'ー' | 'ーん' | 'ーっ';
+
+export type Rhythm = {
+  mora: SpecialMora & '';
+  index: number;
+  syllable: string;
+  disabled: SpecialMora & '' & 'x';
+  longVowel?: string;
+};
 
 export type Audio = {
   start: number;
@@ -214,7 +230,10 @@ export const INITIAL_WORKOUT: Workout = {
 };
 
 export type State = {
+  user: FirebaseUser | null;
+  initializing: boolean;
   isFetching: boolean;
+  audioContext: AudioContext | null;
   users: User[];
   articleList: Article[];
   article: Article;
@@ -222,6 +241,7 @@ export type State = {
   articleSentenceForms: ArticleSentenceForm[];
   quizList: QuestionSet[];
   quiz: QuestionSet;
+  quizBlob: Blob | null;
   questions: Question[];
   workout: Workout;
   workoutList: Workout[];
@@ -231,12 +251,16 @@ export type State = {
     sentences: { [id: string]: ArticleSentence[] };
     articleSentenceForms: { [id: string]: ArticleSentenceForm[] };
     quizzes: { [id: string]: QuestionSet };
+    quizBlobs: { [id: string]: Blob | null };
     questions: { [id: string]: Question[] };
   };
 };
 
 export const INITIAL_STATE: State = {
+  user: null,
+  initializing: true,
   isFetching: false,
+  audioContext: null,
   users: [],
   article: INITIAL_ARTICLE,
   articleList: [],
@@ -244,6 +268,7 @@ export const INITIAL_STATE: State = {
   articleSentenceForms: [],
   quizList: [],
   quiz: INITIAL_QUESTION_SET,
+  quizBlob: null,
   questions: [],
   workout: INITIAL_WORKOUT,
   workoutList: [],
@@ -253,6 +278,7 @@ export const INITIAL_STATE: State = {
     sentences: {},
     articleSentenceForms: {},
     quizzes: {},
+    quizBlobs: {},
     questions: {},
   },
 };

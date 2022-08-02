@@ -4,7 +4,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import { IconButton, TableCell, TableRow } from '@mui/material';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { State } from '../../../Model';
+import { QuestionSet, State } from '../../../Model';
+import { deleteQuiz } from '../../../services/quiz';
 import { Action, ActionTypes } from '../../../Update';
 
 const QuizRow = ({
@@ -19,7 +20,8 @@ const QuizRow = ({
   const navigate = useNavigate();
   const { quizList } = state;
   const questionSet = quizList[index];
-  const { userDisplayname, title, answered, type, id } = questionSet;
+  const { userDisplayname, title, answered, type, id, questionGroups } =
+    questionSet;
 
   const handleOpenEditPage = () => {
     dispatch({ type: ActionTypes.startFetching });
@@ -35,7 +37,8 @@ const QuizRow = ({
   };
 
   const handleDelete = () => {
-    // todo
+    dispatch({ type: ActionTypes.deleteQuiz, payload: id });
+    deleteQuiz(id, questionGroups[0]);
   };
 
   return (

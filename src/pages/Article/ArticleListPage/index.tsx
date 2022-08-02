@@ -50,6 +50,7 @@ const ArticleListPage = ({
     });
   };
 
+  // debug
   const handleClickDelete = async ({
     id,
     title,

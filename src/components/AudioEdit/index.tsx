@@ -13,11 +13,8 @@ import {
   IconButton,
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
+import { Mark } from '../../Model';
 
-type Mark = {
-  start: number;
-  end: number;
-};
 const AudioEdit: React.FC<{
   downloadURL: string;
   marks: Mark[];

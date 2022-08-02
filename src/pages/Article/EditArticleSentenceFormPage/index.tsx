@@ -1,8 +1,7 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Navigate, useMatch } from 'react-router-dom';
 import TableLayout from '../../../components/templates/TableLayout';
 import { State } from '../../../Model';
-import { AppContext } from '../../../services/app';
 import { Action } from '../../../Update';
 import SentenceForm from './components/SentenceForm';
 
