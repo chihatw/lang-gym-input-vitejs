@@ -4,15 +4,20 @@ import { Checkbox } from '@mui/material';
 import { PitchLine } from '@chihatw/pitch-line.pitch-line';
 import string2PitchesArray from 'string2pitches-array';
 
-import { Audio } from '../../../../../entities/Audio';
-import Speaker from '../../../../../components/Speaker';
+import Speaker from '../../../components/Speaker';
+import { Audio } from '../../../Model';
 
-const AccentsMonitor: React.FC<{
+const AccentsMonitor = ({
+  accentString,
+  audios,
+  disabledsArray,
+  onChangeDisabled,
+}: {
   audios: Audio[];
   accentString: string;
   disabledsArray: number[][];
   onChangeDisabled: (sentenceIndex: number, wordIndex: number) => void;
-}> = ({ accentString, audios, disabledsArray, onChangeDisabled }) => {
+}) => {
   const lines = accentString.split('\n');
   return (
     <div style={{ fontSize: 12, color: '#555' }}>

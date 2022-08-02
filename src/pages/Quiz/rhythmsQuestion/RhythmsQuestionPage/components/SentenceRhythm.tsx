@@ -5,16 +5,17 @@ import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import WordRhythm from './WordRhythm';
 import { RhythmsQuestionPageContext } from '../services/rhythmsQuestionPage';
 import Speaker from '../../../../../components/Speaker';
-import {
-  Question,
-  useHandleQuestions,
-} from '../../../../../services/useQuestions';
+import { useHandleQuestions } from '../../../../../services/useQuestions';
 import EditIcon from '@mui/icons-material/Edit';
+import { Question } from '../../../../../Model';
 
-const SentenceRhythm: React.FC<{
+const SentenceRhythm = ({
+  sentenceIndex,
+  question,
+}: {
   question: Question | null;
   sentenceIndex: number;
-}> = ({ sentenceIndex, question }) => {
+}) => {
   const { sentenceRhythmArray } = useContext(RhythmsQuestionPageContext);
   const sentenceRhythm = sentenceRhythmArray[sentenceIndex];
   return (

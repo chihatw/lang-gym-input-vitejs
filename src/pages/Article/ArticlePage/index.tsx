@@ -1,18 +1,16 @@
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 
 import ArticlePageComponent from './components/ArticlePageComponent';
 import { useHandleQuestions } from '../../../services/useQuestions';
-import {
-  QuestionGroup,
-  useHandleQuestionGroups,
-} from '../../../services/useQuestionGroups';
+import { useHandleQuestionGroups } from '../../../services/useQuestionGroups';
 import { useHandleQuestionSets } from '../../../services/useQuestionSets';
 import { AppContext } from '../../../services/app';
 import {
   ArticleSentence,
   ArticleSentenceForm,
   INITIAL_ARTICLE,
+  QuestionGroup,
   State,
 } from '../../../Model';
 import { Action, ActionTypes } from '../../../Update';

@@ -4,25 +4,22 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../repositories/firebase';
 import { getMoraString, buildSentenceRhythm } from '../entities/Rhythm';
-import {
-  INITIAL_QUESTION_GROUP,
-  QuestionGroup,
-  useHandleQuestionGroups,
-} from './useQuestionGroups';
-import { Question, useHandleQuestions } from './useQuestions';
-import {
-  INITIAL_QUESTION_SET,
-  QuestionSet,
-  useHandleQuestionSets,
-} from './useQuestionSets';
+import { useHandleQuestionGroups } from './useQuestionGroups';
+import { useHandleQuestions } from './useQuestions';
+import { useHandleQuestionSets } from './useQuestionSets';
 
-import { Accent } from '../Model';
+import {
+  Accent,
+  INITIAL_QUESTION_GROUP,
+  INITIAL_QUESTION_SET,
+  Question,
+  QuestionGroup,
+  QuestionSet,
+} from '../Model';
 
 export const AppContext = createContext<{
   user: FirebaseUser | null;
   initializing: boolean;
-  accentsQuestionSets: QuestionSet[];
-  rhythmsQuestionSets: QuestionSet[];
   questionSet: QuestionSet;
   questionGroup: QuestionGroup;
   questions: Question[];
@@ -44,8 +41,6 @@ export const AppContext = createContext<{
 }>({
   user: null,
   initializing: true,
-  accentsQuestionSets: [],
-  rhythmsQuestionSets: [],
   questionSet: INITIAL_QUESTION_SET,
   questionGroup: INITIAL_QUESTION_GROUP,
   questions: [],

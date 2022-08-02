@@ -1,6 +1,6 @@
 import getMoras from 'get-moras';
 import KANA_ROMAJI_MAP from 'kana-romaji-map';
-import { Accent } from './Accent';
+import { Accent } from '../Model';
 
 type SpecialMora = 'っ' | 'ん' | 'ー' | 'ーん' | 'ーっ';
 

@@ -9,9 +9,7 @@ import {
 } from '@mui/material';
 import React from 'react';
 
-import { Audio } from '../../../../../entities/Audio';
-import { State, User } from '../../../../../Model';
-import { Question } from '../../../../../services/useQuestions';
+import { Audio, Question, State, User } from '../../../../../Model';
 import { Action } from '../../../../../Update';
 
 import RhythmsMonitor from './RhythmsMonitor';

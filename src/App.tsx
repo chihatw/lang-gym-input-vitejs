@@ -19,8 +19,10 @@ const App = () => {
     setQuestionSetId,
   });
 
-  const { accentsQuestionSets, rhythmsQuestionSets, questionSet } =
-    useQuestionSets({ questionSetId, setQuestionGroupId });
+  const { questionSet } = useQuestionSets({
+    questionSetId,
+    setQuestionGroupId,
+  });
   const { questionGroup } = useQuestionGroups({
     questionGroupId,
     setQuestionIds,
@@ -44,8 +46,6 @@ const App = () => {
       value={{
         user,
         initializing,
-        accentsQuestionSets,
-        rhythmsQuestionSets,
         questionSet,
         questionGroup,
         questions,

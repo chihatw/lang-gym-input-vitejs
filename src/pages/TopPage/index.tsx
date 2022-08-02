@@ -36,18 +36,11 @@ const TopPage = ({
         <Button
           variant='contained'
           onClick={() => {
+            dispatch({ type: ActionTypes.startFetching });
             navigate('accentsQuestion/list');
           }}
         >
-          アクセント問題一覧
-        </Button>
-        <Button
-          variant='contained'
-          onClick={() => {
-            navigate('rhythmsQuestion/list');
-          }}
-        >
-          リズム問題一覧
+          問題一覧
         </Button>
         <Button
           variant='contained'

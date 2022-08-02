@@ -2,9 +2,9 @@
 import { Unsubscribe } from 'firebase/auth';
 import { DocumentData, QueryConstraint, where } from 'firebase/firestore';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { buildAccentString } from '../entities/Accent';
+
 import { buildSentenceRhythm, getMoraString } from '../entities/Rhythm';
-import { Accent, Tags } from '../Model';
+import { Accent, INITIAL_QUESTION, Question } from '../Model';
 
 import { db } from '../repositories/firebase';
 import {
@@ -14,36 +14,7 @@ import {
   snapshotCollection,
   updateDocument,
 } from '../repositories/utils';
-
-export const INITIAL_QUESTION = {
-  id: '',
-  tags: {},
-  memo: '',
-  note: '',
-  type: 'describe',
-  answers: [''],
-  choices: [],
-  feedback: '',
-  question: '',
-  createdAt: 0,
-  answerExample: '',
-  questionGroup: '',
-};
-
-export type Question = {
-  id: string;
-  answerExample: string;
-  answers: string[];
-  choices: string[];
-  createdAt: number;
-  feedback: string;
-  memo: string;
-  note: string;
-  question: string;
-  questionGroup: string;
-  tags: Tags;
-  type: string;
-};
+import { buildAccentString } from './quiz';
 
 const COLLECTION = 'questions';
 

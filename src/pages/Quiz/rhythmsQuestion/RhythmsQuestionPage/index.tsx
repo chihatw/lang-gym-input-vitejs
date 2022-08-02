@@ -4,16 +4,10 @@ import { RhythmsQuestionPageContext } from './services/rhythmsQuestionPage';
 import RhythmsQuestionForm from './components/RhythmsQuestionForm';
 import TableLayout from '../../../../components/templates/TableLayout';
 import { AppContext } from '../../../../services/app';
-import {
-  QuestionSet,
-  useHandleQuestionSets,
-} from '../../../../services/useQuestionSets';
+import { useHandleQuestionSets } from '../../../../services/useQuestionSets';
 import { useHandleQuestionGroups } from '../../../../services/useQuestionGroups';
-import {
-  Question,
-  useHandleQuestions,
-} from '../../../../services/useQuestions';
-import { Audio } from '../../../../entities/Audio';
+import { useHandleQuestions } from '../../../../services/useQuestions';
+
 import {
   buildRhythmString,
   buildSentenceRhythm,
@@ -21,7 +15,7 @@ import {
   SentenceRhythm,
   WordRhythm,
 } from '../../../../entities/Rhythm';
-import { State } from '../../../../Model';
+import { Audio, Question, QuestionSet, State } from '../../../../Model';
 import { Action } from '../../../../Update';
 
 const RhythmsQuestionPage = ({

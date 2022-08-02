@@ -4,15 +4,19 @@ import {
   ArticleSentence,
   ArticleSentenceForm,
   INITIAL_ARTICLE,
+  Question,
+  QuestionSet,
   State,
   User,
   Workout,
 } from './Model';
 
 export const ActionTypes = {
+  setQuiz: 'setQuiz',
   setUsers: 'setUsers',
   setArticle: 'setArticle',
   setWorkout: 'setWorkout',
+  setQuizList: 'setQuizList',
   startFetching: 'startFetching',
   setArticleList: 'setArticleList',
   setWorkoutList: 'setWorkoutList',
@@ -27,7 +31,9 @@ export type Action = {
     | User[]
     | Article[]
     | Workout[]
+    | QuestionSet[]
     | { workout: Workout; users: User[] }
+    | { quiz: QuestionSet; users: User[]; questions: Question[] }
     | {
         article: Article;
         sentences: ArticleSentence[];
@@ -64,6 +70,13 @@ export const reducer = (state: State, action: Action): State => {
         R.assocPath<Article[], State>(['articleList'], articleList)
       )(state);
     }
+    case ActionTypes.setQuizList: {
+      const quizList = payload as QuestionSet[];
+      return R.compose(
+        R.assocPath<boolean, State>(['isFetching'], false),
+        R.assocPath<QuestionSet[], State>(['quizList'], quizList)
+      )(state);
+    }
     case ActionTypes.setUsers: {
       const users = payload as User[];
       return R.compose(
@@ -93,6 +106,24 @@ export const reducer = (state: State, action: Action): State => {
         R.assocPath<ArticleSentenceForm[], State>(
           ['memo', 'articleSentenceForms', article.id],
           articleSentenceForms
+        )
+      )(state);
+    }
+    case ActionTypes.setQuiz: {
+      const { quiz, users, questions } = payload as {
+        quiz: QuestionSet;
+        users: User[];
+        questions: Question[];
+      };
+      return R.compose(
+        R.assocPath<boolean, State>(['isFetching'], false),
+        R.assocPath<User[], State>(['users'], users),
+        R.assocPath<QuestionSet, State>(['quiz'], quiz),
+        R.assocPath<QuestionSet, State>(['memo', 'quizzes', quiz.id], quiz),
+        R.assocPath<Question[], State>(['questions'], questions),
+        R.assocPath<Question[], State>(
+          ['memo', 'questions', quiz.id],
+          questions
         )
       )(state);
     }

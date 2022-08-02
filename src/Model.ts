@@ -1,5 +1,11 @@
 import { FSentences } from 'fsentence-types';
 
+export type Audio = {
+  start: number;
+  end: number;
+  downloadURL: string;
+};
+
 export type Article = {
   id: string;
   uid: string;
@@ -91,6 +97,86 @@ export const INITIAL_ARTICLE_SENTENCE_FORM: ArticleSentenceForm = {
   sentences: {},
 };
 
+export type QuestionSet = {
+  id: string;
+  uid: string;
+  type: 'articleRhythms' | 'general' | 'articleAccents';
+  title: string;
+  answered: boolean;
+  createdAt: number;
+  unlockedAt: number;
+  questionCount: number;
+  hasFreeAnswers: boolean;
+  questionGroups: string[];
+  userDisplayname: string;
+};
+
+export const INITIAL_QUESTION_SET: QuestionSet = {
+  id: '',
+  uid: '',
+  type: 'articleAccents',
+  title: '',
+  answered: false,
+  createdAt: 0,
+  unlockedAt: 0,
+  questionCount: 0,
+  hasFreeAnswers: false,
+  questionGroups: [],
+  userDisplayname: '',
+};
+
+export type QuestionGroup = {
+  id: string;
+  tags: Tags; // will delete
+  example: string;
+  feedback: string;
+  questions: string[];
+  createdAt: number;
+  explanation: string;
+  hasFreeAnswers: boolean;
+};
+
+export const INITIAL_QUESTION_GROUP: QuestionGroup = {
+  id: '',
+  tags: {},
+  example: '',
+  feedback: '',
+  questions: [],
+  createdAt: 0,
+  explanation: '',
+  hasFreeAnswers: false,
+};
+
+export type Question = {
+  id: string;
+  answerExample: string;
+  answers: string[];
+  choices: string[];
+  createdAt: number;
+  feedback: string;
+  memo: string;
+  note: string;
+  question: string;
+  questionGroup: string;
+  tags: Tags;
+  type: string;
+};
+
+export const INITIAL_QUESTION: Question = {
+  id: '',
+  tags: {},
+  memo: '',
+  note: '',
+  type: 'describe',
+  answers: [''],
+  choices: [],
+  feedback: '',
+  question: '',
+  createdAt: 0,
+  answerExample: '',
+  questionGroup: '',
+};
+
 export type User = {
   id: string;
   createdAt: number;
@@ -130,10 +216,13 @@ export const INITIAL_WORKOUT: Workout = {
 export type State = {
   isFetching: boolean;
   users: User[];
-  article: Article;
   articleList: Article[];
+  article: Article;
   sentences: ArticleSentence[];
   articleSentenceForms: ArticleSentenceForm[];
+  quizList: QuestionSet[];
+  quiz: QuestionSet;
+  questions: Question[];
   workout: Workout;
   workoutList: Workout[];
   memo: {
@@ -141,6 +230,8 @@ export type State = {
     workouts: { [id: string]: Workout };
     sentences: { [id: string]: ArticleSentence[] };
     articleSentenceForms: { [id: string]: ArticleSentenceForm[] };
+    quizzes: { [id: string]: QuestionSet };
+    questions: { [id: string]: Question[] };
   };
 };
 
@@ -151,6 +242,9 @@ export const INITIAL_STATE: State = {
   articleList: [],
   sentences: [],
   articleSentenceForms: [],
+  quizList: [],
+  quiz: INITIAL_QUESTION_SET,
+  questions: [],
   workout: INITIAL_WORKOUT,
   workoutList: [],
   memo: {
@@ -158,5 +252,7 @@ export const INITIAL_STATE: State = {
     workouts: {},
     sentences: {},
     articleSentenceForms: {},
+    quizzes: {},
+    questions: {},
   },
 };

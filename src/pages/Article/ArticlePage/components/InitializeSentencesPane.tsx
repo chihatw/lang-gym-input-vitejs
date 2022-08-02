@@ -8,7 +8,6 @@ import {
   kanaAccentsStr2Kana,
   kanaAccentsStr2AccentsString,
 } from '../../../../services/useSentences';
-import { buildAccents } from '../../../../entities/Accent';
 import { buildTags } from '../../../../entities/Tags';
 import {
   Accent,
@@ -16,6 +15,7 @@ import {
   ArticleSentence,
   INITIAL_ARTICLE_SENTENCE,
 } from '../../../../Model';
+import { buildAccents } from '../../../../services/quiz';
 
 const InitializeSentencesPane = ({ article }: { article: Article }) => {
   const { createSentences } = useHandleSentences();

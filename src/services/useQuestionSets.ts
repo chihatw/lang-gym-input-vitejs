@@ -15,35 +15,12 @@ import {
   snapshotCollection,
   updateDocument,
 } from '../repositories/utils';
-import { Accent, ArticleSentence } from '../Model';
-
-export type QuestionSet = {
-  id: string;
-  uid: string;
-  type: 'articleRhythms' | 'general' | 'articleAccents';
-  title: string;
-  answered: boolean;
-  createdAt: number;
-  unlockedAt: number;
-  questionCount: number;
-  hasFreeAnswers: boolean;
-  questionGroups: string[];
-  userDisplayname: string;
-};
-
-export const INITIAL_QUESTION_SET: QuestionSet = {
-  id: '',
-  uid: '',
-  type: 'articleAccents',
-  title: '',
-  answered: false,
-  createdAt: 0,
-  unlockedAt: 0,
-  questionCount: 0,
-  hasFreeAnswers: false,
-  questionGroups: [],
-  userDisplayname: '',
-};
+import {
+  Accent,
+  ArticleSentence,
+  INITIAL_QUESTION_SET,
+  QuestionSet,
+} from '../Model';
 
 const COLLECTION = 'questionSets';
 

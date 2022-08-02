@@ -1,6 +1,6 @@
 import { Unsubscribe, DocumentData } from '@firebase/firestore';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Tags } from '../Model';
+import { INITIAL_QUESTION_GROUP, QuestionGroup } from '../Model';
 import { db } from '../repositories/firebase';
 import {
   addDocument,
@@ -9,28 +9,6 @@ import {
   snapshotDocument,
   getDocument,
 } from '../repositories/utils';
-
-export type QuestionGroup = {
-  id: string;
-  tags: Tags; // will delete
-  example: string;
-  feedback: string;
-  questions: string[];
-  createdAt: number;
-  explanation: string;
-  hasFreeAnswers: boolean;
-};
-
-export const INITIAL_QUESTION_GROUP: QuestionGroup = {
-  id: '',
-  tags: {},
-  example: '',
-  feedback: '',
-  questions: [],
-  createdAt: 0,
-  explanation: '',
-  hasFreeAnswers: false,
-};
 
 const COLLECTION = 'questionGroups';
 

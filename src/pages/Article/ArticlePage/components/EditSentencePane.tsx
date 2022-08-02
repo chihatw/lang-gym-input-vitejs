@@ -7,11 +7,12 @@ import {
   kanaAccentsStr2Kana,
   useHandleSentences,
 } from '../../../../services/useSentences';
-import { buildAccents, buildAccentString } from '../../../../entities/Accent';
+
 import { buildTags } from '../../../../entities/Tags';
 import Speaker from '../../../../components/Speaker';
 import { ArticleSentence, State } from '../../../../Model';
 import { Action } from '../../../../Update';
+import { buildAccents, buildAccentString } from '../../../../services/quiz';
 
 const EditSentencePane = ({
   state,

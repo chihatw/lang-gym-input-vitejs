@@ -1,4 +1,4 @@
-import { Accent } from './Accent';
+import { Accent } from '../Model';
 
 export type QuizInputs = {
   [key: string]: JSON | string | string[][] | Accent[];

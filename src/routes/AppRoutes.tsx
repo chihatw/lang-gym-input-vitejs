@@ -13,10 +13,9 @@ import WorkoutsPage from '../pages/Workout/WorkoutsPage';
 import ArticleListPage from '../pages/Article/ArticleListPage';
 import EditArticlePage from '../pages/Article/EditArticlePage';
 
-import AccentsQuestionPage from '../pages/Question/accentsQuestion/AccentsQuestionPage';
-import RhythmsQuestionPage from '../pages/Question/rhythmsQuestion/RhythmsQuestionPage';
-import AccentsQuestionListPage from '../pages/Question/accentsQuestion/AccentsQuestionListPage';
-import RhythmsQuestionListPage from '../pages/Question/rhythmsQuestion/RhythmsQuestionListPage';
+import AccentQuizPage from '../pages/Quiz/AccentQuizPage';
+import RhythmsQuestionPage from '../pages/Quiz/rhythmsQuestion/RhythmsQuestionPage';
+import QuizListPage from '../pages/Quiz/QuizListPage';
 import ArticlePage from '../pages/Article/ArticlePage';
 import EditArticleSentenceFormPane from '../pages/Article/EditArticleSentenceFormPage';
 import PrintPitchesPage from '../pages/Article/PrintPitchesPage';
@@ -82,25 +81,17 @@ const AppRoutes = ({
       <Route path='/accentsQuestion/*'>
         <Route
           path='list'
-          element={
-            <AccentsQuestionListPage state={state} dispatch={dispatch} />
-          }
+          element={<QuizListPage state={state} dispatch={dispatch} />}
         />
         <Route
-          path=':id'
-          element={<AccentsQuestionPage state={state} dispatch={dispatch} />}
+          path=':questionSetId'
+          element={<AccentQuizPage state={state} dispatch={dispatch} />}
         />
       </Route>
 
       {/* rhythmsQuestion */}
 
       <Route path='/rhythmsQuestion/*'>
-        <Route
-          path='list'
-          element={
-            <RhythmsQuestionListPage state={state} dispatch={dispatch} />
-          }
-        />
         <Route
           path=':id'
           element={<RhythmsQuestionPage state={state} dispatch={dispatch} />}
