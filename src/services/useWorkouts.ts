@@ -1,92 +1,15 @@
-import {
-  limit,
-  orderBy,
-  collection,
-  Unsubscribe,
-  DocumentData,
-  QueryConstraint,
-} from 'firebase/firestore';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { WorkoutItem } from 'workout-items';
+import { DocumentData } from 'firebase/firestore';
+import { useCallback, useMemo } from 'react';
+import { Workout } from '../Model';
 import { db } from '../repositories/firebase';
 import {
   addDocument,
   deleteDocument,
   updateDocument,
-  snapshotCollection,
 } from '../repositories/utils';
 
-export type Workout = {
-  id: string;
-  beatCount: number;
-  createdAt: number;
-  createdAtStr: string;
-  dateId: string;
-  hidden: boolean;
-  items: WorkoutItem[];
-  label: string;
-  uid: string;
-};
-
-export const INITIAL_WORKOUT: Workout = {
-  id: '',
-  beatCount: 0,
-  createdAt: 0,
-  createdAtStr: '',
-  dateId: '',
-  hidden: true,
-  items: [],
-  label: '',
-  uid: '',
-};
-
 const COLLECTION = 'workouts';
-const colRef = collection(db, COLLECTION);
 
-export const useWorkouts = ({ workoutId }: { workoutId: string }) => {
-  const [workout, setWorkout] = useState(INITIAL_WORKOUT);
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
-
-  useEffect(() => {
-    const workout = workouts.filter((workout) => workout.id === workoutId)[0];
-    setWorkout(workout || INITIAL_WORKOUT);
-  }, [workoutId, workouts]);
-
-  const _snapshotCollection = useMemo(
-    () =>
-      function <T>({
-        queries,
-        setValues,
-        buildValue,
-      }: {
-        queries?: QueryConstraint[];
-        setValues: (value: T[]) => void;
-        buildValue: (value: DocumentData) => T;
-      }): Unsubscribe {
-        return snapshotCollection({
-          db,
-          colId: COLLECTION,
-          queries,
-          setValues,
-          buildValue,
-        });
-      },
-    []
-  );
-
-  useEffect(() => {
-    const unsub = _snapshotCollection({
-      queries: [orderBy('createdAt', 'desc'), limit(6)],
-      setValues: setWorkouts,
-      buildValue: buildWorkout,
-    });
-    return () => {
-      unsub();
-    };
-  }, []);
-
-  return { workout, workouts };
-};
 export const useHandleWorkouts = () => {
   const _addDocument = useMemo(
     () =>

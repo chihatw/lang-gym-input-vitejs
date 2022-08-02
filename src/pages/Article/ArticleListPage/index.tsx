@@ -1,15 +1,31 @@
-import { useNavigate } from 'react-router-dom';
-import React, { useContext } from 'react';
-
-import { AppContext } from '../../../services/app';
+import React, { useEffect } from 'react';
 import { deleteFile } from '../../../repositories/file';
 import { useHandleSentences } from '../../../services/useSentences';
 import ArticleListPageComponent from './components/ArticleListPageComponent';
-import { Article, useHandleArticles } from '../../../services/useArticles';
+import { useHandleArticles } from '../../../services/useArticles';
+import { Article, State } from '../../../Model';
+import { Action, ActionTypes } from '../../../Update';
+import { getArticles } from '../../../services/article';
 
-const ArticleListPage = () => {
-  const navigate = useNavigate();
-  const { articles, setArticleId } = useContext(AppContext);
+const ArticleListPage = ({
+  state,
+  dispatch,
+}: {
+  state: State;
+  dispatch: React.Dispatch<Action>;
+}) => {
+  const { isFetching, articleList } = state;
+  useEffect(() => {
+    if (!isFetching) return;
+    const fetchData = async () => {
+      const _articleList = !!articleList.length
+        ? articleList
+        : await getArticles();
+      dispatch({ type: ActionTypes.setArticleList, payload: _articleList });
+    };
+    fetchData();
+  }, [isFetching]);
+
   const { updateArticle, deleteArticle } = useHandleArticles();
   const { deleteSentences } = useHandleSentences();
 
@@ -55,34 +71,14 @@ const ArticleListPage = () => {
     }
   };
 
-  const openPage = ({
-    path,
-    article: _article,
-  }: {
-    path: string;
-    article: Article;
-  }) => {
-    setArticleId(_article.id);
-    setTimeout(() => {
-      navigate(`/article/${path}`);
-      // article が設定されるのを待つ
-    }, 100);
-  };
-
-  const handleClickOpenCreateArticlePage = () => {
-    setArticleId('');
-    setTimeout(() => navigate('/article'), 100);
-  };
-
   return (
     <ArticleListPageComponent
-      articles={articles}
-      openPage={openPage}
+      state={state}
+      dispatch={dispatch}
       handleClickDelete={handleClickDelete}
       handleClickShowAccents={handleClickShowAccents}
       handleClickShowParses={handleClickShowParses}
       handleClickShowRecButton={handleClickShowRecButton}
-      handleClickOpenCreateArticlePage={handleClickOpenCreateArticlePage}
     />
   );
 };

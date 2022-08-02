@@ -12,20 +12,35 @@ import {
   TableCell,
   TableRow,
 } from '@mui/material';
-import React, { useContext, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AppContext } from '../../../services/app';
-import { useHandleWorkouts, Workout } from '../../../services/useWorkouts';
+import { useHandleWorkouts } from '../../../services/useWorkouts';
+import { State, Workout } from '../../../Model';
+import { Action, ActionTypes } from '../../../Update';
+import { getWorkouts } from '../../../services/workout';
 
-const WorkoutsPage = () => {
+const WorkoutsPage = ({
+  state,
+  dispatch,
+}: {
+  state: State;
+  dispatch: React.Dispatch<Action>;
+}) => {
+  const { isFetching, workoutList } = state;
+  useEffect(() => {
+    if (!isFetching) return;
+    const fetchData = async () => {
+      const _workoutList = workoutList.length
+        ? workoutList
+        : await getWorkouts();
+      dispatch({ type: ActionTypes.setWorkoutList, payload: _workoutList });
+    };
+    fetchData();
+  }, [isFetching]);
   const navigate = useNavigate();
-  const { workouts, setWorkoutId } = useContext(AppContext);
 
   const handleClickCreate = () => {
-    setWorkoutId('');
-    setTimeout(() => {
-      navigate('/workout');
-    }, 150);
+    navigate('/workout');
   };
 
   return (
@@ -42,8 +57,13 @@ const WorkoutsPage = () => {
         </div>
         <Table size='small'>
           <TableBody>
-            {workouts.map((workout, index) => (
-              <WorkoutRow key={index} workout={workout} />
+            {workoutList.map((workout, index) => (
+              <WorkoutRow
+                key={index}
+                workout={workout}
+                state={state}
+                dispatch={dispatch}
+              />
             ))}
           </TableBody>
         </Table>
@@ -54,9 +74,18 @@ const WorkoutsPage = () => {
 
 export default WorkoutsPage;
 
-const WorkoutRow = ({ workout }: { workout: Workout }) => {
+const WorkoutRow = ({
+  workout,
+  state,
+  dispatch,
+}: {
+  state: State;
+  dispatch: React.Dispatch<Action>;
+  workout: Workout;
+}) => {
+  const { users } = state;
   const navigate = useNavigate();
-  const { users, setWorkoutId } = useContext(AppContext);
+
   const { deleteWorkout, updateWorkout } = useHandleWorkouts();
   const user = useMemo(
     () => users.filter((user) => user.id === workout.uid)[0],
@@ -64,8 +93,8 @@ const WorkoutRow = ({ workout }: { workout: Workout }) => {
   );
 
   const handleClickEdit = () => {
-    setWorkoutId(workout.id);
-    navigate('/workout');
+    dispatch({ type: ActionTypes.startFetching });
+    navigate(`/workout/${workout.id}`);
   };
   const handleClickDelete = () => {
     deleteWorkout(workout.id);

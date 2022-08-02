@@ -1,5 +1,5 @@
-import { Navigate, useNavigate } from 'react-router-dom';
-import React, { useContext, useState } from 'react';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react';
 
 import ArticlePageComponent from './components/ArticlePageComponent';
 import { useHandleQuestions } from '../../../services/useQuestions';
@@ -9,8 +9,75 @@ import {
 } from '../../../services/useQuestionGroups';
 import { useHandleQuestionSets } from '../../../services/useQuestionSets';
 import { AppContext } from '../../../services/app';
+import {
+  ArticleSentence,
+  ArticleSentenceForm,
+  INITIAL_ARTICLE,
+  State,
+} from '../../../Model';
+import { Action, ActionTypes } from '../../../Update';
+import { getArticle } from '../../../services/article';
 
-const ArticlePage = () => {
+const ArticlePage = ({
+  state,
+  dispatch,
+}: {
+  state: State;
+  dispatch: React.Dispatch<Action>;
+}) => {
+  const { articleId } = useParams();
+
+  const { isFetching, memo, article, sentences } = state;
+
+  useEffect(() => {
+    if (!isFetching) return;
+
+    if (!articleId) {
+      dispatch({
+        type: ActionTypes.setArticle,
+        payload: {
+          article: INITIAL_ARTICLE,
+          sentences: [],
+          articleSentenceForms: [],
+        },
+      });
+      return;
+    }
+
+    const fetchData = async () => {
+      let _article = INITIAL_ARTICLE;
+      let _sentences: ArticleSentence[] = [];
+      let _articleSentenceForms: ArticleSentenceForm[] = [];
+
+      const memoArticle = memo.articles[articleId];
+      const memoSentences = memo.sentences[articleId];
+      const memoArticleSentenceForms = memo.articleSentenceForms[articleId];
+
+      if (memoArticle && memoSentences && memoArticleSentenceForms) {
+        _article = memoArticle;
+        _sentences = memoSentences;
+        _articleSentenceForms = memoArticleSentenceForms;
+      } else {
+        const { article, sentences, articleSentenceForms } = await getArticle(
+          articleId
+        );
+        _article = article;
+        _sentences = sentences;
+        _articleSentenceForms = articleSentenceForms;
+      }
+
+      dispatch({
+        type: ActionTypes.setArticle,
+        payload: {
+          article: _article,
+          sentences: _sentences,
+          articleSentenceForms: _articleSentenceForms,
+        },
+      });
+    };
+    fetchData();
+  }, [isFetching, articleId]);
+
   const navigate = useNavigate();
   const { setQuestionSetId } = useContext(AppContext);
 
@@ -21,54 +88,12 @@ const ArticlePage = () => {
   const { createAccentsQuestionSet, createRhythmQuestionSet } =
     useHandleQuestionSets();
 
-  const { article, sentences, sentenceParseNews } = useContext(AppContext);
-
-  const [isSm, setIsSm] = useState(true);
-
-  const handleClickWidthButton = () => {
-    setIsSm(!isSm);
-  };
-
-  const copySentenceParseNew = async (index: number) => {
-    const sentence = sentences[index];
-    const sentenceParseNew = sentenceParseNews[index];
-    const item: {
-      line: number;
-      japanese: string;
-      chinese: string;
-      units: string;
-      words: string;
-      branches: string;
-      sentences: string;
-      sentenceArrays: string;
-      branchInvisibilities: string;
-      commentInvisibilities: string;
-    } = {
-      line: sentenceParseNew.line + 1,
-      japanese: sentence.japanese,
-      chinese: sentence.chinese,
-      units: JSON.stringify(sentenceParseNew.units),
-      words: JSON.stringify(sentenceParseNew.words),
-      branches: JSON.stringify(sentenceParseNew.branches),
-      sentences: JSON.stringify(sentenceParseNew.sentences),
-      sentenceArrays: JSON.stringify(sentenceParseNew.sentenceArrays),
-      branchInvisibilities: JSON.stringify(
-        sentenceParseNew.branchInvisibilities
-      ),
-      commentInvisibilities: JSON.stringify(
-        sentenceParseNew.commentInvisibilities
-      ),
-    };
-    await navigator.clipboard.writeText(JSON.stringify(item));
-    console.log('copied!!');
-  };
-
   const createAccentsQuestion = async () => {
     const questionGroup = await createInitialQuestionGroup();
 
     if (!!questionGroup) {
       const docIds = await createAccentsQuestions({
-        sentences,
+        sentences: sentences,
         questionGroupId: questionGroup.id,
       });
       if (!!docIds.length) {
@@ -81,7 +106,7 @@ const ArticlePage = () => {
           const createdQuestionSet = await createAccentsQuestionSet({
             title: article.title,
             questionGroupId: questionGroup.id,
-            sentences,
+            sentences: sentences,
           });
           if (!!createdQuestionSet) {
             setQuestionSetId(createdQuestionSet.id);
@@ -96,7 +121,7 @@ const ArticlePage = () => {
     const questionGroup = await createInitialQuestionGroup();
     if (!!questionGroup) {
       const docIds = await createRhythmQuestions({
-        sentences,
+        sentences: sentences,
         downloadURL: article.downloadURL,
         questinGroupId: questionGroup.id,
       });
@@ -121,28 +146,18 @@ const ArticlePage = () => {
     }
   };
 
-  const openPage = (path: string) => {
-    navigate(path);
-  };
-
   // データ取得中
-
-  if (!!article.id) {
-    return (
-      <ArticlePageComponent
-        isSm={isSm}
-        openPage={openPage}
-        copySentenceParseNew={copySentenceParseNew}
-        createAccentsQuestion={createAccentsQuestion}
-        createRhythmsQuestion={createRhythmsQuestion}
-        handleClickWidthButton={handleClickWidthButton}
-      />
-    );
-  }
+  if (isFetching) return <></>;
   // article が 初期値
-  else {
-    return <Navigate to={'/article/list'} />;
-  }
+  if (!article.id) return <Navigate to={'/article/list'} />;
+  return (
+    <ArticlePageComponent
+      state={state}
+      dispatch={dispatch}
+      createAccentsQuestion={createAccentsQuestion}
+      createRhythmsQuestion={createRhythmsQuestion}
+    />
+  );
 };
 
 export default ArticlePage;

@@ -13,8 +13,7 @@ import { useHandleQuestionSetScores } from '../../../../../services/useQuestionS
 export const useRhythmsQuestionListPage = () => {
   const navigate = useNavigate();
 
-  const { rhythmsQuestionSets, users, setQuestionSetId } =
-    useContext(AppContext);
+  const { rhythmsQuestionSets, setQuestionSetId } = useContext(AppContext);
 
   const { deleteQuestionSet } = useHandleQuestionSets();
   const { deleteQuestionGroup, getQuestionGroup } = useHandleQuestionGroups();
@@ -22,14 +21,14 @@ export const useRhythmsQuestionListPage = () => {
   const { deleteQuestionSetScoresByQuestionSetId } =
     useHandleQuestionSetScores();
 
-  const userDisplaynames = useMemo(() => {
-    const userDisplaynames: { [key: string]: string } = {};
-    for (const user of users) {
-      userDisplaynames[user.id] = user.displayname;
-    }
+  // const userDisplaynames = useMemo(() => {
+  //   const userDisplaynames: { [key: string]: string } = {};
+  //   for (const user of users) {
+  //     userDisplaynames[user.id] = user.displayname;
+  //   }
 
-    return userDisplaynames;
-  }, [users]);
+  //   return userDisplaynames;
+  // }, [users]);
 
   const onEdit = (q: QuestionSet) => {
     setQuestionSetId(q.id);
@@ -56,7 +55,6 @@ export const useRhythmsQuestionListPage = () => {
 
   return {
     questionSets: rhythmsQuestionSets,
-    userDisplaynames,
     onEdit,
     onDelete,
   };

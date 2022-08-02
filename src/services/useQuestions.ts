@@ -2,10 +2,10 @@
 import { Unsubscribe } from 'firebase/auth';
 import { DocumentData, QueryConstraint, where } from 'firebase/firestore';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Accent, buildAccentString } from '../entities/Accent';
+import { buildAccentString } from '../entities/Accent';
 import { buildSentenceRhythm, getMoraString } from '../entities/Rhythm';
+import { Accent, Tags } from '../Model';
 
-import { Tags } from '../entities/Tags';
 import { db } from '../repositories/firebase';
 import {
   batchAddDocuments,

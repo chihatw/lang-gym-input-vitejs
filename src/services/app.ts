@@ -1,25 +1,9 @@
-import { User as _User } from 'firebase/auth';
+import { User as FirebaseUser } from 'firebase/auth';
 import { createContext } from 'react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import { auth } from '../repositories/firebase';
-import { Accent } from '../entities/Accent';
-import { AudioItem } from './useAudioItems';
-
 import { getMoraString, buildSentenceRhythm } from '../entities/Rhythm';
-import { Article, INITIAL_ARTICLE } from './useArticles';
-import { User } from './useUsers';
-import { ArticleSentence, AssignmentBlobs } from './useSentences';
-import { Assignment, INITIAL_ASSIGNMENT } from './useAssignments';
-import { AssignmentSentence } from './useAssignmentSentences';
-import {
-  INITIAL_SENTENCE_PARSE_NEW,
-  SentenceParseNew,
-} from './useSentenceParseNews';
-import { INITIAL_WORKOUT, Workout } from './useWorkouts';
-import { INITIAL_ONDOKU, Ondoku } from './useOndokus';
-import { INITIAL_ONDOKU_SENTENCE, OndokuSentence } from './useOndokuSentences';
 import {
   INITIAL_QUESTION_GROUP,
   QuestionGroup,
@@ -31,44 +15,19 @@ import {
   QuestionSet,
   useHandleQuestionSets,
 } from './useQuestionSets';
-import { UidOndoku } from './useUidOndokus';
-import { ArticleSentenceForm } from './useArticleSentenceForms';
+
+import { Accent } from '../Model';
 
 export const AppContext = createContext<{
-  user: _User | null;
-  users: User[];
-  article: Article;
-  ondoku: Ondoku;
-  ondokus: Ondoku[];
-  workout: Workout;
-  articles: Article[];
-  workouts: Workout[];
-  sentences: ArticleSentence[];
-  audioItems: AudioItem[];
-  assignment: Assignment;
+  user: FirebaseUser | null;
   initializing: boolean;
-  sentenceParseNew: SentenceParseNew;
-  sentenceParseNews: SentenceParseNew[];
-  assignmentSentences: AssignmentSentence[];
-  ondokuSentence: OndokuSentence;
-  ondokuSentences: OndokuSentence[];
-  ondokuAssignment: Assignment;
-  ondokuAssignmentSentences: AssignmentSentence[];
   accentsQuestionSets: QuestionSet[];
   rhythmsQuestionSets: QuestionSet[];
   questionSet: QuestionSet;
   questionGroup: QuestionGroup;
   questions: Question[];
-  uidOndokus: UidOndoku[];
-  articleSentenceForms: ArticleSentenceForm[];
-  assignmentBlobs: AssignmentBlobs;
   audioContext: AudioContext | null;
-  setOndokuId: (value: string) => void;
-  setArticleId: (value: string) => void;
-  setWorkoutId: (value: string) => void;
-  setOndokuSentenceId: (value: string) => void;
   setQuestionSetId: (value: string) => void;
-  setSentenceId: (value: string) => void;
   createRhythmsQuestion: ({
     title,
     endArray,
@@ -84,38 +43,13 @@ export const AppContext = createContext<{
   }) => Promise<void>;
 }>({
   user: null,
-  users: [],
-  article: INITIAL_ARTICLE,
-  workout: INITIAL_WORKOUT,
-  workouts: [],
-  ondoku: INITIAL_ONDOKU,
-  ondokus: [],
-  articles: [],
-  sentences: [],
-  audioItems: [],
-  assignment: INITIAL_ASSIGNMENT,
-  ondokuSentence: INITIAL_ONDOKU_SENTENCE,
-  ondokuSentences: [],
   initializing: true,
-  sentenceParseNew: INITIAL_SENTENCE_PARSE_NEW,
-  sentenceParseNews: [],
-  assignmentSentences: [],
-  ondokuAssignment: INITIAL_ASSIGNMENT,
-  ondokuAssignmentSentences: [],
   accentsQuestionSets: [],
   rhythmsQuestionSets: [],
   questionSet: INITIAL_QUESTION_SET,
   questionGroup: INITIAL_QUESTION_GROUP,
   questions: [],
-  uidOndokus: [],
-  articleSentenceForms: [],
-  assignmentBlobs: {},
-  setOndokuId: () => {},
   setQuestionSetId: () => {},
-  setArticleId: () => {},
-  setWorkoutId: () => {},
-  setSentenceId: () => {},
-  setOndokuSentenceId: () => {},
   createRhythmsQuestion: async () => {},
   audioContext: null,
 });

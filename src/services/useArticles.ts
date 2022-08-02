@@ -1,99 +1,14 @@
-import {
-  limit,
-  orderBy,
-  Unsubscribe,
-  DocumentData,
-  QueryConstraint,
-} from '@firebase/firestore';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { DocumentData } from '@firebase/firestore';
+import { useCallback, useMemo } from 'react';
+import { Article } from '../Model';
 import { db } from '../repositories/firebase';
 import {
   addDocument,
   updateDocument,
   deleteDocument,
-  snapshotCollection,
 } from '../repositories/utils';
 
-export type Article = {
-  id: string;
-  uid: string;
-  marks: string[];
-  title: string;
-  embedID: string;
-  createdAt: number;
-  downloadURL: string;
-  isShowParse: boolean;
-  hasRecButton: boolean;
-  isShowAccents: boolean;
-  userDisplayname: string;
-};
-
-export const INITIAL_ARTICLE: Article = {
-  id: '',
-  uid: '',
-  marks: [],
-  title: '',
-  embedID: '',
-  createdAt: 0,
-  downloadURL: '',
-  isShowParse: false,
-  hasRecButton: false,
-  isShowAccents: false,
-  userDisplayname: '',
-};
-
 const COLLECTION = 'articles';
-
-export const useArticles = ({
-  opened,
-  articleId,
-}: {
-  opened: boolean;
-  articleId: string;
-}) => {
-  const [article, setArticle] = useState(INITIAL_ARTICLE);
-  const [articles, setArticles] = useState<Article[]>([]);
-
-  const _snapshotCollection = useMemo(
-    () =>
-      function <T>({
-        queries,
-        setValues,
-        buildValue,
-      }: {
-        queries?: QueryConstraint[];
-        setValues: (value: T[]) => void;
-        buildValue: (value: DocumentData) => T;
-      }): Unsubscribe {
-        return snapshotCollection({
-          db,
-          colId: COLLECTION,
-          queries,
-          setValues,
-          buildValue,
-        });
-      },
-    []
-  );
-
-  useEffect(() => {
-    const article = articles.filter((article) => article.id === articleId)[0];
-    setArticle(article ?? INITIAL_ARTICLE);
-  }, [articleId, articles]);
-
-  useEffect(() => {
-    if (!opened) return;
-    const unsub = _snapshotCollection({
-      queries: [orderBy('createdAt', 'desc'), limit(6)],
-      setValues: setArticles,
-      buildValue: buildArticle,
-    });
-    return () => {
-      unsub();
-    };
-  }, [opened]);
-  return { article, articles };
-};
 
 export const useHandleArticles = () => {
   const _addDocument = useMemo(

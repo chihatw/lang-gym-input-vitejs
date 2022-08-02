@@ -4,11 +4,9 @@ import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import accentsForPitchesArray from 'accents-for-pitches-array';
 
 import { buildAccents, buildAccentString } from '../../../../entities/Accent';
-import {
-  AssignmentSentence,
-  useHandleAssignmentSentences,
-} from '../../../../services/useAssignmentSentences';
+import { useHandleAssignmentSentences } from '../../../../services/useAssignmentSentences';
 import Speaker from '../../../../components/Speaker';
+import { AssignmentSentence } from '../../../../Model';
 
 const EditAssignmentPane = ({
   assignmentSentence,

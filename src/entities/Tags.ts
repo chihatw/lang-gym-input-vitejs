@@ -1,6 +1,4 @@
-export type Tags = {
-  [key: string]: boolean;
-};
+import { Tags } from '../Model';
 
 export const buildTags = (linesArray: string[]) => {
   const tags: Tags = {};

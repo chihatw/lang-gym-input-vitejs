@@ -11,8 +11,7 @@ import {
 import { ref, getDownloadURL } from 'firebase/storage';
 
 import { db, storage } from '../repositories/firebase';
-import { Tags } from '../entities/Tags';
-import { Accent } from '../entities/Accent';
+
 import {
   batchAddDocuments,
   batchDeleteDocuments,
@@ -22,120 +21,9 @@ import {
   updateDocument,
 } from '../repositories/utils';
 import getMoras from 'get-moras';
+import { ArticleSentence } from '../Model';
 
 const COLLECTION = 'sentences';
-
-export type ArticleSentence = {
-  id: string;
-  uid: string;
-  end: number;
-  tags: Tags;
-  kana: string;
-  line: number;
-  start: number;
-  title: string;
-  accents: Accent[];
-  article: string;
-  chinese: string;
-  japanese: string;
-  original: string;
-  createdAt: number;
-  kanaAccentsStr: string;
-  storagePath: string;
-  storageDuration: number;
-};
-
-export const INITIAL_ARTICLE_SENTENCE: ArticleSentence = {
-  id: '',
-  uid: '',
-  end: 0,
-  tags: {},
-  kana: '',
-  line: 0,
-  start: 0,
-  title: '',
-  accents: [],
-  article: '',
-  chinese: '',
-  japanese: '',
-  original: '',
-  createdAt: 0,
-  kanaAccentsStr: '',
-  storagePath: '',
-  storageDuration: 0,
-};
-
-export type AssignmentBlobs = { [key: string]: Blob | null };
-
-export const useSentences = (articleId: string) => {
-  const [sentences, setSentences] = useState<ArticleSentence[]>([]);
-  const [assignmentBlobs, setAssignmentBlobs] = useState<AssignmentBlobs>({});
-
-  const _snapshotCollection = useMemo(
-    () =>
-      function <T>({
-        queries,
-        setValues,
-        buildValue,
-      }: {
-        queries?: QueryConstraint[];
-        setValues: (value: T[]) => void;
-        buildValue: (value: DocumentData) => T;
-      }): Unsubscribe {
-        return snapshotCollection({
-          db,
-          colId: COLLECTION,
-          queries,
-          setValues,
-          buildValue,
-        });
-      },
-    []
-  );
-
-  useEffect(() => {
-    if (!articleId) return;
-    const unsub = _snapshotCollection({
-      queries: [where('article', '==', articleId), orderBy('line')],
-      buildValue: buildSentence,
-      setValues: setSentences,
-    });
-    return () => {
-      unsub();
-    };
-  }, [articleId]);
-
-  useEffect(() => {
-    const filterdSentences = sentences.filter(
-      (sentence) => !!sentence.storagePath
-    );
-
-    const fetchData = async () => {
-      // sentence の storagePath から storageAudio を作成
-      const assignmentBlobs: AssignmentBlobs = {};
-      await Promise.all(
-        filterdSentences.map(async (sentence) => {
-          const { id, storagePath } = sentence;
-          if (!!storagePath) {
-            // ダウンロード URL を取得
-            const url = await getDownloadURL(ref(storage, storagePath));
-            console.log('create assignmentAudio');
-            // HTTP レスポンスを取得
-            const response = await fetch(url);
-            // HTTP レスポンス全体から Blob を取得
-            const blob = await response.blob();
-            assignmentBlobs[id] = blob;
-          }
-        })
-      );
-      console.log({ assignmentBlobs });
-      setAssignmentBlobs(assignmentBlobs);
-    };
-    fetchData();
-  }, [sentences]);
-
-  return { sentences, assignmentBlobs };
-};
 
 export const useHandleSentences = () => {
   const _updateDocument = useMemo(

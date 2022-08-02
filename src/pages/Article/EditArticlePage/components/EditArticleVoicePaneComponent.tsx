@@ -2,8 +2,9 @@ import React from 'react';
 import { Button, Container } from '@mui/material';
 
 import { Mark } from '../../../../entities/Mark';
-import { Article } from '../../../../services/useArticles';
+
 import EditAudioPane from './EditAudioPane';
+import { Article } from '../../../../Model';
 
 const EditArticleVoicePaneComponent = ({
   peaks,

@@ -3,26 +3,29 @@ import { SentenceFormPane } from '@chihatw/sentence-form.sentence-form-pane';
 import { Button } from '@mui/material';
 
 import { FSentences } from 'fsentence-types';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { fsentences2String } from 'sentence-form-string';
-import { AppContext } from '../../../../services/app';
-import {
-  ArticleSentenceForm,
-  useHandleArticleSentenceForms,
-} from '../../../../services/useArticleSentenceForms';
-import { ArticleSentence } from '../../../../services/useSentences';
+import { ArticleSentence, ArticleSentenceForm, State } from '../../../../Model';
+
+import { useHandleArticleSentenceForms } from '../../../../services/useArticleSentenceForms';
+import { Action } from '../../../../Update';
 
 const SentenceForm = ({
+  state,
+  dispatch,
   lineIndex,
   sentence,
 }: {
+  state: State;
+  dispatch: React.Dispatch<Action>;
   lineIndex: number;
+
   sentence: ArticleSentence;
 }) => {
+  const { article, articleSentenceForms } = state;
   const navigate = useNavigate();
-  const { articleSentenceForms, article } = useContext(AppContext);
   const articleSentenceForm = articleSentenceForms[lineIndex];
   const { addArticleSentenceForm, updateArticleSentenceForm } =
     useHandleArticleSentenceForms();

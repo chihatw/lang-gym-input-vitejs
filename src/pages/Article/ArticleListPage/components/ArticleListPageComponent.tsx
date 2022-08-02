@@ -2,65 +2,70 @@ import React from 'react';
 import { Button, Container, Table, TableBody, Typography } from '@mui/material';
 
 import ArticleRow from './ArticleRow';
-import { Article } from '../../../../services/useArticles';
 import LinkButton from '../../../../components/ui/LinkButton';
+import { Article, State } from '../../../../Model';
+import { Action, ActionTypes } from '../../../../Update';
+import { useNavigate } from 'react-router-dom';
 
 const ArticleListPageComponent = ({
-  articles,
-  openPage,
+  state,
+  dispatch,
   handleClickDelete,
   handleClickShowParses,
   handleClickShowAccents,
   handleClickShowRecButton,
-  handleClickOpenCreateArticlePage,
 }: {
-  articles: Article[];
-  openPage: ({ path, article }: { path: string; article: Article }) => void;
+  state: State;
+  dispatch: React.Dispatch<Action>;
   handleClickDelete: (article: Article) => void;
   handleClickShowParses: (article: Article) => void;
   handleClickShowAccents: (article: Article) => void;
   handleClickShowRecButton: (article: Article) => void;
-  handleClickOpenCreateArticlePage: () => void;
-}) => (
-  <Container maxWidth={'sm'} sx={{ paddingTop: 2 }}>
-    <div style={{ display: 'grid', rowGap: 16 }}>
+}) => {
+  const navigate = useNavigate();
+
+  const { articleList } = state;
+  return (
+    <Container maxWidth={'sm'} sx={{ paddingTop: 2 }}>
       <div style={{ display: 'grid', rowGap: 16 }}>
-        <Typography variant='h5'>{'作文一覧'}</Typography>
-        <div>
-          <LinkButton label={'戻る'} pathname={'/'} />
+        <div style={{ display: 'grid', rowGap: 16 }}>
+          <Typography variant='h5'>{'作文一覧'}</Typography>
+          <div>
+            <LinkButton label={'戻る'} pathname={'/'} />
+          </div>
+          <div>
+            <Button
+              variant='contained'
+              onClick={() => {
+                navigate('/article/initial');
+                dispatch({ type: ActionTypes.initialArticle });
+              }}
+            >
+              新規作成
+            </Button>
+          </div>
         </div>
-        <div>
-          <Button
-            variant='contained'
-            onClick={handleClickOpenCreateArticlePage}
-          >
-            新規作成
-          </Button>
-        </div>
+        <Table>
+          <TableBody>
+            {articleList.map((article, index) => (
+              <ArticleRow
+                key={index}
+                index={index}
+                state={state}
+                dispatch={dispatch}
+                handleClickDelete={() => handleClickDelete(article)}
+                handleClickShowParses={() => handleClickShowParses(article)}
+                handleClickShowAccents={() => handleClickShowAccents(article)}
+                handleClickShowRecButton={() =>
+                  handleClickShowRecButton(article)
+                }
+              />
+            ))}
+          </TableBody>
+        </Table>
       </div>
-      <Table>
-        <TableBody>
-          {articles.map((article, index) => (
-            <ArticleRow
-              key={index}
-              article={article}
-              handleClickDelete={() => handleClickDelete(article)}
-              handleClickShowParses={() => handleClickShowParses(article)}
-              openArticlePage={() =>
-                openPage({ article, path: `${article.id}` })
-              }
-              openArticleEditPage={() => openPage({ article, path: `` })}
-              handleClickShowAccents={() => handleClickShowAccents(article)}
-              handleClickShowRecButton={() => handleClickShowRecButton(article)}
-              openPrintPitchesPage={() =>
-                openPage({ article, path: `print/${article.id}` })
-              }
-            />
-          ))}
-        </TableBody>
-      </Table>
-    </div>
-  </Container>
-);
+    </Container>
+  );
+};
 
 export default ArticleListPageComponent;

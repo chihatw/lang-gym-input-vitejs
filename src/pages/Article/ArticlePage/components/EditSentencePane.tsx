@@ -1,26 +1,31 @@
-import { Button, Divider, TextField } from '@mui/material';
+import { Button, TextField } from '@mui/material';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import accentsForPitchesArray from 'accents-for-pitches-array';
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  ArticleSentence,
   kanaAccentsStr2AccentsString,
   kanaAccentsStr2Kana,
   useHandleSentences,
 } from '../../../../services/useSentences';
-import { AppContext } from '../../../../services/app';
 import { buildAccents, buildAccentString } from '../../../../entities/Accent';
 import { buildTags } from '../../../../entities/Tags';
 import Speaker from '../../../../components/Speaker';
+import { ArticleSentence, State } from '../../../../Model';
+import { Action } from '../../../../Update';
 
 const EditSentencePane = ({
-  sentence,
+  state,
+  dispatch,
   callback,
+  sentenceIndex,
 }: {
-  sentence: ArticleSentence;
+  state: State;
+  dispatch: React.Dispatch<Action>;
   callback: () => void;
+  sentenceIndex: number;
 }) => {
-  const { article } = useContext(AppContext);
+  const { article, sentences } = state;
+  const sentence = sentences[sentenceIndex];
   const { updateSentence } = useHandleSentences();
 
   const [end, setEnd] = useState(0);

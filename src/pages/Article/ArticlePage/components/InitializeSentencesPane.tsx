@@ -2,16 +2,20 @@ import React, { useEffect, useState } from 'react';
 import string2PitchesArray from 'string2pitches-array';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import { Button, TextField } from '@mui/material';
-import { Article } from '../../../../services/useArticles';
+
 import {
-  INITIAL_ARTICLE_SENTENCE,
-  ArticleSentence,
   useHandleSentences,
   kanaAccentsStr2Kana,
   kanaAccentsStr2AccentsString,
 } from '../../../../services/useSentences';
-import { Accent, buildAccents } from '../../../../entities/Accent';
+import { buildAccents } from '../../../../entities/Accent';
 import { buildTags } from '../../../../entities/Tags';
+import {
+  Accent,
+  Article,
+  ArticleSentence,
+  INITIAL_ARTICLE_SENTENCE,
+} from '../../../../Model';
 
 const InitializeSentencesPane = ({ article }: { article: Article }) => {
   const { createSentences } = useHandleSentences();

@@ -1,12 +1,76 @@
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import { Container, Divider } from '@mui/material';
 import accentsForPitchesArray from 'accents-for-pitches-array';
-import React, { useContext } from 'react';
-import { AppContext } from '../../../services/app';
-import { ArticleSentence } from '../../../services/useSentences';
+import React, { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import {
+  ArticleSentence,
+  ArticleSentenceForm,
+  INITIAL_ARTICLE,
+  State,
+} from '../../../Model';
+import { getArticle } from '../../../services/article';
 
-const PrintPitchesPage = () => {
-  const { sentences } = useContext(AppContext);
+import { Action, ActionTypes } from '../../../Update';
+
+const PrintPitchesPage = ({
+  state,
+  dispatch,
+}: {
+  state: State;
+  dispatch: React.Dispatch<Action>;
+}) => {
+  const { articleId } = useParams();
+  const { isFetching, memo, article, sentences } = state;
+
+  useEffect(() => {
+    if (!isFetching) return;
+
+    if (!articleId) {
+      dispatch({
+        type: ActionTypes.setArticle,
+        payload: {
+          article: INITIAL_ARTICLE,
+          sentences: [],
+          articleSentenceForms: [],
+        },
+      });
+      return;
+    }
+
+    const fetchData = async () => {
+      let _article = INITIAL_ARTICLE;
+      let _sentences: ArticleSentence[] = [];
+      let _articleSentenceForms: ArticleSentenceForm[] = [];
+
+      const memoArticle = memo.articles[articleId];
+      const memoSentences = memo.sentences[articleId];
+      const memoArticleSentenceForms = memo.articleSentenceForms[articleId];
+
+      if (memoArticle && memoSentences && memoArticleSentenceForms) {
+        _article = memoArticle;
+        _sentences = memoSentences;
+        _articleSentenceForms = memoArticleSentenceForms;
+      } else {
+        const { article, sentences, articleSentenceForms } = await getArticle(
+          articleId
+        );
+        _article = article;
+        _sentences = sentences;
+        _articleSentenceForms = articleSentenceForms;
+      }
+
+      dispatch({
+        type: ActionTypes.setArticle,
+        payload: {
+          article: _article,
+          sentences: _sentences,
+          articleSentenceForms: _articleSentenceForms,
+        },
+      });
+    };
+    fetchData();
+  }, [isFetching, articleId]);
 
   return (
     <Container sx={{ paddingTop: 5, width: '180mm' }}>

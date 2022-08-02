@@ -9,17 +9,20 @@ import {
   InputLabel,
   FormControl,
   Container,
+  Typography,
 } from '@mui/material';
 
-import { User } from '../../../../services/useUsers';
-import TableLayoutHeader from '../../../../components/organisms/TableLayoutHeader';
 import { YoutubeEmbeded } from '@chihatw/lang-gym-h.ui.youtube-embeded';
+import { State } from '../../../../Model';
+import { Action } from '../../../../Update';
+import { useNavigate } from 'react-router-dom';
 
 const EditArticlePageComponent = ({
+  state,
+  dispatch,
   uid,
   date,
   title,
-  users,
   embedId,
   articleId,
   articleMarksString,
@@ -30,9 +33,10 @@ const EditArticlePageComponent = ({
   handleChangeEmbedId,
   handleChangeArticleMarksString,
 }: {
+  state: State;
+  dispatch: React.Dispatch<Action>;
   uid: string;
   date: Date;
-  users: User[];
   title: string;
   embedId: string;
   articleId: string;
@@ -44,13 +48,21 @@ const EditArticlePageComponent = ({
   handleChangeEmbedId: (value: string) => void;
   handleChangeArticleMarksString: (value: string) => void;
 }) => {
+  const { users } = state;
+  const navigate = useNavigate();
   return (
     <Container maxWidth='sm' sx={{ paddingTop: 4 }}>
       <div style={{ display: 'grid', rowGap: 16 }}>
-        <TableLayoutHeader
-          title={!articleId ? '作文新規' : '作文編集'}
-          backURL={'/article/list'}
-        />
+        <div>
+          <Typography variant='h5'>
+            {!articleId ? '作文新規' : '作文編集'}
+          </Typography>
+          <div style={{ height: 16 }} />
+          <Button variant='contained' onClick={() => navigate('/article/list')}>
+            戻る
+          </Button>
+          <div style={{ height: 16 }} />
+        </div>
         <FormControl fullWidth>
           <InputLabel>user</InputLabel>
           <Select

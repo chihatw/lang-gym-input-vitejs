@@ -20,8 +20,7 @@ import { AppContext } from '../../../../../services/app';
 export const useAccentsQuestionPage = (id: string) => {
   const navigate = useNavigate();
 
-  const { questionSet, users, questionGroup, questions } =
-    useContext(AppContext);
+  const { questionSet, questionGroup, questions } = useContext(AppContext);
 
   const { updateQuestionSet } = useHandleQuestionSets();
   const { updateQuestions } = useHandleQuestions();
@@ -120,7 +119,8 @@ export const useAccentsQuestionPage = (id: string) => {
       uid,
       questionCount,
       answered: isAnswered,
-      userDisplayname: users.filter((user) => user.id === uid)[0].displayname,
+      userDisplayname: '',
+      // userDisplayname: users.filter((user) => user.id === uid)[0].displayname,
     };
     const updatedQuestionSet = await updateQuestionSet(newQuestionSet);
     if (!!updatedQuestionSet) {
@@ -149,7 +149,6 @@ export const useAccentsQuestionPage = (id: string) => {
     initializing: false,
     title,
     uid,
-    users,
     onChangeUid,
     onChangeTitle,
     isAnswered,

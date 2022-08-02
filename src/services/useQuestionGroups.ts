@@ -1,6 +1,6 @@
 import { Unsubscribe, DocumentData } from '@firebase/firestore';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Tags } from '../entities/Tags';
+import { Tags } from '../Model';
 import { db } from '../repositories/firebase';
 import {
   addDocument,

@@ -7,22 +7,22 @@ import { buildPeaks } from '../../../../services/buildPeaks';
 import { buildMarks } from '../../../../services/buildMarks';
 import { deleteFile, uploadFile } from '../../../../repositories/file';
 import EditArticleVoicePaneComponent from './EditArticleVoicePaneComponent';
-import { Article, useHandleArticles } from '../../../../services/useArticles';
-import {
-  ArticleSentence,
-  useHandleSentences,
-} from '../../../../services/useSentences';
+import { useHandleArticles } from '../../../../services/useArticles';
+import { useHandleSentences } from '../../../../services/useSentences';
+import { Article, ArticleSentence, State } from '../../../../Model';
+import { Action } from '../../../../Update';
 
 const CANVAS_WIDTH = 550;
 const INITIAL_BLANK_DURATION = 700;
 
 const EditArticleVoicePane = ({
-  article,
-  sentences,
+  state,
+  dispatch,
 }: {
-  article: Article;
-  sentences: ArticleSentence[];
+  state: State;
+  dispatch: React.Dispatch<Action>;
 }) => {
+  const { article, sentences } = state;
   const navigate = useNavigate();
 
   const audioContext = useMemo(() => new AudioContext(), []);

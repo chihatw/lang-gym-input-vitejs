@@ -21,12 +21,19 @@ import {
   SentenceRhythm,
   WordRhythm,
 } from '../../../../entities/Rhythm';
+import { State } from '../../../../Model';
+import { Action } from '../../../../Update';
 
-const RhythmsQuestionPage = () => {
+const RhythmsQuestionPage = ({
+  state,
+  dispatch,
+}: {
+  state: State;
+  dispatch: React.Dispatch<Action>;
+}) => {
   const navigate = useNavigate();
-
-  const { questionSet, users, questions, questionGroup } =
-    useContext(AppContext);
+  const { users } = state;
+  const { questionSet, questions, questionGroup } = useContext(AppContext);
 
   const { updateQuestionSet } = useHandleQuestionSets();
   const { updateQuestionGroup } = useHandleQuestionGroups();
@@ -277,6 +284,8 @@ const RhythmsQuestionPage = () => {
         }}
       >
         <RhythmsQuestionForm
+          state={state}
+          dispatch={dispatch}
           title={title}
           uid={uid}
           users={users}

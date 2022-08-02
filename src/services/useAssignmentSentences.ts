@@ -1,94 +1,17 @@
-import {
-  where,
-  orderBy,
-  Unsubscribe,
-  DocumentData,
-  QueryConstraint,
-} from '@firebase/firestore';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { DocumentData } from '@firebase/firestore';
+import { useCallback, useMemo } from 'react';
+import { AssignmentSentence } from '../Model';
 
 import { db } from '../repositories/firebase';
 import {
   updateDocument,
-  snapshotCollection,
   batchUpdateDocuments,
   batchAddDocuments,
   batchDeleteDocuments,
 } from '../repositories/utils';
 
-type Accent = {
-  moras: string[];
-  pitchPoint: number;
-};
-
-export type AssignmentSentence = {
-  id: string;
-  end: number;
-  uid: string;
-  line: number;
-  start: number;
-  ondoku: string;
-  accents: Accent[];
-  article: string;
-  mistakes: string[];
-};
-
-export const INITIAL_ASSINGMENT_SENTENCE: AssignmentSentence = {
-  id: '',
-  end: 0,
-  uid: '',
-  line: 0,
-  start: 0,
-  ondoku: '',
-  accents: [],
-  article: '',
-  mistakes: [],
-};
-
 const COLLECTION = 'aSentences';
 
-export const useAssignmentSentences = (articleId: string) => {
-  const [assignmentSentences, setAssignmentSentences] = useState<
-    AssignmentSentence[]
-  >([]);
-
-  const _snapshotCollection = useMemo(
-    () =>
-      function <T>({
-        queries,
-        setValues,
-        buildValue,
-      }: {
-        queries?: QueryConstraint[];
-        setValues: (value: T[]) => void;
-        buildValue: (value: DocumentData) => T;
-      }): Unsubscribe {
-        return snapshotCollection({
-          db,
-          colId: COLLECTION,
-          queries,
-          setValues,
-          buildValue,
-        });
-      },
-    []
-  );
-
-  useEffect(() => {
-    if (!articleId) return;
-
-    const unsub = _snapshotCollection({
-      queries: [where('article', '==', articleId), orderBy('line')],
-      setValues: setAssignmentSentences,
-      buildValue: buildAssignmentSentence,
-    });
-
-    return () => {
-      unsub();
-    };
-  }, [articleId]);
-  return { assignmentSentences };
-};
 export const useHandleAssignmentSentences = () => {
   const _updateDocument = useMemo(
     () =>

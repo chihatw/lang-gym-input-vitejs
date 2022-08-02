@@ -1,8 +1,8 @@
 import { createContext } from 'react';
 
-import { User } from '../../../../../services/useUsers';
 import { Audio } from '../../../../../entities/Audio';
 import { Rhythm } from '../../../../../entities/Rhythm';
+import { User } from '../../../../../Model';
 
 export const RhythmsQuestionPageContext = createContext<{
   uid: string;

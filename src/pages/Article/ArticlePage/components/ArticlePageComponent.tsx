@@ -1,37 +1,25 @@
-import React, { useContext } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@mui/material';
 
 import TableLayout from '../../../../components/templates/TableLayout';
 import SentenceRow from './SentenceRow';
 import InitializeSentencesPane from './InitializeSentencesPane';
-import { AppContext } from '../../../../services/app';
-import { INITIAL_ARTICLE_SENTENCE_FORM } from '../../../../services/useArticleSentenceForms';
+import { State } from '../../../../Model';
+import { Action } from '../../../../Update';
 
 const ArticlePageComponent = ({
-  isSm,
-  openPage,
-  copySentenceParseNew,
+  state,
+  dispatch,
   createAccentsQuestion,
   createRhythmsQuestion,
-  handleClickWidthButton,
 }: {
-  isSm: boolean;
-  openPage: (path: string) => void;
-  copySentenceParseNew: (value: number) => void;
+  state: State;
+  dispatch: React.Dispatch<Action>;
   createAccentsQuestion: () => void;
   createRhythmsQuestion: () => void;
-  handleClickWidthButton: () => void;
 }) => {
-  const {
-    article,
-    sentences,
-    assignment,
-    assignmentBlobs,
-    sentenceParseNews,
-    assignmentSentences,
-    articleSentenceForms,
-    setSentenceId,
-  } = useContext(AppContext);
+  const [isSm, setIsSm] = useState(true);
+  const { article, sentences } = state;
   return (
     <TableLayout
       maxWidth={isSm ? 'sm' : 'md'}
@@ -39,48 +27,21 @@ const ArticlePageComponent = ({
       backURL={`/article/list`}
     >
       <div style={{ marginBottom: 16 }}>
-        <Button
-          size='small'
-          variant='contained'
-          onClick={handleClickWidthButton}
-        >
+        <Button size='small' variant='contained' onClick={() => setIsSm(!isSm)}>
           switch width
         </Button>
       </div>
       {!!sentences.length ? (
         <div style={{ display: 'grid', rowGap: 16 }}>
-          {sentences.map((sentence, index) => {
-            const { id, storageDuration } = sentence;
-            const articleSentenceForm =
-              articleSentenceForms[index] || INITIAL_ARTICLE_SENTENCE_FORM;
-            const blob = assignmentBlobs[id] || null;
-            return (
-              <SentenceRow
-                key={index}
-                isSm={isSm}
-                sentence={sentence}
-                blob={blob}
-                storageDuration={storageDuration}
-                downloadURL={article.downloadURL}
-                sentenceParseNew={sentenceParseNews[index]}
-                openEditParsePage={() => {
-                  setSentenceId(id);
-                  setTimeout(() => {
-                    openPage(`/parse/${index}`);
-                  }, 100);
-                }}
-                sentences={articleSentenceForm.sentences}
-                openEditArticleSentenceFormPane={() => {
-                  setTimeout(() => {
-                    openPage(`/form/${index}`);
-                  }, 100);
-                }}
-                assignmentSentence={assignmentSentences[index]}
-                assignmentDownloadURL={assignment.downloadURL}
-                copySentenceParseNew={() => copySentenceParseNew(index)}
-              />
-            );
-          })}
+          {sentences.map((_, sentenceIndex) => (
+            <SentenceRow
+              key={sentenceIndex}
+              isSm={isSm}
+              state={state}
+              sentenceIndex={sentenceIndex}
+              dispatch={dispatch}
+            />
+          ))}
 
           <Button variant='contained' onClick={createAccentsQuestion}>
             アクセント問題作成

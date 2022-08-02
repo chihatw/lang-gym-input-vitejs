@@ -1,77 +1,11 @@
-import {
-  where,
-  orderBy,
-  DocumentData,
-  QueryConstraint,
-  Unsubscribe,
-} from '@firebase/firestore';
-import { FSentences } from 'fsentence-types';
-import { useEffect, useMemo, useState } from 'react';
+import { DocumentData } from '@firebase/firestore';
+import { useMemo } from 'react';
+import { ArticleSentenceForm } from '../Model';
 import { db } from '../repositories/firebase';
-import {
-  addDocument,
-  snapshotCollection,
-  updateDocument,
-} from '../repositories/utils';
-
-export type ArticleSentenceForm = {
-  id: string;
-  lineIndex: number;
-  articleId: string;
-  sentences: FSentences;
-};
-
-export const INITIAL_ARTICLE_SENTENCE_FORM: ArticleSentenceForm = {
-  id: '',
-  lineIndex: 0,
-  articleId: '',
-  sentences: {},
-};
+import { addDocument, updateDocument } from '../repositories/utils';
 
 const COLLECTION = 'articleSentenceForms';
 
-export const useArticleSentenceForms = (articleId: string) => {
-  const [articleSentenceForms, setArticleSentenceForms] = useState<
-    ArticleSentenceForm[]
-  >([]);
-  const _snapshotCollection = useMemo(
-    () =>
-      function <T>({
-        queries,
-        setValues,
-        buildValue,
-      }: {
-        queries?: QueryConstraint[];
-        setValues: (value: T[]) => void;
-        buildValue: (value: DocumentData) => T;
-      }): Unsubscribe {
-        return snapshotCollection({
-          db,
-          colId: COLLECTION,
-          queries,
-          setValues,
-          buildValue,
-        });
-      },
-    []
-  );
-
-  useEffect(() => {
-    if (!articleId) {
-      setArticleSentenceForms([]);
-      return;
-    }
-    const unsub = _snapshotCollection({
-      buildValue: buildArticleSentenceForm,
-      setValues: setArticleSentenceForms,
-      queries: [where('articleId', '==', articleId), orderBy('lineIndex')],
-    });
-    return () => {
-      unsub();
-    };
-  }, [articleId]);
-  return { articleSentenceForms };
-};
 export const useHandleArticleSentenceForms = () => {
   const _addDocument = useMemo(
     () =>

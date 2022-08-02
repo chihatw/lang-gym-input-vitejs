@@ -60,41 +60,6 @@ service cloud.firestore {
       	&& request.auth.token.email == 'chiha.tw@gmail.com'
     }
 
-    function isValidOndokuSentence(data){
-      return  data.size() == 7
-        && 'accents' in data && data.accents is list
-        && 'createdAt' in data && data.createdAt is number
-        && 'end' in data && data.end is number
-        && 'japanese' in data && data.japanese is string
-        && 'line' in data && data.line is number
-        && 'ondoku' in data && data.ondoku is string
-        && 'start' in data && data.start is number
-    }
-
-    match /oSentences/{oSentence} {
-   	  allow read: if request.auth != null
-      allow create,update: if request.auth != null
-      	&& isValidOndokuSentence(request.resource.data)
-      allow delete: if request.auth != null
-      	&& request.auth.token.email == 'chiha.tw@gmail.com'
-    }
-
-    function isValidOndoku(data){
-      return  data.size() == 4
-        && 'createdAt' in data && data.createdAt is number
-        && 'isShowAccents' in data && data.isShowAccents is bool
-        && 'title' in data && data.title is string
-        && 'downloadURL' in data && data.downloadURL is string
-    }
-
-    match /ondokus/{ondoku} {
-   	  allow read: if request.auth != null
-      allow create,update: if request.auth != null
-      	&& isValidOndoku(request.resource.data)
-      allow delete: if request.auth != null
-      	&& request.auth.token.email == 'chiha.tw@gmail.com'
-    }
-
     function isValidQuestionGroup(data){
       return  data.size() == 7
         && 'createdAt' in data && data.createdAt is number
@@ -202,21 +167,6 @@ service cloud.firestore {
    	  allow read: if request.auth != null
       allow create,update: if request.auth != null
       	&& isValidSentence(request.resource.data) 
-      allow delete: if request.auth != null
-      	&& request.auth.token.email == 'chiha.tw@gmail.com'
-    }
-
-    function isValidUidOndoku(data){
-      return  data.size() == 3
-        && 'createdAt' in data && data.createdAt is number
-        && 'ondoku' in data && data.ondoku is path
-        && 'uid' in data && data.uid is string
-    }
-
-    match /uidOndokus/{uidOndoku} {
-   	  allow read: if request.auth != null
-      allow create,update: if request.auth != null
-      	&& isValidUidOndoku(request.resource.data)
       allow delete: if request.auth != null
       	&& request.auth.token.email == 'chiha.tw@gmail.com'
     }

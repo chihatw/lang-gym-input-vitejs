@@ -1,9 +1,5 @@
 import getMoras from 'get-moras';
-
-export type Accent = {
-  moras: string[];
-  pitchPoint: number;
-};
+import { Accent } from '../Model';
 
 export const buildAccentString = (accents: Accent[]) => {
   return accents

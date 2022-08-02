@@ -2,20 +2,25 @@ import CheckIcon from '@mui/icons-material/Check';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { IconButton, TableCell, TableRow } from '@mui/material';
-import React, { useContext, useMemo } from 'react';
-import { AppContext } from '../../../services/app';
+import React, { useMemo } from 'react';
+import { State } from '../../../Model';
 import { QuestionSet } from '../../../services/useQuestionSets';
+import { Action } from '../../../Update';
 
 const QuestionSetRow = ({
+  state,
+  dispatch,
   questionSet,
   onEdit,
   onDelete,
 }: {
+  state: State;
+  dispatch: React.Dispatch<Action>;
   questionSet: QuestionSet;
   onEdit: (q: QuestionSet) => void;
   onDelete: () => void;
 }) => {
-  const { users } = useContext(AppContext);
+  const { users } = state;
   const displayname = useMemo(() => {
     const { uid } = questionSet;
     const user = users.filter((user) => user.id === uid)[0];

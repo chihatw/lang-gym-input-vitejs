@@ -1,23 +1,97 @@
 import { useNavigate } from 'react-router-dom';
-import React, { useContext, useEffect, useState } from 'react';
-import { Divider } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import {
+  Button,
+  Container,
+  Divider,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from '@mui/material';
 
-import { AppContext } from '../../../services/app';
-import EditArticlePageComponent from './components/EditArticlePageComponent';
-
+import { useHandleArticles } from '../../../services/useArticles';
+import EditArticleVoicePane from './components/EditArticleVoicePane';
 import {
   Article,
+  ArticleSentence,
+  ArticleSentenceForm,
   INITIAL_ARTICLE,
-  useHandleArticles,
-} from '../../../services/useArticles';
-import EditArticleVoicePane from './components/EditArticleVoicePane';
-import EditAssignmentVoicePane from './components/EditAssignmentVoicePane';
+  State,
+} from '../../../Model';
+import { Action, ActionTypes } from '../../../Update';
+import { getUsers } from '../../../services/user';
+import { useParams } from 'react-router-dom';
+import { getArticle } from '../../../services/article';
+import { LocalizationProvider, MobileDatePicker } from '@mui/lab';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import { YoutubeEmbeded } from '@chihatw/lang-gym-h.ui.youtube-embeded';
 
-const EditArticlePage = () => {
+const EditArticlePage = ({
+  state,
+  dispatch,
+}: {
+  state: State;
+  dispatch: React.Dispatch<Action>;
+}) => {
+  const { articleId } = useParams();
+
   const navigate = useNavigate();
+  const { article, isFetching, users, sentences, memo } = state;
+
+  useEffect(() => {
+    if (!isFetching) return;
+    const fetchData = async () => {
+      let _users = !!users.length ? users : await getUsers();
+      if (!articleId) {
+        dispatch({
+          type: ActionTypes.setArticleForm,
+          payload: {
+            users: _users,
+            article: INITIAL_ARTICLE,
+            sentences: [],
+            articleSentenceForms: [],
+          },
+        });
+        return;
+      }
+      let _article = INITIAL_ARTICLE;
+      let _sentences: ArticleSentence[] = [];
+      let _articleSentenceForms: ArticleSentenceForm[] = [];
+
+      const memoArticle = memo.articles[articleId];
+      const memoSentences = memo.sentences[articleId];
+      const memoArticleSentenceForms = memo.articleSentenceForms[articleId];
+
+      if (memoArticle && memoSentences && memoArticleSentenceForms) {
+        _article = memoArticle;
+        _sentences = memoSentences;
+        _articleSentenceForms = memoArticleSentenceForms;
+      } else {
+        const { article, sentences, articleSentenceForms } = await getArticle(
+          articleId
+        );
+        _article = article;
+        _sentences = sentences;
+        _articleSentenceForms = articleSentenceForms;
+      }
+
+      dispatch({
+        type: ActionTypes.setArticleForm,
+        payload: {
+          users: _users,
+          article: _article,
+          sentences: _sentences,
+          articleSentenceForms: _articleSentenceForms,
+        },
+      });
+    };
+    fetchData();
+  }, [isFetching]);
+
   const { addArticle, updateArticle } = useHandleArticles();
-  const { users, article, sentences, assignment, assignmentSentences } =
-    useContext(AppContext);
 
   const [uid, setUid] = useState('');
   const [date, setDate] = useState<Date>(new Date());
@@ -125,36 +199,90 @@ const EditArticlePage = () => {
 
   return (
     <div style={{ display: 'grid', rowGap: 16, paddingBottom: 120 }}>
-      <EditArticlePageComponent
-        uid={uid}
-        date={date}
-        title={title}
-        users={users}
-        embedId={embedId}
-        articleId={article.id}
-        articleMarksString={articleMarksString}
-        handlePickDate={handlePickDate}
-        handleChangeUid={handleChangeUid}
-        handleClickSubmit={handleClickSubmit}
-        handleChangeTitle={handleChangeTitle}
-        handleChangeEmbedId={handleChangeEmbedId}
-        handleChangeArticleMarksString={handleChangeArticleMarksString}
-      />
-      {!!article.id && (
-        <>
-          <Divider />
-          <EditArticleVoicePane article={article} sentences={sentences} />
-        </>
-      )}
-      {!!article.id && (
-        <>
-          <Divider />
-          <EditAssignmentVoicePane
-            article={article}
-            sentences={sentences}
-            assignment={assignment}
-            assignmentSentences={assignmentSentences}
+      <Container maxWidth='sm' sx={{ paddingTop: 4 }}>
+        <div style={{ display: 'grid', rowGap: 16 }}>
+          <div>
+            <Typography variant='h5'>{title}</Typography>
+            <div style={{ height: 16 }} />
+            <Button
+              variant='contained'
+              onClick={() => navigate('/article/list')}
+            >
+              戻る
+            </Button>
+            <div style={{ height: 16 }} />
+          </div>
+          <FormControl fullWidth>
+            <InputLabel>user</InputLabel>
+            <Select
+              size='small'
+              value={uid}
+              variant='standard'
+              onChange={(e) => handleChangeUid(e.target.value as string)}
+            >
+              {users.map((u) => (
+                <MenuItem key={u.id} value={u.id}>
+                  {u.displayname}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <MobileDatePicker
+              label='Created at'
+              inputFormat='yyyy年MM月dd日'
+              value={date}
+              onChange={handlePickDate}
+              renderInput={(params) => (
+                <TextField {...params} size='small' fullWidth />
+              )}
+            />
+          </LocalizationProvider>
+          <TextField
+            size='small'
+            label='title'
+            value={title}
+            variant='outlined'
+            onChange={(e) => handleChangeTitle(e.target.value)}
           />
+          <TextField
+            size='small'
+            label='embedID'
+            value={embedId}
+            variant='outlined'
+            onChange={(e) => handleChangeEmbedId(e.target.value)}
+          />
+          {!!embedId && (
+            <div style={{ padding: '16px 0 24px', width: 480 }}>
+              <YoutubeEmbeded
+                embedId={embedId}
+                offSet={400}
+                transition={1000}
+                isShowControls={false}
+              />
+            </div>
+          )}
+          <TextField
+            size='small'
+            label='marks'
+            value={articleMarksString}
+            variant='outlined'
+            onChange={(e) => handleChangeArticleMarksString(e.target.value)}
+            multiline
+          />
+          <Button
+            variant='contained'
+            color='primary'
+            onClick={handleClickSubmit}
+          >
+            送信
+          </Button>
+        </div>
+      </Container>
+      {!!article.id && (
+        <>
+          <Divider />
+          <EditArticleVoicePane state={state} dispatch={dispatch} />
         </>
       )}
     </div>

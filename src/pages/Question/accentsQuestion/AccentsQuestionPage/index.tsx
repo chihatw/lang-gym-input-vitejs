@@ -3,8 +3,16 @@ import { useMatch } from 'react-router-dom';
 import { useAccentsQuestionPage } from './services/accentsQuestionPage';
 import AccentsQuestionForm from './components/AccentsQuestionForm';
 import TableLayout from '../../../../components/templates/TableLayout';
+import { State } from '../../../../Model';
+import { Action } from '../../../../Update';
 
-const AccentsQuestionPage = () => {
+const AccentsQuestionPage = ({
+  state,
+  dispatch,
+}: {
+  state: State;
+  dispatch: React.Dispatch<Action>;
+}) => {
   const match = useMatch('/accentsQuestion/:id');
   const { initializing, title, ...props } = useAccentsQuestionPage(
     match?.params.id || ''
@@ -14,7 +22,12 @@ const AccentsQuestionPage = () => {
   } else {
     return (
       <TableLayout title={title} backURL='/accentsQuestion/list'>
-        <AccentsQuestionForm {...props} title={title} />
+        <AccentsQuestionForm
+          {...props}
+          title={title}
+          state={state}
+          dispatch={dispatch}
+        />
       </TableLayout>
     );
   }

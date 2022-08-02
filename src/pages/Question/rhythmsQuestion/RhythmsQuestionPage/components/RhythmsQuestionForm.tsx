@@ -10,25 +10,15 @@ import {
 import React from 'react';
 
 import { Audio } from '../../../../../entities/Audio';
+import { State, User } from '../../../../../Model';
 import { Question } from '../../../../../services/useQuestions';
-import { User } from '../../../../../services/useUsers';
+import { Action } from '../../../../../Update';
+
 import RhythmsMonitor from './RhythmsMonitor';
 
-const RhythmsQuestionForm: React.FC<{
-  title: string;
-  users: User[];
-  uid: string;
-  isAnswered: boolean;
-  rhythmString: string;
-  disabledsArray: string[][][];
-  audios: Audio[];
-  questions: Question[];
-  onSubmit: () => void;
-  onChangeUid: (uid: string) => void;
-  onChangeTitle: (title: string) => void;
-  onChangeIsAnswered: (isAnswered: boolean) => void;
-  onChangeRhythmString: (rhythmString: string) => void;
-}> = ({
+const RhythmsQuestionForm = ({
+  state,
+  dispatch,
   users,
   uid,
   title,
@@ -42,6 +32,22 @@ const RhythmsQuestionForm: React.FC<{
   onChangeTitle,
   onChangeIsAnswered,
   onChangeRhythmString,
+}: {
+  state: State;
+  dispatch: React.Dispatch<Action>;
+  title: string;
+  users: User[];
+  uid: string;
+  isAnswered: boolean;
+  rhythmString: string;
+  disabledsArray: string[][][];
+  audios: Audio[];
+  questions: Question[];
+  onSubmit: () => void;
+  onChangeUid: (uid: string) => void;
+  onChangeTitle: (title: string) => void;
+  onChangeIsAnswered: (isAnswered: boolean) => void;
+  onChangeRhythmString: (rhythmString: string) => void;
 }) => {
   return (
     <div style={{ display: 'grid', rowGap: 16 }}>

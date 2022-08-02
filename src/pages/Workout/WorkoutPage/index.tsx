@@ -1,20 +1,57 @@
-import { useNavigate } from 'react-router-dom';
-import React, { useContext, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import { Button, Container, MenuItem, Select, TextField } from '@mui/material';
 
-import { AppContext } from '../../../services/app';
 import WorkoutItemRow from './components/WorkoutItemRow';
-import { Workout, useHandleWorkouts } from '../../../services/useWorkouts';
+import { useHandleWorkouts } from '../../../services/useWorkouts';
 import {
   calcBeatCount,
   string2WorkoutItems,
   WorkoutItem,
   workoutItems2String,
 } from 'workout-items';
+import { INITIAL_WORKOUT, State, Workout } from '../../../Model';
+import { Action, ActionTypes } from '../../../Update';
+import { getUsers } from '../../../services/user';
+import { getWorkout } from '../../../services/workout';
 
-const WorkoutPage = () => {
+const WorkoutPage = ({
+  state,
+  dispatch,
+}: {
+  state: State;
+  dispatch: React.Dispatch<Action>;
+}) => {
+  const { workoutId } = useParams();
+  const { users, isFetching, workout, memo } = state;
+  const { workouts } = memo;
+
+  useEffect(() => {
+    if (!isFetching || !workoutId) return;
+
+    const fetchData = async () => {
+      let _users = users.length ? users : await getUsers();
+
+      let _workout = INITIAL_WORKOUT;
+      if (workout.id === workoutId) {
+        _workout = workout;
+      } else {
+        const memoWorkout = workouts[workoutId];
+        if (memoWorkout) {
+          _workout = memoWorkout;
+        } else {
+          _workout = await getWorkout(workoutId);
+        }
+      }
+      dispatch({
+        type: ActionTypes.setWorkout,
+        payload: { users: _users, workout: _workout },
+      });
+    };
+    fetchData();
+  }, [isFetching]);
+
   const navigate = useNavigate();
-  const { users, workout } = useContext(AppContext);
 
   const { updateWorkout, createWorkout } = useHandleWorkouts();
 

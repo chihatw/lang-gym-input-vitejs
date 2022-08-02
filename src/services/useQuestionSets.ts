@@ -8,7 +8,6 @@ import {
 } from '@firebase/firestore';
 
 import { db } from '../repositories/firebase';
-import { Accent } from '../entities/Accent';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   addDocument,
@@ -16,7 +15,7 @@ import {
   snapshotCollection,
   updateDocument,
 } from '../repositories/utils';
-import { ArticleSentence } from './useSentences';
+import { Accent, ArticleSentence } from '../Model';
 
 export type QuestionSet = {
   id: string;

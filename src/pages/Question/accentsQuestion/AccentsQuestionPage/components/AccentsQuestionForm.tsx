@@ -13,26 +13,12 @@ import JapaneseMonitor from './JapaneseMonitor';
 import AccentsMonitor from './AccentsMonitor';
 
 import { Audio } from '../../../../../entities/Audio';
-import { User } from '../../../../../services/useUsers';
+import { State, User } from '../../../../../Model';
+import { Action } from '../../../../../Update';
 
-const AccentsQuestionForm: React.FC<{
-  title: string;
-  users: User[];
-  uid: string;
-  isAnswered: boolean;
-  japanese: string;
-  accentString: string;
-  disabledsArray: number[][];
-  audios: Audio[];
-  onChangeUid: (uid: string) => void;
-  onChangeTitle: (title: string) => void;
-  onChangeIsAnswered: (isAnswered: boolean) => void;
-  onChangeJapanese: (japanese: string) => void;
-  onChangeAccentString: (accentString: string) => void;
-  onChangeDisabled: (sentenceIndex: number, wordIndex: number) => void;
-  onSubmit: () => void;
-}> = ({
-  users,
+const AccentsQuestionForm = ({
+  state,
+  dispatch,
   uid,
   title,
   isAnswered,
@@ -47,7 +33,25 @@ const AccentsQuestionForm: React.FC<{
   onChangeAccentString,
   onChangeDisabled,
   onSubmit,
+}: {
+  state: State;
+  dispatch: React.Dispatch<Action>;
+  title: string;
+  uid: string;
+  isAnswered: boolean;
+  japanese: string;
+  accentString: string;
+  disabledsArray: number[][];
+  audios: Audio[];
+  onChangeUid: (uid: string) => void;
+  onChangeTitle: (title: string) => void;
+  onChangeIsAnswered: (isAnswered: boolean) => void;
+  onChangeJapanese: (japanese: string) => void;
+  onChangeAccentString: (accentString: string) => void;
+  onChangeDisabled: (sentenceIndex: number, wordIndex: number) => void;
+  onSubmit: () => void;
 }) => {
+  const { users } = state;
   return (
     <Grid container direction='column' spacing={2}>
       {!!users.length && (

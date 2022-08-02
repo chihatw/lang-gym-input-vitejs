@@ -10,39 +10,61 @@ import MicNoneIcon from '@mui/icons-material/MicNone';
 import FlashOffIcon from '@mui/icons-material/FlashOff';
 import { TableRow, TableCell } from '@mui/material';
 
-import { Article } from '../../../../services/useArticles';
 import TitleDateCell from './TitleDateCell';
 import IconButtonCell from './IconButtonCell';
 import PrintIcon from '@mui/icons-material/Print';
+import { Article, State } from '../../../../Model';
+import { Action, ActionTypes } from '../../../../Update';
+import { useNavigate } from 'react-router-dom';
 
 const ArticleRow = ({
-  article,
-  openArticlePage,
+  index,
+  state,
+  dispatch,
   handleClickDelete,
-  openArticleEditPage,
-  openPrintPitchesPage,
   handleClickShowParses,
   handleClickShowAccents,
   handleClickShowRecButton,
 }: {
-  article: Article;
-  openArticlePage: () => void;
+  index: number;
+  state: State;
+  dispatch: React.Dispatch<Action>;
   handleClickDelete: () => void;
-  openArticleEditPage: () => void;
-  openPrintPitchesPage: () => void;
   handleClickShowParses: () => void;
   handleClickShowAccents: () => void;
   handleClickShowRecButton: () => void;
 }) => {
+  const { articleList } = state;
+  const article = articleList[index];
+  const { id } = article;
+  const navigate = useNavigate();
   return (
     <TableRow>
       <TableCell padding='none' sx={{ whiteSpace: 'nowrap' }}>
         {article.userDisplayname}
       </TableCell>
       <TitleDateCell title={article.title} createdAt={article.createdAt} />
-      <IconButtonCell icon={<EditIcon />} onClick={openArticleEditPage} />
-      <IconButtonCell icon={<SubjectIcon />} onClick={openArticlePage} />
-      <IconButtonCell icon={<PrintIcon />} onClick={openPrintPitchesPage} />
+      <IconButtonCell
+        icon={<EditIcon />}
+        onClick={() => {
+          dispatch({ type: ActionTypes.startFetching });
+          navigate(`/article/edit/${article.id}`);
+        }}
+      />
+      <IconButtonCell
+        icon={<SubjectIcon />}
+        onClick={() => {
+          dispatch({ type: ActionTypes.startFetching });
+          navigate(`/article/${article.id}`);
+        }}
+      />
+      <IconButtonCell
+        icon={<PrintIcon />}
+        onClick={() => {
+          dispatch({ type: ActionTypes.startFetching });
+          navigate(`/article/print/${id}`);
+        }}
+      />
       <IconButtonCell
         icon={
           article.isShowAccents ? (

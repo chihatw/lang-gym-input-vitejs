@@ -14,22 +14,13 @@ import { useHandleQuestionSetScores } from '../../../../../services/useQuestionS
 export const useAccentsQuestionListPage = () => {
   const navigate = useNavigate();
 
-  const { accentsQuestionSets, setQuestionSetId, users, questionGroup } =
-    useContext(AppContext);
+  const { accentsQuestionSets, setQuestionSetId } = useContext(AppContext);
 
   const { deleteQuestionSet } = useHandleQuestionSets();
   const { getQuestionGroup, deleteQuestionGroup } = useHandleQuestionGroups();
   const { deleteQuestions } = useHandleQuestions();
   const { deleteQuestionSetScoresByQuestionSetId } =
     useHandleQuestionSetScores();
-
-  const userDisplaynames = useMemo(() => {
-    const userDisplayname: { [key: string]: string } = {};
-    for (const user of users) {
-      userDisplayname[user.id] = user.displayname;
-    }
-    return userDisplayname;
-  }, [users]);
 
   const onEdit = (q: QuestionSet) => {
     setQuestionSetId(q.id);
@@ -57,7 +48,6 @@ export const useAccentsQuestionListPage = () => {
 
   return {
     questionSets: accentsQuestionSets,
-    userDisplaynames,
     onEdit,
     onDelete,
   };
