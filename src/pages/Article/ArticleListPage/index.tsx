@@ -26,29 +26,8 @@ const ArticleListPage = ({
     fetchData();
   }, [isFetching]);
 
-  const { updateArticle, deleteArticle } = useHandleArticles();
+  const { deleteArticle } = useHandleArticles();
   const { deleteSentences } = useHandleSentences();
-
-  const handleClickShowAccents = (article: Article) => {
-    updateArticle({
-      ...article,
-      isShowAccents: !article.isShowAccents,
-    });
-  };
-
-  const handleClickShowParses = (article: Article) => {
-    updateArticle({
-      ...article,
-      isShowParse: !article.isShowParse,
-    });
-  };
-
-  const handleClickShowRecButton = (article: Article) => {
-    updateArticle({
-      ...article,
-      hasRecButton: !article.hasRecButton,
-    });
-  };
 
   // debug
   const handleClickDelete = async ({
@@ -72,16 +51,7 @@ const ArticleListPage = ({
     }
   };
 
-  return (
-    <ArticleListPageComponent
-      state={state}
-      dispatch={dispatch}
-      handleClickDelete={handleClickDelete}
-      handleClickShowAccents={handleClickShowAccents}
-      handleClickShowParses={handleClickShowParses}
-      handleClickShowRecButton={handleClickShowRecButton}
-    />
-  );
+  return <ArticleListPageComponent state={state} dispatch={dispatch} />;
 };
 
 export default ArticleListPage;

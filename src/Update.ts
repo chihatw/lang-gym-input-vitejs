@@ -28,6 +28,8 @@ export const ActionTypes = {
   initialArticle: 'initialArticle',
   setArticleForm: 'setArticleForm',
   setAudioContext: 'setAudioContext',
+  toggleIsShowParses: 'toggleIsShowParses',
+  toggleIsShowAccents: 'toggleIsShowAccents',
 };
 
 export type Action = {
@@ -67,8 +69,58 @@ export type Action = {
 
 export const reducer = (state: State, action: Action): State => {
   const { type, payload } = action;
-  const { quizList } = state;
+  const { quizList, articleList } = state;
+
   switch (type) {
+    case ActionTypes.toggleIsShowAccents: {
+      const articleId = payload as string;
+      const article = articleList.find((item) => item.id === articleId);
+      if (!article) return state;
+
+      const { isShowAccents } = article;
+      const updatedList = articleList.map((item) =>
+        item.id == articleId
+          ? {
+              ...item,
+              isShowAccents: !isShowAccents,
+            }
+          : item
+      );
+      return R.compose(
+        R.assocPath<Article[], State>(['articleList'], updatedList),
+        R.assocPath<boolean, State>(
+          ['article', 'isShowAccents'],
+          !isShowAccents
+        ),
+        R.assocPath<boolean, State>(
+          ['memo', 'articles', articleId, 'isShowAccents'],
+          !isShowAccents
+        )
+      )(state);
+    }
+    case ActionTypes.toggleIsShowParses: {
+      const articleId = payload as string;
+      const article = articleList.find((item) => item.id === articleId);
+      if (!article) return state;
+      const { isShowParse } = article;
+
+      const updatedList = articleList.map((item) =>
+        item.id == articleId
+          ? {
+              ...item,
+              isShowParse: !isShowParse,
+            }
+          : item
+      );
+      return R.compose(
+        R.assocPath<Article[], State>(['articleList'], updatedList),
+        R.assocPath<boolean, State>(['article', 'isShowParse'], !isShowParse),
+        R.assocPath<boolean, State>(
+          ['memo', 'articles', articleId, 'isShowParse'],
+          !isShowParse
+        )
+      )(state);
+    }
     case ActionTypes.setUser: {
       const user = payload as FirebaseUser | null;
       return R.compose(

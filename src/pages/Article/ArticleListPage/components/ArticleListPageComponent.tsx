@@ -10,17 +10,9 @@ import { useNavigate } from 'react-router-dom';
 const ArticleListPageComponent = ({
   state,
   dispatch,
-  handleClickDelete,
-  handleClickShowParses,
-  handleClickShowAccents,
-  handleClickShowRecButton,
 }: {
   state: State;
   dispatch: React.Dispatch<Action>;
-  handleClickDelete: (article: Article) => void;
-  handleClickShowParses: (article: Article) => void;
-  handleClickShowAccents: (article: Article) => void;
-  handleClickShowRecButton: (article: Article) => void;
 }) => {
   const navigate = useNavigate();
 
@@ -53,12 +45,6 @@ const ArticleListPageComponent = ({
                 index={index}
                 state={state}
                 dispatch={dispatch}
-                handleClickDelete={() => handleClickDelete(article)}
-                handleClickShowParses={() => handleClickShowParses(article)}
-                handleClickShowAccents={() => handleClickShowAccents(article)}
-                handleClickShowRecButton={() =>
-                  handleClickShowRecButton(article)
-                }
               />
             ))}
           </TableBody>

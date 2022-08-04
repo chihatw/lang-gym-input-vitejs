@@ -7,6 +7,7 @@ import {
   limit,
   orderBy,
   query,
+  updateDoc,
   where,
 } from 'firebase/firestore';
 import { db } from '../repositories/firebase';
@@ -77,6 +78,12 @@ export const getArticles = async () => {
     articleList.push(buildArticle(doc));
   });
   return articleList;
+};
+
+export const updateArticle = async (article: Article) => {
+  const { id, ...omitted } = article;
+  console.log('update article');
+  await updateDoc(doc(db, COLLECTIONS.articles, id), { ...omitted });
 };
 
 const buildArticle = (doc: DocumentData) => {

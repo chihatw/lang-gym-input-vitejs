@@ -4,9 +4,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import SubjectIcon from '@mui/icons-material/Subject';
-import MicOffIcon from '@mui/icons-material/MicOff';
 import FlashOnIcon from '@mui/icons-material/FlashOn';
-import MicNoneIcon from '@mui/icons-material/MicNone';
 import FlashOffIcon from '@mui/icons-material/FlashOff';
 import { TableRow, TableCell } from '@mui/material';
 
@@ -16,28 +14,41 @@ import PrintIcon from '@mui/icons-material/Print';
 import { Article, State } from '../../../../Model';
 import { Action, ActionTypes } from '../../../../Update';
 import { useNavigate } from 'react-router-dom';
+import { updateArticle } from '../../../../services/article';
 
 const ArticleRow = ({
   index,
   state,
   dispatch,
-  handleClickDelete,
-  handleClickShowParses,
-  handleClickShowAccents,
-  handleClickShowRecButton,
 }: {
   index: number;
   state: State;
   dispatch: React.Dispatch<Action>;
-  handleClickDelete: () => void;
-  handleClickShowParses: () => void;
-  handleClickShowAccents: () => void;
-  handleClickShowRecButton: () => void;
 }) => {
   const { articleList } = state;
   const article = articleList[index];
-  const { id } = article;
+  const { id, isShowParse, isShowAccents } = article;
   const navigate = useNavigate();
+
+  const handleToggleShowAccents = async () => {
+    dispatch({ type: ActionTypes.toggleIsShowAccents, payload: id });
+    const newArticle: Article = { ...article, isShowAccents: !isShowAccents };
+    await updateArticle(newArticle);
+  };
+
+  const handleToggleShowParses = async () => {
+    dispatch({ type: ActionTypes.toggleIsShowParses, payload: id });
+    const newArticle: Article = { ...article, isShowParse: !isShowParse };
+    await updateArticle(newArticle);
+  };
+
+  const handleDelete = async () => {
+    // todo
+    // local
+    // remote
+    // cloudStorage
+  };
+
   return (
     <TableRow>
       <TableCell padding='none' sx={{ whiteSpace: 'nowrap' }}>
@@ -67,23 +78,19 @@ const ArticleRow = ({
       />
       <IconButtonCell
         icon={
-          article.isShowAccents ? (
+          isShowAccents ? (
             <VisibilityOutlinedIcon />
           ) : (
             <VisibilityOffOutlinedIcon />
           )
         }
-        onClick={handleClickShowAccents}
+        onClick={handleToggleShowAccents}
       />
       <IconButtonCell
-        icon={article.isShowParse ? <FlashOnIcon /> : <FlashOffIcon />}
-        onClick={handleClickShowParses}
+        icon={isShowParse ? <FlashOnIcon /> : <FlashOffIcon />}
+        onClick={handleToggleShowParses}
       />
-      <IconButtonCell
-        icon={article.hasRecButton ? <MicNoneIcon /> : <MicOffIcon />}
-        onClick={handleClickShowRecButton}
-      />
-      <IconButtonCell icon={<DeleteIcon />} onClick={handleClickDelete} />
+      <IconButtonCell icon={<DeleteIcon />} onClick={handleDelete} />
     </TableRow>
   );
 };
