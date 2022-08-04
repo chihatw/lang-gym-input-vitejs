@@ -237,6 +237,7 @@ export type State = {
   users: User[];
   articleList: Article[];
   article: Article;
+  articleBlob: Blob | null;
   sentences: ArticleSentence[];
   articleSentenceForms: ArticleSentenceForm[];
   quizList: QuestionSet[];
@@ -247,12 +248,13 @@ export type State = {
   workoutList: Workout[];
   memo: {
     articles: { [id: string]: Article };
-    workouts: { [id: string]: Workout };
+    articleBlobs: { [id: string]: Blob | null };
     sentences: { [id: string]: ArticleSentence[] };
     articleSentenceForms: { [id: string]: ArticleSentenceForm[] };
     quizzes: { [id: string]: QuestionSet };
     quizBlobs: { [id: string]: Blob | null };
     questions: { [id: string]: Question[] };
+    workouts: { [id: string]: Workout };
   };
 };
 
@@ -262,8 +264,9 @@ export const INITIAL_STATE: State = {
   isFetching: false,
   audioContext: null,
   users: [],
-  article: INITIAL_ARTICLE,
   articleList: [],
+  article: INITIAL_ARTICLE,
+  articleBlob: null,
   sentences: [],
   articleSentenceForms: [],
   quizList: [],
@@ -274,11 +277,12 @@ export const INITIAL_STATE: State = {
   workoutList: [],
   memo: {
     articles: {},
-    workouts: {},
+    articleBlobs: {},
     sentences: {},
     articleSentenceForms: {},
     quizzes: {},
     quizBlobs: {},
     questions: {},
+    workouts: {},
   },
 };

@@ -1,3 +1,5 @@
+import getMoras from 'get-moras';
+import { mora2Vowel } from 'mora2vowel';
 import {
   collection,
   doc,
@@ -7,16 +9,21 @@ import {
   limit,
   orderBy,
   query,
+  setDoc,
   updateDoc,
   where,
 } from 'firebase/firestore';
-import { db } from '../repositories/firebase';
+import { db, storage } from '../repositories/firebase';
 import {
   Article,
   ArticleSentence,
   ArticleSentenceForm,
   INITIAL_ARTICLE,
+  Tags,
 } from '../Model';
+import { getDownloadURL, ref } from 'firebase/storage';
+
+const REMOVE_MARKS_REG_EXP = /[、。「」]/g;
 
 const COLLECTIONS = {
   articles: 'articles',
@@ -58,10 +65,25 @@ export const getArticle = async (id: string) => {
   querySnapshot.forEach((doc) => {
     articleSentenceForms.push(buildArticleSentenceForm(doc));
   });
+
+  let articleBlob: Blob | null = null;
+  let { downloadURL } = article;
+  if (downloadURL) {
+    const header = downloadURL.slice(0, 4);
+    if (header !== 'http') {
+      downloadURL = await getDownloadURL(ref(storage, downloadURL));
+    }
+
+    console.log('create article blob');
+    const response = await fetch(downloadURL);
+    articleBlob = await response.blob();
+  }
+
   return {
     article,
     sentences,
     articleSentenceForms,
+    articleBlob,
   };
 };
 
@@ -80,10 +102,25 @@ export const getArticles = async () => {
   return articleList;
 };
 
+// setArticle?
 export const updateArticle = async (article: Article) => {
   const { id, ...omitted } = article;
   console.log('update article');
   await updateDoc(doc(db, COLLECTIONS.articles, id), { ...omitted });
+};
+
+export const setSentences = async (sentences: ArticleSentence[]) => {
+  for (const sentence of sentences) {
+    const { id, ...omitted } = sentence;
+    console.log('set sentence');
+    await setDoc(doc(db, COLLECTIONS.sentences, id), { ...omitted });
+  }
+};
+
+export const updateSentence = async (sentence: ArticleSentence) => {
+  const { id, ...omitted } = sentence;
+  console.log('update sentence');
+  await updateDoc(doc(db, COLLECTIONS.sentences, id), { ...omitted });
 };
 
 const buildArticle = (doc: DocumentData) => {
@@ -165,4 +202,111 @@ const buildArticleSentenceForm = (doc: DocumentData) => {
     sentences: sentences || {},
   };
   return articleSentenceForm;
+};
+
+export const kanaAccentsStr2Kana = (value: string) => {
+  return kana2Hira(value.replace(/[　＼]/g, ''));
+};
+
+const kana2Hira = (str: string): string => {
+  return str.replace(/[\u30a1-\u30f6]/g, function (match) {
+    var chr = match.charCodeAt(0) - 0x60;
+    return String.fromCharCode(chr);
+  });
+};
+
+export const kanaAccentsStr2AccentsString = (value: string) => {
+  let removedMarksStr = value.replace(REMOVE_MARKS_REG_EXP, '');
+
+  const words = removedMarksStr.split('　');
+  const newWords: string[] = [];
+  for (const word of words) {
+    // 「＼」で分割
+    const moraGroups = word.split('＼');
+    const newMoraGroups: string[] = [];
+    let preMoras: string[] = [];
+    for (let i = 0; i < moraGroups.length; i++) {
+      const moraGroup = moraGroups[i];
+      const moras = getMoras(moraGroup);
+      const newMoras: string[] = [];
+      for (let j = 0; j < moras.length; j++) {
+        const newMora = getNewMora({
+          targetMora: moras[j],
+          // moras の先頭は、「＼」で区切られたひとつ前のモーラと長音関係かどうかをチェックする
+          // じゆ＼う　　moras = ['じゆ', 'う'] 「う」の時、「ゆ」と長音関係かどうかをチェック
+          preMora: moras[j - 1] || preMoras.slice(-1)[0],
+        });
+        newMoras.push(newMora);
+      }
+      // 現在のモーラを、preMoras に代入
+      preMoras = moras;
+      newMoraGroups.push(newMoras.join(''));
+    }
+    newWords.push(newMoraGroups.join('＼'));
+  }
+
+  return newWords.join('　');
+};
+
+const getNewMora = ({
+  targetMora,
+  preMora,
+}: {
+  targetMora: string;
+  preMora?: string;
+}) => {
+  if (!preMora) {
+    return targetMora;
+  }
+  const isLongVowel = checkLongVowel({ targetMora, preMora });
+  if (isLongVowel) {
+    return 'ー';
+  }
+  return targetMora;
+};
+
+const checkLongVowel = ({
+  targetMora,
+  preMora,
+}: {
+  targetMora: string;
+  preMora: string;
+}) => {
+  const preMoraVowel = mora2Vowel(preMora);
+  switch (targetMora) {
+    case 'あ':
+    case 'ア':
+      return preMoraVowel === 'a';
+    case 'い':
+    case 'イ':
+      return ['i', 'e'].includes(preMoraVowel);
+    case 'う':
+    case 'ウ':
+      return ['u', 'o'].includes(preMoraVowel);
+    case 'え':
+    case 'エ':
+      return preMoraVowel === 'e';
+    case 'お':
+    case 'オ':
+      return preMoraVowel === 'o';
+    default:
+      return false;
+  }
+};
+
+export const buildTags = (linesArray: string[]) => {
+  const tags: Tags = {};
+  linesArray.forEach((lines) => {
+    lines.split('\n').forEach((line) => {
+      Array.from(line).forEach((_, i) => {
+        // uni-gram
+        tags[line.slice(i, i + 1)] = true;
+        // bi-gram
+        if (i + 1 < line.length) {
+          tags[line.slice(i, i + 2)] = true;
+        }
+      });
+    });
+  });
+  return tags;
 };

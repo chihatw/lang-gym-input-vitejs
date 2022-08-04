@@ -4,21 +4,30 @@ import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import { Button, TextField } from '@mui/material';
 
 import {
-  useHandleSentences,
-  kanaAccentsStr2Kana,
-  kanaAccentsStr2AccentsString,
-} from '../../../../services/useSentences';
-import { buildTags } from '../../../../entities/Tags';
-import {
   Accent,
-  Article,
   ArticleSentence,
   INITIAL_ARTICLE_SENTENCE,
-} from '../../../../Model';
-import { buildAccents } from '../../../../services/quiz';
+  State,
+} from '../../../Model';
+import { buildAccents } from '../../../services/quiz';
+import {
+  buildTags,
+  kanaAccentsStr2AccentsString,
+  kanaAccentsStr2Kana,
+  setSentences,
+} from '../../../services/article';
+import { nanoid } from 'nanoid';
+import { Action, ActionTypes } from '../../../Update';
 
-const InitializeSentencesPane = ({ article }: { article: Article }) => {
-  const { createSentences } = useHandleSentences();
+const InitializeSentencesPane = ({
+  state,
+  dispatch,
+}: {
+  state: State;
+  dispatch: React.Dispatch<Action>;
+}) => {
+  const { article } = state;
+  const { id: articleId } = article;
 
   const [kanaArray, setKanaArray] = useState<string[]>([]);
   const [chineseArray, setChineseArray] = useState<string[]>([]);
@@ -84,7 +93,7 @@ const InitializeSentencesPane = ({ article }: { article: Article }) => {
       );
       return;
     }
-    const sentences: Omit<ArticleSentence, 'id'>[] = [];
+    const sentences: ArticleSentence[] = [];
     japaneseArray.forEach((_, index) => {
       const kana = kanaArray[index];
       const chinese = chineseArray[index];
@@ -93,10 +102,9 @@ const InitializeSentencesPane = ({ article }: { article: Article }) => {
       const japanese = japaneseArray[index];
       const kanaAccentsStr = kanaAccentsStrArray[index];
 
-      const { id, ...omitted } = INITIAL_ARTICLE_SENTENCE;
-
-      const sentence: Omit<ArticleSentence, 'id'> = {
-        ...omitted,
+      const sentence: ArticleSentence = {
+        ...INITIAL_ARTICLE_SENTENCE,
+        id: nanoid(8),
         line: index,
         uid: article.uid,
         kana,
@@ -113,7 +121,11 @@ const InitializeSentencesPane = ({ article }: { article: Article }) => {
       sentences.push(sentence);
     });
 
-    createSentences(sentences);
+    dispatch({
+      type: ActionTypes.updateSentences,
+      payload: { articleId, sentences },
+    });
+    setSentences(sentences);
   };
 
   return (

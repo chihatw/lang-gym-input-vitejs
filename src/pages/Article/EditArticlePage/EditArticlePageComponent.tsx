@@ -13,8 +13,8 @@ import {
 } from '@mui/material';
 
 import { YoutubeEmbeded } from '@chihatw/lang-gym-h.ui.youtube-embeded';
-import { State } from '../../../../Model';
-import { Action } from '../../../../Update';
+import { State } from '../../../Model';
+import { Action } from '../../../Update';
 import { useNavigate } from 'react-router-dom';
 
 const EditArticlePageComponent = ({

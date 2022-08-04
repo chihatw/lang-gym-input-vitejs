@@ -3,7 +3,7 @@ import { deleteFile } from '../../../repositories/file';
 import { useHandleSentences } from '../../../services/useSentences';
 import ArticleListPageComponent from './components/ArticleListPageComponent';
 import { useHandleArticles } from '../../../services/useArticles';
-import { Article, State } from '../../../Model';
+import { State } from '../../../Model';
 import { Action, ActionTypes } from '../../../Update';
 import { getArticles } from '../../../services/article';
 

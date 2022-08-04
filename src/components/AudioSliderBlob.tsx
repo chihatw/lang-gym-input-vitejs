@@ -2,9 +2,9 @@ import PauseIcon from '@mui/icons-material/Pause';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { IconButton, Slider, useTheme } from '@mui/material';
 import React, { useRef, useState } from 'react';
-import { State } from '../../../../Model';
+import { State } from '../Model';
 
-import { createSourceNode } from '../../../../services/utils';
+import { createSourceNode } from '../services/utils';
 
 const AudioSliderBlob = ({
   blob,

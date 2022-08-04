@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 
 import { useHandleArticles } from '../../../services/useArticles';
-import EditArticleVoicePane from './components/EditArticleVoicePane';
+import EditArticleVoicePane from './EditArticleVoicePane';
 import {
   Article,
   ArticleSentence,
@@ -52,6 +52,7 @@ const EditArticlePage = ({
             users: _users,
             article: INITIAL_ARTICLE,
             sentences: [],
+            articleBlob: null,
             articleSentenceForms: [],
           },
         });
@@ -59,22 +60,29 @@ const EditArticlePage = ({
       }
       let _article = INITIAL_ARTICLE;
       let _sentences: ArticleSentence[] = [];
+      let _articleBlob: Blob | null = null;
       let _articleSentenceForms: ArticleSentenceForm[] = [];
 
       const memoArticle = memo.articles[articleId];
       const memoSentences = memo.sentences[articleId];
+      const memoArticleBlob = memo.articleBlobs[articleId];
       const memoArticleSentenceForms = memo.articleSentenceForms[articleId];
-
-      if (memoArticle && memoSentences && memoArticleSentenceForms) {
+      if (
+        memoArticle &&
+        memoSentences &&
+        memoArticleSentenceForms &&
+        memoArticleBlob !== undefined
+      ) {
         _article = memoArticle;
         _sentences = memoSentences;
+        _articleBlob = memoArticleBlob;
         _articleSentenceForms = memoArticleSentenceForms;
       } else {
-        const { article, sentences, articleSentenceForms } = await getArticle(
-          articleId
-        );
+        const { article, sentences, articleSentenceForms, articleBlob } =
+          await getArticle(articleId);
         _article = article;
         _sentences = sentences;
+        _articleBlob = articleBlob;
         _articleSentenceForms = articleSentenceForms;
       }
 
@@ -84,6 +92,7 @@ const EditArticlePage = ({
           users: _users,
           article: _article,
           sentences: _sentences,
+          articleBlob: _articleBlob,
           articleSentenceForms: _articleSentenceForms,
         },
       });

@@ -26,10 +26,14 @@ export const ActionTypes = {
   setArticleList: 'setArticleList',
   setWorkoutList: 'setWorkoutList',
   initialArticle: 'initialArticle',
+  updateSentence: 'updateSentence',
   setArticleForm: 'setArticleForm',
+  updateSentences: 'updateSentences',
   setAudioContext: 'setAudioContext',
   toggleIsShowParses: 'toggleIsShowParses',
   toggleIsShowAccents: 'toggleIsShowAccents',
+  deleteArticleAudioFile: 'deleteArticleAudioFile',
+  uploadArticleAudioFile: 'uploadArticleAudioFile',
 };
 
 export type Action = {
@@ -39,11 +43,14 @@ export type Action = {
     | FirebaseUser
     | string
     | User[]
+    | Article
     | Article[]
     | Workout[]
     | QuestionSet[]
     | AudioContext
     | { workout: Workout; users: User[] }
+    | { articleId: string; sentence: ArticleSentence }
+    | { articleId: string; sentences: ArticleSentence[] }
     | {
         quiz: QuestionSet;
         questions: Question[];
@@ -57,19 +64,29 @@ export type Action = {
     | {
         article: Article;
         sentences: ArticleSentence[];
+      }
+    | {
+        article: Article;
+        articleBlob: Blob | null;
+      }
+    | {
+        article: Article;
+        sentences: ArticleSentence[];
+        articleBlob: Blob | null;
         articleSentenceForms: ArticleSentenceForm[];
       }
     | {
         users: User[];
         article: Article;
         sentences: ArticleSentence[];
+        articleBlob: Blob | null;
         articleSentenceForms: ArticleSentenceForm[];
       };
 };
 
 export const reducer = (state: State, action: Action): State => {
   const { type, payload } = action;
-  const { quizList, articleList } = state;
+  const { quizList, articleList, sentences } = state;
 
   switch (type) {
     case ActionTypes.toggleIsShowAccents: {
@@ -142,6 +159,20 @@ export const reducer = (state: State, action: Action): State => {
         R.assocPath<ArticleSentenceForm[], State>(['articleSentenceForms'], [])
       )(state);
     }
+    case ActionTypes.updateSentences: {
+      const { articleId, sentences } = payload as {
+        articleId: string;
+        sentences: ArticleSentence[];
+      };
+
+      return R.compose(
+        R.assocPath<ArticleSentence[], State>(['sentences'], sentences),
+        R.assocPath<ArticleSentence[], State>(
+          ['memo', 'sentences', articleId],
+          sentences
+        )
+      )(state);
+    }
     case ActionTypes.startFetching: {
       return R.compose(R.assocPath<boolean, State>(['isFetching'], true))(
         state
@@ -169,20 +200,27 @@ export const reducer = (state: State, action: Action): State => {
       )(state);
     }
     case ActionTypes.setArticle: {
-      const { article, sentences, articleSentenceForms } = payload as {
-        article: Article;
-        sentences: ArticleSentence[];
-        articleSentenceForms: ArticleSentenceForm[];
-      };
+      const { article, sentences, articleSentenceForms, articleBlob } =
+        payload as {
+          article: Article;
+          sentences: ArticleSentence[];
+          articleBlob: Blob | null;
+          articleSentenceForms: ArticleSentenceForm[];
+        };
       return R.compose(
         R.assocPath<boolean, State>(['isFetching'], false),
         R.assocPath<Article, State>(['article'], article),
+        R.assocPath<Blob | null, State>(['articleBlob'], articleBlob),
         R.assocPath<ArticleSentence[], State>(['sentences'], sentences),
         R.assocPath<ArticleSentenceForm[], State>(
           ['articleSentenceForms'],
           articleSentenceForms
         ),
         R.assocPath<Article, State>(['memo', 'articles', article.id], article),
+        R.assocPath<Blob | null, State>(
+          ['memo', 'articleBlobs', article.id],
+          articleBlob
+        ),
         R.assocPath<ArticleSentence[], State>(
           ['memo', 'sentences', article.id],
           sentences
@@ -260,22 +298,29 @@ export const reducer = (state: State, action: Action): State => {
       )(state);
     }
     case ActionTypes.setArticleForm: {
-      const { users, article, sentences, articleSentenceForms } = payload as {
-        users: User[];
-        article: Article;
-        sentences: ArticleSentence[];
-        articleSentenceForms: ArticleSentenceForm[];
-      };
+      const { users, article, sentences, articleSentenceForms, articleBlob } =
+        payload as {
+          users: User[];
+          article: Article;
+          articleBlob: Blob | null;
+          sentences: ArticleSentence[];
+          articleSentenceForms: ArticleSentenceForm[];
+        };
       return R.compose(
         R.assocPath<boolean, State>(['isFetching'], false),
         R.assocPath<User[], State>(['users'], users),
         R.assocPath<Article, State>(['article'], article),
+        R.assocPath<Blob | null, State>(['articleBlob'], articleBlob),
         R.assocPath<ArticleSentence[], State>(['sentences'], sentences),
         R.assocPath<ArticleSentenceForm[], State>(
           ['articleSentenceForms'],
           articleSentenceForms
         ),
         R.assocPath<Article, State>(['memo', 'articles', article.id], article),
+        R.assocPath<Blob | null, State>(
+          ['memo', 'articleBlobs', article.id],
+          articleBlob
+        ),
         R.assocPath<ArticleSentence[], State>(
           ['memo', 'sentences', article.id],
           sentences
@@ -301,6 +346,57 @@ export const reducer = (state: State, action: Action): State => {
         R.assocPath<User[], State>(['users'], users),
         R.assocPath<Workout, State>(['workout'], workout),
         R.assocPath<Workout, State>(['memo', 'workouts', workout.id], workout)
+      )(state);
+    }
+    case ActionTypes.updateSentence: {
+      const { sentence, articleId } = payload as {
+        articleId: string;
+        sentence: ArticleSentence;
+      };
+      const updatedSentences = sentences.map((item) =>
+        item.id === sentence.id ? sentence : item
+      );
+      return R.compose(
+        R.assocPath<ArticleSentence[], State>(['sentences'], updatedSentences),
+        R.assocPath<ArticleSentence[], State>(
+          ['memo', 'sentences', articleId],
+          updatedSentences
+        )
+      )(state);
+    }
+    case ActionTypes.uploadArticleAudioFile: {
+      const { article, articleBlob } = payload as {
+        article: Article;
+        articleBlob: Blob | null;
+      };
+      return R.compose(
+        R.assocPath<Article, State>(['article'], article),
+        R.assocPath<Blob | null, State>(['articleBlob'], articleBlob),
+        R.assocPath<Article, State>(['memo', 'articles', article.id], article),
+        R.assocPath<Blob | null, State>(
+          ['memo', 'articleBlobs', article.id],
+          articleBlob
+        )
+      )(state);
+    }
+    case ActionTypes.deleteArticleAudioFile: {
+      const { article, sentences } = payload as {
+        article: Article;
+        sentences: ArticleSentence[];
+      };
+      return R.compose(
+        R.assocPath<Article, State>(['article'], article),
+        R.assocPath<Blob | null, State>(['articleBlob'], null),
+        R.assocPath<ArticleSentence[], State>(['sentences'], sentences),
+        R.assocPath<Article, State>(['memo', 'articles', article.id], article),
+        R.assocPath<Blob | null, State>(
+          ['memo', 'articleBlobs', article.id],
+          null
+        ),
+        R.assocPath<ArticleSentence[], State>(
+          ['memo', 'sentences', article.id],
+          sentences
+        )
       )(state);
     }
     default:

@@ -2,17 +2,18 @@ import { Button, TextField } from '@mui/material';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import accentsForPitchesArray from 'accents-for-pitches-array';
 import React, { useState, useEffect } from 'react';
-import {
-  kanaAccentsStr2AccentsString,
-  kanaAccentsStr2Kana,
-  useHandleSentences,
-} from '../../../../services/useSentences';
 
-import { buildTags } from '../../../../entities/Tags';
-import Speaker from '../../../../components/Speaker';
-import { ArticleSentence, State } from '../../../../Model';
-import { Action } from '../../../../Update';
-import { buildAccents, buildAccentString } from '../../../../services/quiz';
+import { Action, ActionTypes } from '../../../../../Update';
+import AudioSlider from '../../../../../components/AudioSlider';
+
+import { ArticleSentence, State } from '../../../../../Model';
+import { buildAccents, buildAccentString } from '../../../../../services/quiz';
+import {
+  updateSentence,
+  kanaAccentsStr2Kana,
+  kanaAccentsStr2AccentsString,
+  buildTags,
+} from '../../../../../services/article';
 
 const EditSentencePane = ({
   state,
@@ -25,9 +26,9 @@ const EditSentencePane = ({
   callback: () => void;
   sentenceIndex: number;
 }) => {
-  const { article, sentences } = state;
+  const { article, sentences, audioContext, articleBlob } = state;
+  const { id: articleId } = article;
   const sentence = sentences[sentenceIndex];
-  const { updateSentence } = useHandleSentences();
 
   const [end, setEnd] = useState(0);
   const [kana, setKana] = useState('');
@@ -104,10 +105,13 @@ const EditSentencePane = ({
       original,
       kanaAccentsStr,
     };
-    const updatedItem = await updateSentence(newSentence);
-    if (!!updatedItem) {
-      callback();
-    }
+    dispatch({
+      type: ActionTypes.updateSentence,
+      payload: { articleId, sentence: newSentence },
+    });
+    await updateSentence(newSentence);
+
+    callback();
   };
 
   return (
@@ -160,14 +164,23 @@ const EditSentencePane = ({
           pitchesArray={accentsForPitchesArray(buildAccents(accentString))}
         />
       </div>
+      {!!audioContext && !!articleBlob && (
+        <AudioSlider
+          start={start}
+          end={end}
+          spacer={5}
+          audioContext={audioContext}
+          blob={articleBlob}
+        />
+      )}
+
       <div
         style={{
           display: 'grid',
           columnGap: 16,
-          gridTemplateColumns: '32px 80px 80px',
+          gridTemplateColumns: ' 80px 80px',
         }}
       >
-        <Speaker start={start} end={end} downloadURL={article.downloadURL} />
         <TextField
           variant='outlined'
           size='small'

@@ -32,6 +32,7 @@ const PrintPitchesPage = ({
         payload: {
           article: INITIAL_ARTICLE,
           sentences: [],
+          articleBlob: null,
           articleSentenceForms: [],
         },
       });
@@ -66,6 +67,7 @@ const PrintPitchesPage = ({
           article: _article,
           sentences: _sentences,
           articleSentenceForms: _articleSentenceForms,
+          articleBlob: null,
         },
       });
     };
