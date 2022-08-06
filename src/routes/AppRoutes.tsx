@@ -98,7 +98,7 @@ const AppRoutes = ({
 
       {/* form */}
       <Route
-        path='/form/:index'
+        path='/form/:articleId/index/:index'
         element={
           <EditArticleSentenceFormPane state={state} dispatch={dispatch} />
         }

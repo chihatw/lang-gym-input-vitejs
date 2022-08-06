@@ -152,6 +152,14 @@ export const deleteArticle = async (articleId: string) => {
   await deleteDoc(doc(db, COLLECTIONS.articles, articleId));
 };
 
+export const setArticleSentenceForm = async (
+  articleSentenceForm: ArticleSentenceForm
+) => {
+  const { id, ...omitted } = articleSentenceForm;
+  console.log('set articleSentenceForm');
+  setDoc(doc(db, COLLECTIONS.articleSentenceForms, id), { ...omitted });
+};
+
 export const buildArticleEditState = (state: State): ArticleEditState => {
   const { users, article, sentences } = state;
   const { id, uid, createdAt, title, embedID } = article;

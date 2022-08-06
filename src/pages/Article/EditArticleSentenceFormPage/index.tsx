@@ -1,9 +1,9 @@
 import React from 'react';
-import { Navigate, useMatch } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 import TableLayout from '../../../components/templates/TableLayout';
 import { State } from '../../../Model';
 import { Action } from '../../../Update';
-import SentenceForm from './components/SentenceForm';
+import SentenceForm from './SentenceForm';
 
 const EditArticleSentenceFormPane = ({
   state,
@@ -12,29 +12,29 @@ const EditArticleSentenceFormPane = ({
   state: State;
   dispatch: React.Dispatch<Action>;
 }) => {
-  const match = useMatch('/form/:index');
-  const index = Number(match?.params.index || '0');
+  const { index } = useParams();
   const { article, sentences } = state;
-  const sentence = sentences[index];
-  if (!!article) {
-    return (
-      <TableLayout
-        title={`${article.title} - 文の形 編集`}
-        maxWidth='md'
-        backURL={`/article/${article.id}`}
-      >
-        {!!sentence && (
-          <SentenceForm
-            lineIndex={index}
-            sentence={sentence}
-            state={state}
-            dispatch={dispatch}
-          />
-        )}
-      </TableLayout>
-    );
-  }
-  return <Navigate to={'/article/list'} />;
+  const { title, id: articleId } = article;
+  if (index === undefined || !article) return <Navigate to={'/article/list'} />;
+
+  const sentenceIndex = Number(index);
+  const sentence = sentences[sentenceIndex];
+
+  return (
+    <TableLayout
+      title={`${title} - 文の形 編集`}
+      maxWidth='md'
+      backURL={`/article/${articleId}`}
+    >
+      {!!sentence && (
+        <SentenceForm
+          state={state}
+          dispatch={dispatch}
+          sentenceIndex={Number(index)}
+        />
+      )}
+    </TableLayout>
+  );
 };
 
 export default EditArticleSentenceFormPane;

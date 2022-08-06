@@ -6,6 +6,7 @@ import {
   ArticleSentenceForm,
   INITIAL_ARTICLE,
   INITIAL_QUESTION_SET,
+  INITIAL_WORKOUT,
   Question,
   QuestionSet,
   State,
@@ -24,6 +25,7 @@ export const ActionTypes = {
   setQuizList: 'setQuizList',
   deleteArticle: 'deleteArticle',
   startFetching: 'startFetching',
+  deleteWorkout: 'deleteWorkout',
   setArticleList: 'setArticleList',
   setWorkoutList: 'setWorkoutList',
   initialArticle: 'initialArticle',
@@ -31,11 +33,13 @@ export const ActionTypes = {
   setArticleForm: 'setArticleForm',
   updateSentences: 'updateSentences',
   setAudioContext: 'setAudioContext',
+  setWorkoutSingle: 'setWorkoutSingle',
   setArticleSingle: 'setArticleSingle',
   toggleIsShowParses: 'toggleIsShowParses',
   toggleIsShowAccents: 'toggleIsShowAccents',
   deleteArticleAudioFile: 'deleteArticleAudioFile',
   uploadArticleAudioFile: 'uploadArticleAudioFile',
+  setArticleSentenceForm: 'setArticleSentenceForm',
 };
 
 export type Action = {
@@ -47,15 +51,22 @@ export type Action = {
     | User[]
     | Article
     | Article[]
+    | Workout
     | Workout[]
     | QuestionSet[]
     | AudioContext
     | { workout: Workout; users: User[] }
+    | { workoutList: Workout[]; users: User[] }
     | { articleId: string; sentence: ArticleSentence }
     | { articleId: string; sentences: ArticleSentence[] }
     | {
         quiz: QuestionSet;
         questions: Question[];
+      }
+    | {
+        articleId: string;
+        sentenceIndex: number;
+        articleSentenceForm: ArticleSentenceForm;
       }
     | {
         quiz: QuestionSet;
@@ -88,7 +99,7 @@ export type Action = {
 
 export const reducer = (state: State, action: Action): State => {
   const { type, payload } = action;
-  const { quizList, articleList, sentences } = state;
+  const { quizList, articleList, sentences, workoutList } = state;
 
   switch (type) {
     case ActionTypes.toggleIsShowAccents: {
@@ -382,8 +393,12 @@ export const reducer = (state: State, action: Action): State => {
     }
 
     case ActionTypes.setWorkoutList: {
-      const workoutList = payload as Workout[];
+      const { workoutList, users } = payload as {
+        workoutList: Workout[];
+        users: User[];
+      };
       return R.compose(
+        R.assocPath<User[], State>(['users'], users),
         R.assocPath<boolean, State>(['isFetching'], false),
         R.assocPath<Workout[], State>(['workoutList'], workoutList)
       )(state);
@@ -395,6 +410,35 @@ export const reducer = (state: State, action: Action): State => {
         R.assocPath<User[], State>(['users'], users),
         R.assocPath<Workout, State>(['workout'], workout),
         R.assocPath<Workout, State>(['memo', 'workouts', workout.id], workout)
+      )(state);
+    }
+    case ActionTypes.setWorkoutSingle: {
+      const workout = payload as Workout;
+      let updatedList = [...workoutList];
+      const isCreateNew = !updatedList.find((item) => item.id === workout.id);
+      if (isCreateNew) {
+        updatedList.unshift(workout);
+      } else {
+        updatedList = updatedList.map((item) =>
+          item.id === workout.id ? workout : item
+        );
+      }
+      return R.compose(
+        R.assocPath<Workout, State>(['workout'], workout),
+        R.assocPath<Workout[], State>(['workoutList'], updatedList),
+        R.assocPath<Workout, State>(['memo', 'workouts', workout.id], workout)
+      )(state);
+    }
+    case ActionTypes.deleteWorkout: {
+      const workoutIdToDelete = payload as string;
+      let updatedList = [...workoutList];
+
+      updatedList = updatedList.filter((item) => item.id !== workoutIdToDelete);
+
+      return R.compose(
+        R.assocPath<Workout, State>(['workout'], INITIAL_WORKOUT),
+        R.assocPath<Workout[], State>(['workoutList'], updatedList),
+        R.dissocPath<State>(['memo', 'workouts', workoutIdToDelete])
       )(state);
     }
     case ActionTypes.updateSentence: {
@@ -445,6 +489,23 @@ export const reducer = (state: State, action: Action): State => {
         R.assocPath<ArticleSentence[], State>(
           ['memo', 'sentences', article.id],
           sentences
+        )
+      )(state);
+    }
+    case ActionTypes.setArticleSentenceForm: {
+      const { articleId, sentenceIndex, articleSentenceForm } = payload as {
+        articleId: string;
+        sentenceIndex: number;
+        articleSentenceForm: ArticleSentenceForm;
+      };
+      return R.compose(
+        R.assocPath<ArticleSentenceForm, State>(
+          ['articleSentenceForms', sentenceIndex],
+          articleSentenceForm
+        ),
+        R.assocPath<ArticleSentenceForm, State>(
+          ['memo', 'articleSentenceForms', articleId, sentenceIndex],
+          articleSentenceForm
         )
       )(state);
     }

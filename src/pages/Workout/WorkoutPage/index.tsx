@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { Button, Container, MenuItem, Select, TextField } from '@mui/material';
 
 import WorkoutItemRow from './components/WorkoutItemRow';
-import { useHandleWorkouts } from '../../../services/useWorkouts';
 import {
   calcBeatCount,
   string2WorkoutItems,
@@ -13,7 +12,8 @@ import {
 import { INITIAL_WORKOUT, State, Workout } from '../../../Model';
 import { Action, ActionTypes } from '../../../Update';
 import { getUsers } from '../../../services/user';
-import { getWorkout } from '../../../services/workout';
+import { getWorkout, setWorkout } from '../../../services/workout';
+import { nanoid } from 'nanoid';
 
 const WorkoutPage = ({
   state,
@@ -53,8 +53,6 @@ const WorkoutPage = ({
 
   const navigate = useNavigate();
 
-  const { updateWorkout, createWorkout } = useHandleWorkouts();
-
   const [label, setLabel] = useState('');
   const [uid, setUid] = useState('');
   const [workoutItems, setWorkoutItems] = useState<WorkoutItem[]>([]);
@@ -68,7 +66,7 @@ const WorkoutPage = ({
   }, [users]);
 
   useEffect(() => {
-    if (!workout.id) return;
+    if (!workoutId) return;
     setLabel(workout.label);
     setUid(workout.uid);
     setBeatCount(workout.beatCount);
@@ -87,30 +85,21 @@ const WorkoutPage = ({
   const handleSubmit = async () => {
     const date = new Date();
     const newWorkout: Workout = {
-      id: workout.id,
+      id: workoutId || nanoid(8),
       beatCount,
       createdAt: !!workout.createdAt ? workout.createdAt : date.getTime(),
-      createdAtStr: !!workout.createdAtStr
-        ? workout.createdAtStr
-        : `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`,
+      createdAtStr: '',
       dateId,
       hidden: typeof workout.hidden === 'boolean' ? workout.hidden : true,
       items: workoutItems,
       label,
       uid,
     };
-    if (!!workout.id) {
-      const result = await updateWorkout(newWorkout);
-      if (!!result) {
-        navigate('/workouts');
-      }
-    } else {
-      const { id, ...omitted } = newWorkout;
-      const result = await createWorkout(omitted);
-      if (!!result) {
-        navigate('/workouts');
-      }
-    }
+
+    dispatch({ type: ActionTypes.setWorkoutSingle, payload: newWorkout });
+    setWorkout(newWorkout);
+
+    navigate('/workouts');
   };
 
   return (

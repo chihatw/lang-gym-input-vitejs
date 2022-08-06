@@ -1,5 +1,6 @@
 import {
   collection,
+  deleteDoc,
   doc,
   DocumentData,
   getDoc,
@@ -7,6 +8,7 @@ import {
   limit,
   orderBy,
   query,
+  setDoc,
   startAfter,
   updateDoc,
   where,
@@ -37,6 +39,17 @@ export const getWorkouts = async () => {
   });
 
   return workoutList;
+};
+
+export const setWorkout = async (workout: Workout) => {
+  const { id, ...omitted } = workout;
+  console.log('set workout');
+  await setDoc(doc(db, COLLECTIONS.workouts, id), { ...omitted });
+};
+
+export const deleteWorkout = async (workoutId: string) => {
+  console.log('delete workkout');
+  await deleteDoc(doc(db, COLLECTIONS.workouts, workoutId));
 };
 
 const buildWorkout = (doc: DocumentData) => {

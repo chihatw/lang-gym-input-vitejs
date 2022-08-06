@@ -16,6 +16,8 @@ const SentenceRowFooter = ({
   dispatch: React.Dispatch<Action>;
   sentenceIndex: number;
 }) => {
+  const { article } = state;
+  const { id: articleId } = article;
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   return (
@@ -34,7 +36,7 @@ const SentenceRowFooter = ({
         <IconButton
           size='small'
           onClick={() => {
-            navigate(`/form/${sentenceIndex}`);
+            navigate(`/form/${articleId}/index/${sentenceIndex}`);
           }}
         >
           <AccountTreeIcon />

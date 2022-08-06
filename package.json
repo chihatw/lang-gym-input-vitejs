@@ -14,7 +14,6 @@
     "@chihatw/pitch-line.sentence-pitch-line": "^1.0.2",
     "@chihatw/sentence-form.sentence-form-input": "^1.0.10",
     "@chihatw/sentence-form.sentence-form-pane": "^1.0.22",
-    "@chihatw/sentence-form.word-pane": "^1.0.2",
     "@date-io/core": "^2.13.1",
     "@date-io/dayjs": "^2.13.1",
     "@emotion/css": "^11.9.0",

@@ -14,10 +14,14 @@ import {
 } from '@mui/material';
 import React, { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useHandleWorkouts } from '../../../services/useWorkouts';
 import { State, Workout } from '../../../Model';
 import { Action, ActionTypes } from '../../../Update';
-import { getWorkouts } from '../../../services/workout';
+import {
+  deleteWorkout,
+  getWorkouts,
+  setWorkout,
+} from '../../../services/workout';
+import { getUsers } from '../../../services/user';
 
 const WorkoutsPage = ({
   state,
@@ -26,14 +30,18 @@ const WorkoutsPage = ({
   state: State;
   dispatch: React.Dispatch<Action>;
 }) => {
-  const { isFetching, workoutList } = state;
+  const { isFetching, workoutList, users } = state;
   useEffect(() => {
     if (!isFetching) return;
     const fetchData = async () => {
+      let _users = !!users.length ? users : await getUsers();
       const _workoutList = workoutList.length
         ? workoutList
         : await getWorkouts();
-      dispatch({ type: ActionTypes.setWorkoutList, payload: _workoutList });
+      dispatch({
+        type: ActionTypes.setWorkoutList,
+        payload: { workoutList: _workoutList, users: _users },
+      });
     };
     fetchData();
   }, [isFetching]);
@@ -60,8 +68,8 @@ const WorkoutsPage = ({
             {workoutList.map((workout, index) => (
               <WorkoutRow
                 key={index}
-                workout={workout}
                 state={state}
+                workoutIndex={index}
                 dispatch={dispatch}
               />
             ))}
@@ -75,18 +83,19 @@ const WorkoutsPage = ({
 export default WorkoutsPage;
 
 const WorkoutRow = ({
-  workout,
   state,
   dispatch,
+  workoutIndex,
 }: {
   state: State;
   dispatch: React.Dispatch<Action>;
-  workout: Workout;
+  workoutIndex: number;
 }) => {
-  const { users } = state;
+  const { users, workoutList } = state;
+  const workout = workoutList[workoutIndex];
+  const { id: workoutId } = workout;
   const navigate = useNavigate();
 
-  const { deleteWorkout, updateWorkout } = useHandleWorkouts();
   const user = useMemo(
     () => users.filter((user) => user.id === workout.uid)[0],
     [users, workout]
@@ -94,14 +103,16 @@ const WorkoutRow = ({
 
   const handleClickEdit = () => {
     dispatch({ type: ActionTypes.startFetching });
-    navigate(`/workout/${workout.id}`);
+    navigate(`/workout/${workoutId}`);
   };
   const handleClickDelete = () => {
-    deleteWorkout(workout.id);
+    dispatch({ type: ActionTypes.deleteWorkout, payload: workoutId });
+    deleteWorkout(workoutId);
   };
   const handleClickVisibility = () => {
     const newWorkout: Workout = { ...workout, hidden: !workout.hidden };
-    updateWorkout(newWorkout);
+    dispatch({ type: ActionTypes.setWorkoutSingle, payload: newWorkout });
+    setWorkout(newWorkout);
   };
   return (
     <TableRow>
