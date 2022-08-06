@@ -10,7 +10,7 @@ import { setArticleVoiceInitialValue } from '../../../services/wave';
 import { articleVoiceReducer } from './Update';
 import { INITIAL_ARTICLE_VOICE_STATE } from './Model';
 import EditAudioPane from './EditAudioPane';
-import { setSentences, updateArticle } from '../../../services/article';
+import { setSentences, setArticle } from '../../../services/article';
 
 const EditArticleVoicePane = ({
   state,
@@ -53,7 +53,7 @@ const EditArticleVoicePane = ({
         payload: { article: newArticle, articleBlob: blob },
       });
 
-      updateArticle(newArticle);
+      setArticle(newArticle);
     };
     reader.readAsDataURL(file);
   };
@@ -95,7 +95,7 @@ const EditArticleVoicePane = ({
         payload: { article: newArticle, sentences: newSentences },
       });
 
-      updateArticle(newArticle);
+      setArticle(newArticle);
       setSentences(newSentences);
     }
   };

@@ -22,6 +22,7 @@ export const ActionTypes = {
   setWorkout: 'setWorkout',
   deleteQuiz: 'deleteQuiz',
   setQuizList: 'setQuizList',
+  deleteArticle: 'deleteArticle',
   startFetching: 'startFetching',
   setArticleList: 'setArticleList',
   setWorkoutList: 'setWorkoutList',
@@ -30,6 +31,7 @@ export const ActionTypes = {
   setArticleForm: 'setArticleForm',
   updateSentences: 'updateSentences',
   setAudioContext: 'setAudioContext',
+  setArticleSingle: 'setArticleSingle',
   toggleIsShowParses: 'toggleIsShowParses',
   toggleIsShowAccents: 'toggleIsShowAccents',
   deleteArticleAudioFile: 'deleteArticleAudioFile',
@@ -199,6 +201,39 @@ export const reducer = (state: State, action: Action): State => {
         R.assocPath<User[], State>(['users'], users)
       )(state);
     }
+    case ActionTypes.setArticleSingle: {
+      const article = payload as Article;
+      let updatedList = [...articleList];
+      const isCreateNew = !updatedList.find((item) => item.id === article.id);
+      if (isCreateNew) {
+        updatedList.unshift(article);
+      } else {
+        updatedList = updatedList.map((item) =>
+          item.id === article.id ? article : item
+        );
+      }
+      return R.compose(
+        R.assocPath<Article, State>(['article'], article),
+        R.assocPath<Article[], State>(['articleList'], updatedList),
+        R.assocPath<Article, State>(['memo', 'articles', article.id], article)
+      )(state);
+    }
+    case ActionTypes.deleteArticle: {
+      const articleId = payload as string;
+      const updatedList = articleList.filter((item) => item.id !== articleId);
+
+      return R.compose(
+        R.assocPath<Article[], State>(['articleList'], updatedList),
+        R.assocPath<Article, State>(['article'], INITIAL_ARTICLE),
+        R.assocPath<ArticleSentence[], State>(['sentences'], []),
+        R.assocPath<null, State>(['articleBlob'], null),
+        R.assocPath<ArticleSentenceForm[], State>(['articleSentenceForms'], []),
+        R.dissocPath<State>(['memo', 'articles', articleId]),
+        R.dissocPath<State>(['memo', 'sentences', articleId]),
+        R.dissocPath<State>(['memo', 'articleBlobs', articleId]),
+        R.dissocPath<State>(['memo', 'articleSentenceForms', articleId])
+      )(state);
+    }
     case ActionTypes.setArticle: {
       const { article, sentences, articleSentenceForms, articleBlob } =
         payload as {
@@ -207,8 +242,22 @@ export const reducer = (state: State, action: Action): State => {
           articleBlob: Blob | null;
           articleSentenceForms: ArticleSentenceForm[];
         };
+
+      let updatedList = [...articleList];
+
+      const isCreateNew = !updatedList.find((item) => item.id === article.id);
+
+      if (isCreateNew) {
+        updatedList.unshift(article);
+      } else {
+        updatedList = updatedList.map((item) =>
+          item.id === article.id ? article : item
+        );
+      }
+
       return R.compose(
         R.assocPath<boolean, State>(['isFetching'], false),
+        R.assocPath<Article[], State>(['articleList'], updatedList),
         R.assocPath<Article, State>(['article'], article),
         R.assocPath<Blob | null, State>(['articleBlob'], articleBlob),
         R.assocPath<ArticleSentence[], State>(['sentences'], sentences),

@@ -12,6 +12,8 @@ import { ArticleSentence, ArticleSentenceForm, State } from '../../../../Model';
 import { useHandleArticleSentenceForms } from '../../../../services/useArticleSentenceForms';
 import { Action } from '../../../../Update';
 
+// debug
+
 const SentenceForm = ({
   state,
   dispatch,

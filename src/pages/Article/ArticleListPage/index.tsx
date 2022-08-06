@@ -1,11 +1,11 @@
+import { Button, Container, Table, TableBody, Typography } from '@mui/material';
 import React, { useEffect } from 'react';
-import { deleteFile } from '../../../repositories/file';
-import { useHandleSentences } from '../../../services/useSentences';
-import ArticleListPageComponent from './components/ArticleListPageComponent';
-import { useHandleArticles } from '../../../services/useArticles';
 import { State } from '../../../Model';
 import { Action, ActionTypes } from '../../../Update';
 import { getArticles } from '../../../services/article';
+import LinkButton from '../../../components/ui/LinkButton';
+import { useNavigate } from 'react-router-dom';
+import ArticleRow from './components/ArticleRow';
 
 const ArticleListPage = ({
   state,
@@ -14,6 +14,7 @@ const ArticleListPage = ({
   state: State;
   dispatch: React.Dispatch<Action>;
 }) => {
+  const navigate = useNavigate();
   const { isFetching, articleList } = state;
   useEffect(() => {
     if (!isFetching) return;
@@ -26,32 +27,41 @@ const ArticleListPage = ({
     fetchData();
   }, [isFetching]);
 
-  const { deleteArticle } = useHandleArticles();
-  const { deleteSentences } = useHandleSentences();
-
-  // debug
-  const handleClickDelete = async ({
-    id,
-    title,
-    downloadURL,
-  }: {
-    id: string;
-    title: string;
-    downloadURL: string;
-  }) => {
-    if (window.confirm(`${title}を削除しますか`)) {
-      if (downloadURL) {
-        const path = decodeURIComponent(
-          downloadURL.split('/')[7].split('?')[0]
-        );
-        deleteFile(path);
-      }
-      await deleteSentences(id);
-      await deleteArticle(id);
-    }
-  };
-
-  return <ArticleListPageComponent state={state} dispatch={dispatch} />;
+  return (
+    <Container maxWidth={'sm'} sx={{ paddingTop: 2 }}>
+      <div style={{ display: 'grid', rowGap: 16 }}>
+        <div style={{ display: 'grid', rowGap: 16 }}>
+          <Typography variant='h5'>{'作文一覧'}</Typography>
+          <div>
+            <LinkButton label={'戻る'} pathname={'/'} />
+          </div>
+          <div>
+            <Button
+              variant='contained'
+              onClick={() => {
+                navigate('/article/initial');
+                dispatch({ type: ActionTypes.initialArticle });
+              }}
+            >
+              新規作成
+            </Button>
+          </div>
+        </div>
+        <Table>
+          <TableBody>
+            {articleList.map((_, index) => (
+              <ArticleRow
+                key={index}
+                index={index}
+                state={state}
+                dispatch={dispatch}
+              />
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </Container>
+  );
 };
 
 export default ArticleListPage;

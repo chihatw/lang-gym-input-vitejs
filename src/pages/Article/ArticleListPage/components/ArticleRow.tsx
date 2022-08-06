@@ -14,7 +14,8 @@ import PrintIcon from '@mui/icons-material/Print';
 import { Article, State } from '../../../../Model';
 import { Action, ActionTypes } from '../../../../Update';
 import { useNavigate } from 'react-router-dom';
-import { updateArticle } from '../../../../services/article';
+import { deleteArticle, setArticle } from '../../../../services/article';
+import { deleteFile } from '../../../../repositories/file';
 
 const ArticleRow = ({
   index,
@@ -27,26 +28,43 @@ const ArticleRow = ({
 }) => {
   const { articleList } = state;
   const article = articleList[index];
-  const { id, isShowParse, isShowAccents } = article;
+  const {
+    id: articleId,
+    isShowParse,
+    isShowAccents,
+    title,
+    downloadURL,
+  } = article;
   const navigate = useNavigate();
 
-  const handleToggleShowAccents = async () => {
-    dispatch({ type: ActionTypes.toggleIsShowAccents, payload: id });
+  const handleToggleShowAccents = () => {
+    dispatch({ type: ActionTypes.toggleIsShowAccents, payload: articleId });
     const newArticle: Article = { ...article, isShowAccents: !isShowAccents };
-    await updateArticle(newArticle);
+    setArticle(newArticle);
   };
 
-  const handleToggleShowParses = async () => {
-    dispatch({ type: ActionTypes.toggleIsShowParses, payload: id });
+  const handleToggleShowParses = () => {
+    dispatch({ type: ActionTypes.toggleIsShowParses, payload: articleId });
     const newArticle: Article = { ...article, isShowParse: !isShowParse };
-    await updateArticle(newArticle);
+    setArticle(newArticle);
   };
 
   const handleDelete = async () => {
-    // todo
-    // local
-    // remote
-    // cloudStorage
+    if (window.confirm(`${title}を削除しますか`)) {
+      let path = '';
+      const header = downloadURL.slice(0, 4);
+      if (header === 'http') {
+        const audioURL = new URL(downloadURL);
+        path = audioURL.pathname.split('/').slice(-1)[0].replace('%2F', '/');
+      } else {
+        path = downloadURL;
+      }
+      if (path) {
+        deleteFile(path);
+      }
+      dispatch({ type: ActionTypes.deleteArticle, payload: articleId });
+      deleteArticle(articleId);
+    }
   };
 
   return (
@@ -73,7 +91,7 @@ const ArticleRow = ({
         icon={<PrintIcon />}
         onClick={() => {
           dispatch({ type: ActionTypes.startFetching });
-          navigate(`/article/print/${id}`);
+          navigate(`/article/print/${articleId}`);
         }}
       />
       <IconButtonCell

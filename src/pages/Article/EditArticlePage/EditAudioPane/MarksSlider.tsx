@@ -1,5 +1,5 @@
 import { Slider } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { buildMarks, buildSentenceLines } from '../../../../services/wave';
 import { ArticleVoiceState } from '../Model';
 import { ArticleVoiceAction, ArticleVoiceActionTypes } from '../Update';

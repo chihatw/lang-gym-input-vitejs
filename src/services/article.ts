@@ -2,6 +2,7 @@ import getMoras from 'get-moras';
 import { mora2Vowel } from 'mora2vowel';
 import {
   collection,
+  deleteDoc,
   doc,
   DocumentData,
   getDoc,
@@ -19,9 +20,11 @@ import {
   ArticleSentence,
   ArticleSentenceForm,
   INITIAL_ARTICLE,
+  State,
   Tags,
 } from '../Model';
 import { getDownloadURL, ref } from 'firebase/storage';
+import { ArticleEditState } from '../pages/Article/EditArticlePage/Model';
 
 const REMOVE_MARKS_REG_EXP = /[、。「」]/g;
 
@@ -102,11 +105,10 @@ export const getArticles = async () => {
   return articleList;
 };
 
-// setArticle?
-export const updateArticle = async (article: Article) => {
+export const setArticle = async (article: Article) => {
   const { id, ...omitted } = article;
-  console.log('update article');
-  await updateDoc(doc(db, COLLECTIONS.articles, id), { ...omitted });
+  console.log('set article');
+  await setDoc(doc(db, COLLECTIONS.articles, id), { ...omitted });
 };
 
 export const setSentences = async (sentences: ArticleSentence[]) => {
@@ -121,6 +123,74 @@ export const updateSentence = async (sentence: ArticleSentence) => {
   const { id, ...omitted } = sentence;
   console.log('update sentence');
   await updateDoc(doc(db, COLLECTIONS.sentences, id), { ...omitted });
+};
+
+export const deleteArticle = async (articleId: string) => {
+  let q = query(
+    collection(db, COLLECTIONS.sentences),
+    where('article', '==', articleId)
+  );
+  console.log('get sentences');
+  let querySnapshot = await getDocs(q);
+  querySnapshot.forEach(async (_doc) => {
+    console.log('delete sentence');
+    await deleteDoc(doc(db, COLLECTIONS.sentences, _doc.id));
+  });
+
+  q = query(
+    collection(db, COLLECTIONS.articleSentenceForms),
+    where('articleId', '==', articleId)
+  );
+  console.log('get articleSentenceForms');
+  querySnapshot = await getDocs(q);
+  querySnapshot.forEach(async (_doc) => {
+    console.log('delete articleSentenceForm');
+    await deleteDoc(doc(db, COLLECTIONS.articleSentenceForms, _doc.id));
+  });
+
+  console.log('delete article');
+  await deleteDoc(doc(db, COLLECTIONS.articles, articleId));
+};
+
+export const buildArticleEditState = (state: State): ArticleEditState => {
+  const { users, article, sentences } = state;
+  const { id, uid, createdAt, title, embedID } = article;
+
+  if (!id) {
+    return {
+      uid: users.length ? users[0].id : '',
+      date: new Date(),
+      users,
+      title: '',
+      embedId: '',
+      articleMarksString: '',
+    };
+  }
+
+  let articleMarksString = '';
+  if (sentences.length) {
+    const lines: string[] = [];
+    sentences.forEach(({ japanese }, index) => {
+      const items: string[] = [];
+      const mark = article.marks[index];
+      const initial = index === 0 ? '' : '0:00';
+      items.push(mark || initial);
+      const hasMore = japanese.length > 5 ? '…' : '';
+      items.push(japanese.slice(0, 5) + hasMore);
+      const line = items.join(' ');
+      lines.push(line);
+    });
+    articleMarksString = lines.join('\n');
+  }
+
+  return {
+    uid,
+    date: new Date(createdAt),
+    users,
+    title,
+    embedId: embedID,
+    articleMarksString,
+  };
 };
 
 const buildArticle = (doc: DocumentData) => {
@@ -309,4 +379,14 @@ export const buildTags = (linesArray: string[]) => {
     });
   });
   return tags;
+};
+
+export const buildArticleMarks = (value: string) => {
+  let articleMarks: string[] = [];
+  const lines = value.split('\n');
+  lines.forEach((line) => {
+    const items = line.split(' ');
+    articleMarks.push(items[0]);
+  });
+  return articleMarks;
 };

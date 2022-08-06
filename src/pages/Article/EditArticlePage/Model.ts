@@ -1,4 +1,4 @@
-import { Mark } from '../../../Model';
+import { Mark, User } from '../../../Model';
 
 export type SentenceLine = {
   xPos: number;
@@ -35,4 +35,21 @@ export const INITIAL_ARTICLE_VOICE_STATE: ArticleVoiceState = {
   sentenceLines: [],
   blankDuration: 0,
   audioContext: null,
+};
+
+export type ArticleEditState = {
+  uid: string;
+  date: Date;
+  users: User[];
+  title: string;
+  embedId: string;
+  articleMarksString: string;
+};
+export const INITIAL_ARTICLE_EDIT_STATE: ArticleEditState = {
+  uid: '',
+  date: new Date(),
+  title: '',
+  users: [],
+  embedId: '',
+  articleMarksString: '',
 };
