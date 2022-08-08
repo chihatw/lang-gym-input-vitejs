@@ -13,6 +13,7 @@ import {
   buildAccents,
   buildAccentInitialValues,
   getQuiz,
+  submitQuiz,
 } from '../../../services/quiz';
 import { getUsers } from '../../../services/user';
 import {
@@ -123,7 +124,7 @@ const AccentQuizPage = ({
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     let questionCount = 0;
     const japaneses = japanese.split('\n');
     const accentsArray = accentString.split('\n').map((a) => buildAccents(a));
@@ -152,8 +153,11 @@ const AccentQuizPage = ({
         }),
       };
     });
-    // remote
-    // todo
+    dispatch({
+      type: ActionTypes.submitQuiz,
+      payload: { quiz: updatedQuiz, questions: updatedQuestions },
+    });
+    await submitQuiz(updatedQuiz, updatedQuestions, []);
     navigate(`/accentsQuestion/list`);
   };
 

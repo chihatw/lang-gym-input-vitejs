@@ -86,13 +86,15 @@ export const getQuiz = async (
     const { audio }: { audio: Audio } = JSON.parse(question.question);
     if (audio) {
       let { downloadURL } = audio;
-      const header = downloadURL.slice(0, 4);
-      if (header !== 'http') {
-        downloadURL = await getDownloadURL(ref(storage, downloadURL));
+      if (downloadURL) {
+        const header = downloadURL.slice(0, 4);
+        if (header !== 'http') {
+          downloadURL = await getDownloadURL(ref(storage, downloadURL));
+        }
+        console.log('create quiz blob');
+        const response = await fetch(downloadURL);
+        quizBlob = await response.blob();
       }
-      console.log('create quiz blob');
-      const response = await fetch(downloadURL);
-      quizBlob = await response.blob();
     }
   }
 
