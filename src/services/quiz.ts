@@ -28,9 +28,10 @@ import {
   SpecialMora,
   State,
 } from '../Model';
-import { db } from '../repositories/firebase';
+import { db, storage } from '../repositories/firebase';
 
 import { RhythmQuizState } from '../pages/Quiz/RhythmQuizPage/Model';
+import { getDownloadURL, ref } from 'firebase/storage';
 
 const SPACE = '　';
 
@@ -84,7 +85,11 @@ export const getQuiz = async (
     const question = questions[0];
     const { audio }: { audio: Audio } = JSON.parse(question.question);
     if (audio) {
-      const { downloadURL } = audio;
+      let { downloadURL } = audio;
+      const header = downloadURL.slice(0, 4);
+      if (header !== 'http') {
+        downloadURL = await getDownloadURL(ref(storage, downloadURL));
+      }
       console.log('create quiz blob');
       const response = await fetch(downloadURL);
       quizBlob = await response.blob();
