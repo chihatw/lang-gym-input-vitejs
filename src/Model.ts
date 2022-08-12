@@ -248,6 +248,7 @@ export type RandomWorkout = {
   uid: string;
   cues: RandomWorkoutCue[];
   title: string;
+  cueIds: string[];
   beatCount: number;
   targetBpm: number;
   resultBpm: number;
@@ -261,6 +262,7 @@ export const INITIAL_RANDOM_WORKOUT: RandomWorkout = {
   uid: '',
   cues: [],
   title: '',
+  cueIds: [],
   beatCount: 0,
   targetBpm: 0,
   resultBpm: 0,

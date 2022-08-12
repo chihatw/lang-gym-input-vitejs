@@ -55,12 +55,19 @@ const RandomWorkoutEdit = () => {
 
   const submit = async () => {
     if (!dispatch) return;
+    const { cues, roundCount } = randomWorkoutFormState;
+    const cueIds = cues.map(({ id }) => id);
+    let tmpCueIds: string[] = [];
+
+    for (let i = 0; i < roundCount; i++) {
+      tmpCueIds = tmpCueIds.concat(cueIds);
+    }
+
     const workout: RandomWorkout = {
       ...randomWorkoutFormState,
       id: workoutId || nanoid(8),
+      cueIds: tmpCueIds,
     };
-    // local
-    // debug
     const updated: { [key: string]: RandomWorkout } = {
       ...randomWorkouts,
       [workout.id]: workout,

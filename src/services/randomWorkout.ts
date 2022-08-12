@@ -1,16 +1,10 @@
 import {
   collection,
-  deleteDoc,
   doc,
   DocumentData,
-  getDoc,
   getDocs,
-  limit,
-  orderBy,
   query,
   setDoc,
-  updateDoc,
-  where,
 } from 'firebase/firestore';
 import { nanoid } from 'nanoid';
 import string2PitchesArray from 'string2pitches-array';
@@ -19,7 +13,7 @@ import {
   INITIAL_RANDOM_WORKOUT_FORM_STATE,
   RandomWorkoutFormState,
 } from '../pages/RandomWorkout/RandomWorkoutEdit/Model';
-import { db, storage } from '../repositories/firebase';
+import { db } from '../repositories/firebase';
 
 const COLLECTIONS = {
   randomWorkouts: 'randomWorkouts',
@@ -53,12 +47,14 @@ const buildRandomWorkout = (doc: DocumentData) => {
     title,
     resultBpm,
     uid,
+    cueIds,
   } = doc.data();
   const randomWorkout: RandomWorkout = {
     id: doc.id,
     uid: uid || '',
     cues: cues || [],
     title: title || '',
+    cueIds: cueIds || [],
     targetBpm: targetBpm || 0,
     resultBpm: resultBpm || 0,
     beatCount: beatCount || 0,
