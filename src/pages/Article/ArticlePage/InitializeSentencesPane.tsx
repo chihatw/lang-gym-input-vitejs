@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import string2PitchesArray from 'string2pitches-array';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import { Button, TextField } from '@mui/material';
@@ -18,14 +18,10 @@ import {
 } from '../../../services/article';
 import { nanoid } from 'nanoid';
 import { Action, ActionTypes } from '../../../Update';
+import { AppContext } from '../../../App';
 
-const InitializeSentencesPane = ({
-  state,
-  dispatch,
-}: {
-  state: State;
-  dispatch: React.Dispatch<Action>;
-}) => {
+const InitializeSentencesPane = () => {
+  const { state, dispatch } = useContext(AppContext);
   const { article } = state;
   const { id: articleId } = article;
 
@@ -78,6 +74,7 @@ const InitializeSentencesPane = ({
   };
 
   const handleWriteBatch = async () => {
+    if (!dispatch) return;
     const accentsArray: Accent[][] = accentStringArray.map((line) =>
       buildAccents(line)
     );

@@ -1,6 +1,6 @@
 import { Button, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useReducer } from 'react';
+import React, { useContext, useEffect, useReducer } from 'react';
 
 import { deleteFile, uploadStorage } from '../../../repositories/file';
 
@@ -11,14 +11,10 @@ import { articleVoiceReducer } from './Update';
 import { INITIAL_ARTICLE_VOICE_STATE } from './Model';
 import EditAudioPane from './EditAudioPane';
 import { setSentences, setArticle } from '../../../services/article';
+import { AppContext } from '../../../App';
 
-const EditArticleVoicePane = ({
-  state,
-  dispatch,
-}: {
-  state: State;
-  dispatch: React.Dispatch<Action>;
-}) => {
+const EditArticleVoicePane = () => {
+  const { state, dispatch } = useContext(AppContext);
   const { article, sentences, articleBlob } = state;
   const { id: articleId, downloadURL } = article;
 
@@ -34,6 +30,7 @@ const EditArticleVoicePane = ({
   }, [state]);
 
   const uploadAudio = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!dispatch) return;
     const path = `/articles/${articleId}`;
     if (!e.target.files) return;
     const file = e.target.files[0];
@@ -59,6 +56,7 @@ const EditArticleVoicePane = ({
   };
 
   const updateMarks = async () => {
+    if (!dispatch) return;
     const { marks } = articleVoiceState;
     const newSentences: ArticleSentence[] = sentences.map(
       (senetence, index) => ({
@@ -76,6 +74,7 @@ const EditArticleVoicePane = ({
     navigate(`/article/list`);
   };
   const deleteAudio = () => {
+    if (!dispatch) return;
     if (window.confirm('audio ファイルを削除しますか')) {
       const audioURL = new URL(downloadURL);
       const path = audioURL.pathname

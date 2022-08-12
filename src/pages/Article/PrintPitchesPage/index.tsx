@@ -1,8 +1,9 @@
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import { Container, Divider } from '@mui/material';
 import accentsForPitchesArray from 'accents-for-pitches-array';
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { AppContext } from '../../../App';
 import {
   ArticleSentence,
   ArticleSentenceForm,
@@ -11,20 +12,15 @@ import {
 } from '../../../Model';
 import { getArticle } from '../../../services/article';
 
-import { Action, ActionTypes } from '../../../Update';
+import { ActionTypes } from '../../../Update';
 
-const PrintPitchesPage = ({
-  state,
-  dispatch,
-}: {
-  state: State;
-  dispatch: React.Dispatch<Action>;
-}) => {
+const PrintPitchesPage = () => {
+  const { state, dispatch } = useContext(AppContext);
   const { articleId } = useParams();
-  const { isFetching, memo, article, sentences } = state;
+  const { isFetching, memo, sentences } = state;
 
   useEffect(() => {
-    if (!isFetching) return;
+    if (!isFetching || !dispatch) return;
 
     if (!articleId) {
       dispatch({

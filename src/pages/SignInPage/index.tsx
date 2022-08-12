@@ -5,13 +5,7 @@ import SignInForm from '../../components/SignInForm';
 import { State } from '../../Model';
 import { Action } from '../../Update';
 
-const SignInPage = ({
-  state,
-  dispatch,
-}: {
-  state: State;
-  dispatch: React.Dispatch<Action>;
-}) => {
+const SignInPage = () => {
   const { emailErrMsg, passwordErrMsg, resetErrMsg, onSignIn } =
     useSignInPage();
   return (

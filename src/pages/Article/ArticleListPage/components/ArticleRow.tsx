@@ -1,5 +1,5 @@
 import EditIcon from '@mui/icons-material/Edit';
-import React from 'react';
+import React, { useContext } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
@@ -16,16 +16,10 @@ import { Action, ActionTypes } from '../../../../Update';
 import { useNavigate } from 'react-router-dom';
 import { deleteArticle, setArticle } from '../../../../services/article';
 import { deleteFile } from '../../../../repositories/file';
+import { AppContext } from '../../../../App';
 
-const ArticleRow = ({
-  index,
-  state,
-  dispatch,
-}: {
-  index: number;
-  state: State;
-  dispatch: React.Dispatch<Action>;
-}) => {
+const ArticleRow = ({ index }: { index: number }) => {
+  const { state, dispatch } = useContext(AppContext);
   const { articleList } = state;
   const article = articleList[index];
   const {
@@ -38,18 +32,21 @@ const ArticleRow = ({
   const navigate = useNavigate();
 
   const handleToggleShowAccents = () => {
+    if (!dispatch) return;
     dispatch({ type: ActionTypes.toggleIsShowAccents, payload: articleId });
     const newArticle: Article = { ...article, isShowAccents: !isShowAccents };
     setArticle(newArticle);
   };
 
   const handleToggleShowParses = () => {
+    if (!dispatch) return;
     dispatch({ type: ActionTypes.toggleIsShowParses, payload: articleId });
     const newArticle: Article = { ...article, isShowParse: !isShowParse };
     setArticle(newArticle);
   };
 
   const handleDelete = async () => {
+    if (!dispatch) return;
     if (window.confirm(`${title}を削除しますか`)) {
       let path = '';
       const header = downloadURL.slice(0, 4);
@@ -76,6 +73,7 @@ const ArticleRow = ({
       <IconButtonCell
         icon={<EditIcon />}
         onClick={() => {
+          if (!dispatch) return;
           dispatch({ type: ActionTypes.startFetching });
           navigate(`/article/edit/${article.id}`);
         }}
@@ -83,6 +81,7 @@ const ArticleRow = ({
       <IconButtonCell
         icon={<SubjectIcon />}
         onClick={() => {
+          if (!dispatch) return;
           dispatch({ type: ActionTypes.startFetching });
           navigate(`/article/${article.id}`);
         }}
@@ -90,6 +89,7 @@ const ArticleRow = ({
       <IconButtonCell
         icon={<PrintIcon />}
         onClick={() => {
+          if (!dispatch) return;
           dispatch({ type: ActionTypes.startFetching });
           navigate(`/article/print/${articleId}`);
         }}

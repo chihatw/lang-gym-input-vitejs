@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button, Container, MenuItem, Select, TextField } from '@mui/material';
 
 import WorkoutItemRow from './components/WorkoutItemRow';
@@ -14,20 +14,16 @@ import { Action, ActionTypes } from '../../../Update';
 import { getUsers } from '../../../services/user';
 import { getWorkout, setWorkout } from '../../../services/workout';
 import { nanoid } from 'nanoid';
+import { AppContext } from '../../../App';
 
-const WorkoutPage = ({
-  state,
-  dispatch,
-}: {
-  state: State;
-  dispatch: React.Dispatch<Action>;
-}) => {
+const WorkoutPage = () => {
+  const { state, dispatch } = useContext(AppContext);
   const { workoutId } = useParams();
   const { users, isFetching, workout, memo } = state;
   const { workouts } = memo;
 
   useEffect(() => {
-    if (!isFetching || !workoutId) return;
+    if (!isFetching || !workoutId || !dispatch) return;
 
     const fetchData = async () => {
       let _users = users.length ? users : await getUsers();
@@ -83,6 +79,7 @@ const WorkoutPage = ({
   };
 
   const handleSubmit = async () => {
+    if (!dispatch) return;
     const date = new Date();
     const newWorkout: Workout = {
       id: workoutId || nanoid(8),

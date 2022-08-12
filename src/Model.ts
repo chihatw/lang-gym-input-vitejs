@@ -229,6 +229,46 @@ export const INITIAL_WORKOUT: Workout = {
   uid: '',
 };
 
+export type RandomWorkoutCue = {
+  id: string;
+  label: string;
+  pitchStr: string;
+  imagePath: string;
+};
+
+export const INITIAL_CUE: RandomWorkoutCue = {
+  id: '',
+  label: '',
+  pitchStr: '',
+  imagePath: '',
+};
+
+export type RandomWorkout = {
+  id: string;
+  uid: string;
+  cues: RandomWorkoutCue[];
+  title: string;
+  beatCount: number;
+  targetBpm: number;
+  resultBpm: number;
+  resultTime: number;
+  roundCount: number;
+  storagePath: string;
+};
+
+export const INITIAL_RANDOM_WORKOUT: RandomWorkout = {
+  id: '',
+  uid: '',
+  cues: [],
+  title: '',
+  beatCount: 0,
+  targetBpm: 0,
+  resultBpm: 0,
+  resultTime: 0,
+  roundCount: 1,
+  storagePath: '',
+};
+
 export type State = {
   user: FirebaseUser | null;
   initializing: boolean;
@@ -246,6 +286,8 @@ export type State = {
   questions: Question[];
   workout: Workout;
   workoutList: Workout[];
+  randomWorkouts: { [workoutId: string]: RandomWorkout };
+  randomWorkoutBLobs: { [workoutId: string]: Blob | null };
   memo: {
     articles: { [id: string]: Article };
     articleBlobs: { [id: string]: Blob | null };
@@ -275,6 +317,8 @@ export const INITIAL_STATE: State = {
   questions: [],
   workout: INITIAL_WORKOUT,
   workoutList: [],
+  randomWorkouts: {},
+  randomWorkoutBLobs: {},
   memo: {
     articles: {},
     articleBlobs: {},

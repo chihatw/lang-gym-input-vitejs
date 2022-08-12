@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 
 import TopPage from '../pages/TopPage';
@@ -19,6 +19,9 @@ import EditArticleSentenceFormPane from '../pages/Article/EditArticleSentenceFor
 import PrintPitchesPage from '../pages/Article/PrintPitchesPage';
 import { State } from '../Model';
 import { Action } from '../Update';
+import RandomWorkoutList from '../pages/RandomWorkout/RandomWorkoutListPage';
+import RandomWorkoutEdit from '../pages/RandomWorkout/RandomWorkoutEdit';
+import { AppContext } from '../App';
 
 const AppRoutes = ({
   state,
@@ -29,86 +32,58 @@ const AppRoutes = ({
 }) => {
   return (
     <Routes>
-      <Route path='/' element={<TopPage state={state} dispatch={dispatch} />} />
+      <Route path='/' element={<TopPage />} />
 
       {/* article */}
       <Route path='/article'>
-        <Route
-          path=':articleId'
-          element={<ArticlePage state={state} dispatch={dispatch} />}
-        />
-        <Route
-          path='initial'
-          element={<EditArticlePage state={state} dispatch={dispatch} />}
-        />
-        <Route
-          path='edit/:articleId'
-          element={<EditArticlePage state={state} dispatch={dispatch} />}
-        />
-        <Route
-          path='list'
-          element={<ArticleListPage state={state} dispatch={dispatch} />}
-        />
+        <Route path=':articleId' element={<ArticlePage />} />
+        <Route path='initial' element={<EditArticlePage />} />
+        <Route path='edit/:articleId' element={<EditArticlePage />} />
+        <Route path='list' element={<ArticleListPage />} />
         {/* 作文入力作業 */}
-        <Route
-          path='input'
-          element={<ArticleInputPage state={state} dispatch={dispatch} />}
-        />
-        <Route
-          path='print/:articleId'
-          element={<PrintPitchesPage state={state} dispatch={dispatch} />}
-        />
+        <Route path='input' element={<ArticleInputPage />} />
+        <Route path='print/:articleId' element={<PrintPitchesPage />} />
       </Route>
+
+      {/* workout */}
       <Route path='/workout'>
-        <Route
-          index
-          element={<WorkoutPage state={state} dispatch={dispatch} />}
-        />
-        <Route
-          path=':workoutId'
-          element={<WorkoutPage state={state} dispatch={dispatch} />}
-        />
+        <Route index element={<WorkoutPage />} />
+        <Route path=':workoutId' element={<WorkoutPage />} />
       </Route>
-      <Route
-        path='/workouts'
-        element={<WorkoutsPage state={state} dispatch={dispatch} />}
-      />
+
+      <Route path='/workouts' element={<WorkoutsPage />} />
+
+      {/* Random Workout */}
+      <Route path='/random'>
+        <Route path='list' element={<RandomWorkoutList />} />
+        <Route path='new' element={<RandomWorkoutEdit />} />
+        <Route path=':workoutId' element={<RandomWorkoutEdit />} />
+      </Route>
 
       {/* accentsQuestion */}
 
       <Route path='/accentsQuestion/*'>
-        <Route
-          path='list'
-          element={<QuizListPage state={state} dispatch={dispatch} />}
-        />
-        <Route
-          path=':questionSetId'
-          element={<AccentQuizPage state={state} dispatch={dispatch} />}
-        />
+        <Route path='list' element={<QuizListPage />} />
+        <Route path=':questionSetId' element={<AccentQuizPage />} />
       </Route>
 
       {/* rhythmsQuestion */}
 
       <Route path='/rhythmsQuestion/*'>
-        <Route
-          path=':questionSetId'
-          element={<RhythmQuizPage state={state} dispatch={dispatch} />}
-        />
+        <Route path=':questionSetId' element={<RhythmQuizPage />} />
       </Route>
 
       {/* form */}
       <Route
         path='/form/:articleId/index/:index'
-        element={
-          <EditArticleSentenceFormPane state={state} dispatch={dispatch} />
-        }
+        element={<EditArticleSentenceFormPane />}
       />
 
       <Route
         path='/login'
         element={
-          <GuestRoute state={state}>
-            <SignInPage state={state} dispatch={dispatch} />
+          <GuestRoute>
+            <SignInPage />
           </GuestRoute>
         }
       />
@@ -117,13 +92,8 @@ const AppRoutes = ({
   );
 };
 
-const GuestRoute = ({
-  children,
-  state,
-}: {
-  state: State;
-  children: JSX.Element;
-}) => {
+const GuestRoute = ({ children }: { children: JSX.Element }) => {
+  const { state } = useContext(AppContext);
   const { initializing, user } = state;
   return !initializing ? user ? <Navigate to='/' /> : children : <></>;
 };

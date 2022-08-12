@@ -1,5 +1,5 @@
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import {
   ArticleSentence,
@@ -18,14 +18,10 @@ import {
   createQuiz,
 } from '../../../services/quiz';
 import InitializeSentencesPane from './InitializeSentencesPane';
+import { AppContext } from '../../../App';
 
-const ArticlePage = ({
-  state,
-  dispatch,
-}: {
-  state: State;
-  dispatch: React.Dispatch<Action>;
-}) => {
+const ArticlePage = () => {
+  const { state, dispatch } = useContext(AppContext);
   const { articleId } = useParams();
   const navigate = useNavigate();
   const [isSm, setIsSm] = useState(true);
@@ -33,7 +29,7 @@ const ArticlePage = ({
   const { isFetching, memo, article, sentences } = state;
 
   useEffect(() => {
-    if (!isFetching) return;
+    if (!isFetching || !dispatch) return;
 
     if (!articleId) {
       dispatch({
@@ -91,6 +87,7 @@ const ArticlePage = ({
   }, [isFetching, articleId]);
 
   const handleCreateAccentQuiz = async () => {
+    if (!dispatch) return;
     const { quiz, questionGroup, questions } = buildAccentQuizFromState(state);
     await createQuiz(quiz, questionGroup, questions);
     dispatch({
@@ -101,6 +98,7 @@ const ArticlePage = ({
   };
 
   const handleCreateRhythmQuiz = async () => {
+    if (!dispatch) return;
     const { quiz, questionGroup, questions } = buildRhythmQuizFromState(state);
     await createQuiz(quiz, questionGroup, questions);
     dispatch({
@@ -131,9 +129,7 @@ const ArticlePage = ({
             <SentenceRow
               key={sentenceIndex}
               isSm={isSm}
-              state={state}
               sentenceIndex={sentenceIndex}
-              dispatch={dispatch}
             />
           ))}
 
@@ -145,7 +141,7 @@ const ArticlePage = ({
           </Button>
         </div>
       ) : (
-        <InitializeSentencesPane state={state} dispatch={dispatch} />
+        <InitializeSentencesPane />
       )}
     </TableLayout>
   );

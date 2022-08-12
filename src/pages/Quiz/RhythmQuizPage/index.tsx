@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import React, { useEffect, useReducer } from 'react';
+import React, { useContext, useEffect, useReducer } from 'react';
 import { INITIAL_QUESTION_SET, Question, State } from '../../../Model';
 import { Action, ActionTypes } from '../../../Update';
 import { getUsers } from '../../../services/user';
@@ -12,19 +12,15 @@ import {
 import { RhythmQuizActionTypes, rhythmQuizReducer } from './Update';
 import { INITIAL_RHYTHM_QUIZ_STATE } from './Model';
 import RhythmQuizForm from './RhythmQuizForm';
+import { AppContext } from '../../../App';
 
-const RhythmQuizPage = ({
-  state,
-  dispatch,
-}: {
-  state: State;
-  dispatch: React.Dispatch<Action>;
-}) => {
+const RhythmQuizPage = () => {
+  const { state, dispatch } = useContext(AppContext);
   const navigate = useNavigate();
   const { questionSetId } = useParams();
   const { isFetching, memo, users } = state;
   useEffect(() => {
-    if (!isFetching) return;
+    if (!isFetching || !dispatch) return;
 
     const fetchData = async () => {
       let _users = !!users.length ? users : await getUsers();
@@ -100,6 +96,7 @@ const RhythmQuizPage = ({
   }, [state]);
 
   const onSubmit = async () => {
+    if (!dispatch) return;
     const { quiz, questions, questionIdsToDelete } =
       buildQuizFromRhythmQuizState(state, rhythmQuizState);
 

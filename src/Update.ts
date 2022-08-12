@@ -9,6 +9,7 @@ import {
   INITIAL_WORKOUT,
   Question,
   QuestionSet,
+  RandomWorkout,
   State,
   User,
   Workout,
@@ -35,6 +36,7 @@ export const ActionTypes = {
   setAudioContext: 'setAudioContext',
   setWorkoutSingle: 'setWorkoutSingle',
   setArticleSingle: 'setArticleSingle',
+  setRandomWorkouts: 'setRandomWorkouts',
   toggleIsShowParses: 'toggleIsShowParses',
   toggleIsShowAccents: 'toggleIsShowAccents',
   deleteArticleAudioFile: 'deleteArticleAudioFile',
@@ -55,6 +57,7 @@ export type Action = {
     | Workout[]
     | QuestionSet[]
     | AudioContext
+    | { [key: string]: RandomWorkout }
     | { workout: Workout; users: User[] }
     | { workoutList: Workout[]; users: User[] }
     | { articleId: string; sentence: ArticleSentence }
@@ -102,6 +105,15 @@ export const reducer = (state: State, action: Action): State => {
   const { quizList, articleList, sentences, workoutList } = state;
 
   switch (type) {
+    case ActionTypes.setRandomWorkouts: {
+      const randomWorkouts = payload as { [key: string]: RandomWorkout };
+      return R.compose(
+        R.assocPath<{ [key: string]: RandomWorkout }, State>(
+          ['randomWorkouts'],
+          randomWorkouts
+        )
+      )(state);
+    }
     case ActionTypes.toggleIsShowAccents: {
       const articleId = payload as string;
       const article = articleList.find((item) => item.id === articleId);

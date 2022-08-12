@@ -12,7 +12,7 @@ import {
   TableCell,
   TableRow,
 } from '@mui/material';
-import React, { useEffect, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { State, Workout } from '../../../Model';
 import { Action, ActionTypes } from '../../../Update';
@@ -22,17 +22,13 @@ import {
   setWorkout,
 } from '../../../services/workout';
 import { getUsers } from '../../../services/user';
+import { AppContext } from '../../../App';
 
-const WorkoutsPage = ({
-  state,
-  dispatch,
-}: {
-  state: State;
-  dispatch: React.Dispatch<Action>;
-}) => {
+const WorkoutsPage = () => {
+  const { state, dispatch } = useContext(AppContext);
   const { isFetching, workoutList, users } = state;
   useEffect(() => {
-    if (!isFetching) return;
+    if (!isFetching || !dispatch) return;
     const fetchData = async () => {
       let _users = !!users.length ? users : await getUsers();
       const _workoutList = workoutList.length
@@ -65,13 +61,8 @@ const WorkoutsPage = ({
         </div>
         <Table size='small'>
           <TableBody>
-            {workoutList.map((workout, index) => (
-              <WorkoutRow
-                key={index}
-                state={state}
-                workoutIndex={index}
-                dispatch={dispatch}
-              />
+            {workoutList.map((_, index) => (
+              <WorkoutRow key={index} workoutIndex={index} />
             ))}
           </TableBody>
         </Table>
@@ -82,15 +73,8 @@ const WorkoutsPage = ({
 
 export default WorkoutsPage;
 
-const WorkoutRow = ({
-  state,
-  dispatch,
-  workoutIndex,
-}: {
-  state: State;
-  dispatch: React.Dispatch<Action>;
-  workoutIndex: number;
-}) => {
+const WorkoutRow = ({ workoutIndex }: { workoutIndex: number }) => {
+  const { state, dispatch } = useContext(AppContext);
   const { users, workoutList } = state;
   const workout = workoutList[workoutIndex];
   const { id: workoutId } = workout;
@@ -102,14 +86,17 @@ const WorkoutRow = ({
   );
 
   const handleClickEdit = () => {
+    if (!dispatch) return;
     dispatch({ type: ActionTypes.startFetching });
     navigate(`/workout/${workoutId}`);
   };
   const handleClickDelete = () => {
+    if (!dispatch) return;
     dispatch({ type: ActionTypes.deleteWorkout, payload: workoutId });
     deleteWorkout(workoutId);
   };
   const handleClickVisibility = () => {
+    if (!dispatch) return;
     const newWorkout: Workout = { ...workout, hidden: !workout.hidden };
     dispatch({ type: ActionTypes.setWorkoutSingle, payload: newWorkout });
     setWorkout(newWorkout);

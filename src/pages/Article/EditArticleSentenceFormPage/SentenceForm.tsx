@@ -4,24 +4,18 @@ import { Button } from '@mui/material';
 
 import { FSentences } from 'fsentence-types';
 import { nanoid } from 'nanoid';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { fsentences2String } from 'sentence-form-string';
+import { AppContext } from '../../../App';
 import { ArticleSentenceForm, State } from '../../../Model';
 import { setArticleSentenceForm } from '../../../services/article';
 
 import { Action, ActionTypes } from '../../../Update';
 
-const SentenceForm = ({
-  state,
-  dispatch,
-  sentenceIndex,
-}: {
-  state: State;
-  sentenceIndex: number;
-  dispatch: React.Dispatch<Action>;
-}) => {
+const SentenceForm = ({ sentenceIndex }: { sentenceIndex: number }) => {
+  const { state, dispatch } = useContext(AppContext);
   const { articleSentenceForms, sentences: _sentences, article } = state;
   const { id: articleId } = article;
   const sentence = _sentences[sentenceIndex];
@@ -45,6 +39,7 @@ const SentenceForm = ({
   }, [articleSentenceForms, sentenceIndex]);
 
   const handleAdd = async () => {
+    if (!dispatch) return;
     const articleSentenceForm: ArticleSentenceForm = {
       id: nanoid(8),
       lineIndex: sentenceIndex,
@@ -59,6 +54,7 @@ const SentenceForm = ({
     navigate(`/article/${articleId}`);
   };
   const handleUpdate = async () => {
+    if (!dispatch) return;
     const updatedArticleSentenceForm: ArticleSentenceForm = {
       ...articleSentenceForm,
       sentences,
@@ -75,7 +71,7 @@ const SentenceForm = ({
     await setArticleSentenceForm(updatedArticleSentenceForm);
     navigate(`/article/${articleId}`);
   };
-
+  console.log({ sentences });
   return (
     <div style={{ display: 'grid', rowGap: 16 }}>
       <div style={{ fontSize: 12, color: '#555', paddingLeft: 8 }}>

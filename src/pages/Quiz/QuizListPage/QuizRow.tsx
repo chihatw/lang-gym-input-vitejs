@@ -2,21 +2,14 @@ import CheckIcon from '@mui/icons-material/Check';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { IconButton, TableCell, TableRow } from '@mui/material';
-import React from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { QuestionSet, State } from '../../../Model';
+import { AppContext } from '../../../App';
 import { deleteQuiz } from '../../../services/quiz';
-import { Action, ActionTypes } from '../../../Update';
+import { ActionTypes } from '../../../Update';
 
-const QuizRow = ({
-  state,
-  index,
-  dispatch,
-}: {
-  state: State;
-  index: number;
-  dispatch: React.Dispatch<Action>;
-}) => {
+const QuizRow = ({ index }: { index: number }) => {
+  const { state, dispatch } = useContext(AppContext);
   const navigate = useNavigate();
   const { quizList } = state;
   const questionSet = quizList[index];
@@ -24,6 +17,7 @@ const QuizRow = ({
     questionSet;
 
   const handleOpenEditPage = () => {
+    if (!dispatch) return;
     dispatch({ type: ActionTypes.startFetching });
     switch (type) {
       case 'articleAccents':
@@ -37,6 +31,7 @@ const QuizRow = ({
   };
 
   const handleDelete = () => {
+    if (!dispatch) return;
     dispatch({ type: ActionTypes.deleteQuiz, payload: id });
     deleteQuiz(id, questionGroups[0]);
   };

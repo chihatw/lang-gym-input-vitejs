@@ -2,7 +2,8 @@ import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import { SentenceFormPane } from '@chihatw/sentence-form.sentence-form-pane';
 import { Card } from '@mui/material';
 import accentsForPitchesArray from 'accents-for-pitches-array';
-import React from 'react';
+import React, { useContext } from 'react';
+import { AppContext } from '../../../../App';
 import AudioSlider from '../../../../components/AudioSlider';
 import { INITIAL_ARTICLE_SENTENCE_FORM, State } from '../../../../Model';
 import { Action } from '../../../../Update';
@@ -10,15 +11,12 @@ import SentenceRowFooter from './SentenceRowFooter';
 
 const SentenceRow = ({
   isSm,
-  state,
   sentenceIndex,
-  dispatch,
 }: {
   isSm: boolean;
-  state: State;
   sentenceIndex: number;
-  dispatch: React.Dispatch<Action>;
 }) => {
+  const { state } = useContext(AppContext);
   const {
     sentences: articleSentences,
     articleSentenceForms,
@@ -63,11 +61,7 @@ const SentenceRow = ({
           />
         )}
 
-        <SentenceRowFooter
-          state={state}
-          sentenceIndex={sentenceIndex}
-          dispatch={dispatch}
-        />
+        <SentenceRowFooter sentenceIndex={sentenceIndex} />
       </div>
     </Card>
   );

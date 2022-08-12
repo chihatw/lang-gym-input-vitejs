@@ -1,23 +1,19 @@
 import { Button, Container, Table, TableBody, Typography } from '@mui/material';
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { State } from '../../../Model';
 import { Action, ActionTypes } from '../../../Update';
 import { getArticles } from '../../../services/article';
 import LinkButton from '../../../components/ui/LinkButton';
 import { useNavigate } from 'react-router-dom';
 import ArticleRow from './components/ArticleRow';
+import { AppContext } from '../../../App';
 
-const ArticleListPage = ({
-  state,
-  dispatch,
-}: {
-  state: State;
-  dispatch: React.Dispatch<Action>;
-}) => {
+const ArticleListPage = () => {
+  const { state, dispatch } = useContext(AppContext);
   const navigate = useNavigate();
   const { isFetching, articleList } = state;
   useEffect(() => {
-    if (!isFetching) return;
+    if (!isFetching || !dispatch) return;
     const fetchData = async () => {
       const _articleList = !!articleList.length
         ? articleList
@@ -39,6 +35,7 @@ const ArticleListPage = ({
             <Button
               variant='contained'
               onClick={() => {
+                if (!dispatch) return;
                 navigate('/article/initial');
                 dispatch({ type: ActionTypes.initialArticle });
               }}
@@ -50,12 +47,7 @@ const ArticleListPage = ({
         <Table>
           <TableBody>
             {articleList.map((_, index) => (
-              <ArticleRow
-                key={index}
-                index={index}
-                state={state}
-                dispatch={dispatch}
-              />
+              <ArticleRow key={index} index={index} />
             ))}
           </TableBody>
         </Table>

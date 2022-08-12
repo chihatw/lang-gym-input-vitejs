@@ -1,7 +1,7 @@
 import { Button, TextField } from '@mui/material';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import accentsForPitchesArray from 'accents-for-pitches-array';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 
 import { Action, ActionTypes } from '../../../../../Update';
 import AudioSlider from '../../../../../components/AudioSlider';
@@ -14,18 +14,16 @@ import {
   kanaAccentsStr2AccentsString,
   buildTags,
 } from '../../../../../services/article';
+import { AppContext } from '../../../../../App';
 
 const EditSentencePane = ({
-  state,
-  dispatch,
   callback,
   sentenceIndex,
 }: {
-  state: State;
-  dispatch: React.Dispatch<Action>;
   callback: () => void;
   sentenceIndex: number;
 }) => {
+  const { state, dispatch } = useContext(AppContext);
   const { article, sentences, audioContext, articleBlob } = state;
   const { id: articleId } = article;
   const sentence = sentences[sentenceIndex];
@@ -93,6 +91,7 @@ const EditSentencePane = ({
   };
 
   const handleClickUpdate = async () => {
+    if (!dispatch) return;
     const newSentence: ArticleSentence = {
       ...sentence,
       end,

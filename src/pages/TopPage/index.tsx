@@ -1,20 +1,17 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Button, Container } from '@mui/material';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { auth } from '../../repositories/firebase';
 import { State } from '../../Model';
 import { Action, ActionTypes } from '../../Update';
+import { AppContext } from '../../App';
 
-const TopPage = ({
-  state,
-  dispatch,
-}: {
-  state: State;
-  dispatch: React.Dispatch<Action>;
-}) => {
+const TopPage = () => {
+  const { state, dispatch } = useContext(AppContext);
   const { user } = state;
   const navigate = useNavigate();
   if (!user) return <Navigate to='/login' />;
+  if (!dispatch) return <></>;
   return (
     <Container maxWidth='sm' sx={{ paddingTop: 2 }}>
       <div style={{ display: 'grid', rowGap: 16 }}>
@@ -52,6 +49,15 @@ const TopPage = ({
           }}
         >
           練習一覧
+        </Button>
+        <Button
+          variant='contained'
+          onClick={() => {
+            dispatch({ type: ActionTypes.startFetching });
+            navigate('random/list');
+          }}
+        >
+          ランダム練習一覧
         </Button>
         <Button
           variant='contained'

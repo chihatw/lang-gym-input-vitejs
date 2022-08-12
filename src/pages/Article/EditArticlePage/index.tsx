@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useReducer } from 'react';
+import React, { useContext, useEffect, useReducer } from 'react';
 import { Divider } from '@mui/material';
 
 import {
@@ -9,7 +9,6 @@ import {
   ArticleSentence,
   ArticleSentenceForm,
   INITIAL_ARTICLE,
-  State,
 } from '../../../Model';
 import { getUsers } from '../../../services/user';
 import {
@@ -18,28 +17,24 @@ import {
   getArticle,
   setArticle,
 } from '../../../services/article';
-import { Action, ActionTypes } from '../../../Update';
+import { ActionTypes } from '../../../Update';
 
 import EditArticleVoicePane from './EditArticleVoicePane';
 import { ArticleEditActionTypes, articleEditReducer } from './Update';
 import { INITIAL_ARTICLE_EDIT_STATE } from './Model';
 import EditArticleForm from './EditArticleForm';
 import { nanoid } from 'nanoid';
+import { AppContext } from '../../../App';
 
-const EditArticlePage = ({
-  state,
-  dispatch,
-}: {
-  state: State;
-  dispatch: React.Dispatch<Action>;
-}) => {
+const EditArticlePage = () => {
+  const { state, dispatch } = useContext(AppContext);
   const { articleId } = useParams();
 
   const navigate = useNavigate();
   const { article, isFetching, users, memo } = state;
 
   useEffect(() => {
-    if (!isFetching) return;
+    if (!isFetching || !dispatch) return;
     const fetchData = async () => {
       let _users = !!users.length ? users : await getUsers();
       if (!articleId) {
@@ -111,6 +106,7 @@ const EditArticlePage = ({
   }, [state]);
 
   const create = async () => {
+    if (!dispatch) return;
     const { uid, date, users, title } = articleEditState;
 
     const article: Article = {
@@ -135,6 +131,7 @@ const EditArticlePage = ({
   };
 
   const update = async () => {
+    if (!dispatch) return;
     const { articleMarksString, embedId, date, users, uid, title } =
       articleEditState;
     const articleMarks = buildArticleMarks(articleMarksString);
@@ -171,7 +168,7 @@ const EditArticlePage = ({
       {!!article.id && (
         <>
           <Divider />
-          <EditArticleVoicePane state={state} dispatch={dispatch} />
+          <EditArticleVoicePane />
         </>
       )}
     </div>

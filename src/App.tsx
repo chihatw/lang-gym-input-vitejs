@@ -1,10 +1,15 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { createContext, useEffect, useReducer } from 'react';
 
 import AppRoutes from './routes/AppRoutes';
 
-import { ActionTypes, reducer } from './Update';
-import { INITIAL_STATE } from './Model';
+import { Action, ActionTypes, reducer } from './Update';
+import { INITIAL_STATE, State } from './Model';
 import { auth } from './repositories/firebase';
+
+export const AppContext = createContext<{
+  state: State;
+  dispatch: React.Dispatch<Action> | null;
+}>({ state: INITIAL_STATE, dispatch: null });
 
 const App = () => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
@@ -29,7 +34,11 @@ const App = () => {
     }
   }, [state]);
 
-  return <AppRoutes state={state} dispatch={dispatch} />;
+  return (
+    <AppContext.Provider value={{ state, dispatch }}>
+      <AppRoutes state={state} dispatch={dispatch} />
+    </AppContext.Provider>
+  );
 };
 
 export default App;

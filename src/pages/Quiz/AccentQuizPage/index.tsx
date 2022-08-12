@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import TableLayout from '../../../components/templates/TableLayout';
 import {
@@ -27,20 +27,16 @@ import {
 } from '@mui/material';
 import JapaneseMonitor from './JapaneseMonitor';
 import AccentsMonitor from './AccentsMonitor';
+import { AppContext } from '../../../App';
 
-const AccentQuizPage = ({
-  state,
-  dispatch,
-}: {
-  state: State;
-  dispatch: React.Dispatch<Action>;
-}) => {
+const AccentQuizPage = () => {
+  const { state, dispatch } = useContext(AppContext);
   const navigate = useNavigate();
   const { questionSetId } = useParams();
   const { isFetching, memo, quiz, users, questions } = state;
 
   useEffect(() => {
-    if (!isFetching) return;
+    if (!isFetching || !dispatch) return;
 
     const fetchData = async () => {
       let _users = !!users.length ? users : await getUsers();
@@ -125,6 +121,7 @@ const AccentQuizPage = ({
   };
 
   const handleSubmit = async () => {
+    if (!dispatch) return;
     let questionCount = 0;
     const japaneses = japanese.split('\n');
     const accentsArray = accentString.split('\n').map((a) => buildAccents(a));

@@ -6,16 +6,8 @@ import {
   useArticleInputPage,
 } from './services/articleInputPage';
 import ArticleInputDraft from './components/ArticleInputDraft';
-import { State } from '../../Model';
-import { Action } from '../../Update';
 
-const ArticleInputPage = ({
-  state,
-  dispatch,
-}: {
-  state: State;
-  dispatch: React.Dispatch<Action>;
-}) => {
+const ArticleInputPage = () => {
   const {
     items,
     chinese,
