@@ -75,13 +75,17 @@ const EditArticleVoicePane = () => {
   };
   const deleteAudio = () => {
     if (!dispatch) return;
+
     if (window.confirm('audio ファイルを削除しますか')) {
-      const audioURL = new URL(downloadURL);
-      const path = audioURL.pathname
-        .split('/')
-        .slice(-1)[0]
-        .replace('%2F', '/');
-      deleteFile(path);
+      let path = '';
+      const header = downloadURL.slice(0, 4);
+      if (header === 'http') {
+        const audioURL = new URL(downloadURL);
+        path = audioURL.pathname.split('/').slice(-1)[0].replace('%2F', '/');
+        deleteFile(path);
+      } else {
+        path = downloadURL;
+      }
 
       const newArticle: Article = { ...article, downloadURL: '' };
       const newSentences: ArticleSentence[] = sentences.map((sentence) => ({
