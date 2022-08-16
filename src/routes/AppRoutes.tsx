@@ -6,7 +6,7 @@ import SignInPage from '../pages/SignInPage';
 import ArticleInputPage from '../pages/ArticleInputPage';
 
 import WorkoutPage from '../pages/Workout/WorkoutPage';
-import WorkoutsPage from '../pages/Workout/WorkoutsPage';
+import WorkoutListPage from '../pages/Workout/WorkoutListPage';
 
 import ArticleListPage from '../pages/Article/ArticleListPage';
 import EditArticlePage from '../pages/Article/EditArticlePage';
@@ -51,7 +51,7 @@ const AppRoutes = ({
         <Route path=':workoutId' element={<WorkoutPage />} />
       </Route>
 
-      <Route path='/workouts' element={<WorkoutsPage />} />
+      <Route path='/workouts' element={<WorkoutListPage />} />
 
       {/* Random Workout */}
       <Route path='/random'>

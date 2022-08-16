@@ -199,6 +199,12 @@ export type User = {
   displayname: string;
 };
 
+export const INITIAL_USER: User = {
+  id: '',
+  createdAt: 0,
+  displayname: '',
+};
+
 export type WorkoutItem = {
   text: string;
   chinese: string;
@@ -255,6 +261,7 @@ export type RandomWorkout = {
   resultTime: number;
   roundCount: number;
   storagePath: string;
+  recordCount: number;
 };
 
 export const INITIAL_RANDOM_WORKOUT: RandomWorkout = {
@@ -269,6 +276,7 @@ export const INITIAL_RANDOM_WORKOUT: RandomWorkout = {
   resultTime: 0,
   roundCount: 1,
   storagePath: '',
+  recordCount: 0,
 };
 
 export type State = {
@@ -289,7 +297,7 @@ export type State = {
   workout: Workout;
   workoutList: Workout[];
   randomWorkouts: { [workoutId: string]: RandomWorkout };
-  randomWorkoutBLobs: { [workoutId: string]: Blob | null };
+  randomWorkoutBlobs: { [workoutId: string]: Blob | null };
   memo: {
     articles: { [id: string]: Article };
     articleBlobs: { [id: string]: Blob | null };
@@ -320,7 +328,7 @@ export const INITIAL_STATE: State = {
   workout: INITIAL_WORKOUT,
   workoutList: [],
   randomWorkouts: {},
-  randomWorkoutBLobs: {},
+  randomWorkoutBlobs: {},
   memo: {
     articles: {},
     articleBlobs: {},

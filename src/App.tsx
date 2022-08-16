@@ -5,6 +5,7 @@ import AppRoutes from './routes/AppRoutes';
 import { Action, ActionTypes, reducer } from './Update';
 import { INITIAL_STATE, State } from './Model';
 import { auth } from './repositories/firebase';
+import { getUsers } from './services/user';
 
 export const AppContext = createContext<{
   state: State;
@@ -15,6 +16,14 @@ const App = () => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
 
   useEffect(() => {
+    const fetchData = async () => {
+      let _users = !!state.users.length ? state.users : await getUsers();
+      dispatch({ type: ActionTypes.setUsers, payload: _users });
+    };
+    fetchData();
+  }, [state.users]);
+
+  useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       dispatch({ type: ActionTypes.setUser, payload: user });
     });
@@ -22,17 +31,16 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    const { audioContext } = state;
     const createAudioContext = () => {
       const factory = new AudioContextFactory();
       const _audioContext = factory.create();
       dispatch({ type: ActionTypes.setAudioContext, payload: _audioContext });
       window.removeEventListener('click', createAudioContext);
     };
-    if (!audioContext) {
+    if (!state.audioContext) {
       window.addEventListener('click', createAudioContext);
     }
-  }, [state]);
+  }, [state.audioContext]);
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>

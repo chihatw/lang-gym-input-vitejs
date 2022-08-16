@@ -14,8 +14,8 @@ import {
 } from '@mui/material';
 import React, { useContext, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { State, Workout } from '../../../Model';
-import { Action, ActionTypes } from '../../../Update';
+import { Workout } from '../../../Model';
+import { ActionTypes } from '../../../Update';
 import {
   deleteWorkout,
   getWorkouts,
@@ -24,7 +24,7 @@ import {
 import { getUsers } from '../../../services/user';
 import { AppContext } from '../../../App';
 
-const WorkoutsPage = () => {
+const WorkoutListPage = () => {
   const { state, dispatch } = useContext(AppContext);
   const { isFetching, workoutList, users } = state;
   useEffect(() => {
@@ -71,7 +71,7 @@ const WorkoutsPage = () => {
   );
 };
 
-export default WorkoutsPage;
+export default WorkoutListPage;
 
 const WorkoutRow = ({ workoutIndex }: { workoutIndex: number }) => {
   const { state, dispatch } = useContext(AppContext);

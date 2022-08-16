@@ -1,5 +1,6 @@
 import {
   collection,
+  deleteDoc,
   doc,
   DocumentData,
   getDocs,
@@ -8,7 +9,13 @@ import {
 } from 'firebase/firestore';
 import { nanoid } from 'nanoid';
 import string2PitchesArray from 'string2pitches-array';
-import { RandomWorkout, RandomWorkoutCue, State, User } from '../Model';
+import {
+  INITIAL_RANDOM_WORKOUT,
+  RandomWorkout,
+  RandomWorkoutCue,
+  State,
+  User,
+} from '../Model';
 import {
   INITIAL_RANDOM_WORKOUT_FORM_STATE,
   RandomWorkoutFormState,
@@ -31,23 +38,37 @@ export const getRandomWorkouts = async () => {
 };
 
 export const setRandomWorkout = async (workout: RandomWorkout) => {
+  // フォームで使った余分なプロパティを削除
+  type Keys = keyof RandomWorkout;
+  for (const key of Object.keys(workout)) {
+    if (!Object.keys(INITIAL_RANDOM_WORKOUT).includes(key)) {
+      delete workout[key as Keys];
+    }
+  }
+
   const { id, ...omitted } = workout;
   console.log('set randomWorkout');
   await setDoc(doc(db, COLLECTIONS.randomWorkouts, id), { ...omitted });
 };
 
+export const deleteRandomWorkout = async (id: string) => {
+  console.log('delete randomWorkout');
+  await deleteDoc(doc(db, COLLECTIONS.randomWorkouts, id));
+};
+
 const buildRandomWorkout = (doc: DocumentData) => {
   const {
-    beatCount,
-    cues,
-    roundCount,
-    storagePath,
-    targetBpm,
-    resultTime,
-    title,
-    resultBpm,
     uid,
+    cues,
+    title,
     cueIds,
+    resultBpm,
+    targetBpm,
+    beatCount,
+    roundCount,
+    resultTime,
+    storagePath,
+    recordCount,
   } = doc.data();
   const randomWorkout: RandomWorkout = {
     id: doc.id,
@@ -61,6 +82,7 @@ const buildRandomWorkout = (doc: DocumentData) => {
     roundCount: roundCount || 0,
     resultTime: resultTime || 0,
     storagePath: storagePath || '',
+    recordCount: recordCount || 0,
   };
   return randomWorkout;
 };

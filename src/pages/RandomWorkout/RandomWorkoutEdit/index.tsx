@@ -45,6 +45,9 @@ const RandomWorkoutEdit = () => {
           _users
         );
       }
+      if (!initialState.uid) {
+        initialState.uid = _users[0].id;
+      }
       randomWorkoutFormDispatch({
         type: RandomWorkoutFormActionTypes.setState,
         payload: initialState,
@@ -68,11 +71,13 @@ const RandomWorkoutEdit = () => {
       id: workoutId || nanoid(8),
       cueIds: tmpCueIds,
     };
+
     const updated: { [key: string]: RandomWorkout } = {
       ...randomWorkouts,
       [workout.id]: workout,
     };
     dispatch({ type: ActionTypes.setRandomWorkouts, payload: updated });
+
     await setRandomWorkout(workout);
     navigate('/random/list');
   };

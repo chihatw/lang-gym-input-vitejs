@@ -43,7 +43,14 @@ const RandomWorkoutForm = ({
     beatCount,
     targetBpm,
     roundCount,
+    recordCount,
   } = state;
+  const handleChengeRecordCount = (recordCount: number) => {
+    dispatch({
+      type: RandomWorkoutFormActionTypes.setState,
+      payload: { ...state, recordCount },
+    });
+  };
   const handleChangeUid = (uid: string) => {
     dispatch({
       type: RandomWorkoutFormActionTypes.setState,
@@ -131,6 +138,16 @@ const RandomWorkoutForm = ({
         value={targetBpm}
         type='number'
         onChange={(e) => handleChangeTargetBpm(Number(e.target.value))}
+      />
+      <TextField
+        size='small'
+        fullWidth
+        label='recordCount'
+        value={recordCount}
+        type='number'
+        onChange={(e) => {
+          handleChengeRecordCount(Number(e.target.value));
+        }}
       />
       <TextField
         size='small'

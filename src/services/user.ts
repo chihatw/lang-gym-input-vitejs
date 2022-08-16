@@ -13,6 +13,7 @@ const COLLECTIONS = { users: 'users' };
 export const getUsers = async () => {
   const users: User[] = [];
   const q = query(collection(db, COLLECTIONS.users), limit(10));
+  console.log('get users');
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
     users.push(buildUser(doc));
