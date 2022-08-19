@@ -6,9 +6,8 @@ import {
   INITIAL_QUESTION_SET,
   Question,
   QuestionSet,
-  State,
 } from '../../../Model';
-import { Action, ActionTypes } from '../../../Update';
+import { ActionTypes } from '../../../Update';
 import {
   buildAccents,
   buildAccentInitialValues,
@@ -29,6 +28,7 @@ import JapaneseMonitor from './JapaneseMonitor';
 import AccentsMonitor from './AccentsMonitor';
 import { AppContext } from '../../../App';
 
+// debug
 const AccentQuizPage = () => {
   const { state, dispatch } = useContext(AppContext);
   const navigate = useNavigate();
@@ -63,7 +63,9 @@ const AccentQuizPage = () => {
         _questions = memoQuestions;
         _quizBlob = memoQuizBlob;
       } else {
-        const { quiz, questions, quizBlob } = await getQuiz(questionSetId);
+        const { quiz, questions, quizBlob, newQuiz } = await getQuiz(
+          questionSetId
+        );
         _quiz = quiz;
         _questions = questions;
         _quizBlob = quizBlob;
@@ -150,10 +152,13 @@ const AccentQuizPage = () => {
         }),
       };
     });
-    dispatch({
-      type: ActionTypes.submitQuiz,
-      payload: { quiz: updatedQuiz, questions: updatedQuestions },
-    });
+    //  debug
+    // const updatedState = {}
+    // dispatch({ActionTypes.setState,payload:updatesState}) <- setSubmit
+
+    // dispatch({
+    //   payload: { quiz: updatedQuiz, questions: updatedQuestions },
+    // });
     await submitQuiz(updatedQuiz, updatedQuestions, []);
     navigate(`/accentsQuestion/list`);
   };

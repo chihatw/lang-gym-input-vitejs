@@ -48,7 +48,9 @@ const RhythmQuizPage = () => {
         _questions = memoQuestions;
         _quizBlob = memoQuizBlob;
       } else {
-        const { quiz, questions, quizBlob } = await getQuiz(questionSetId);
+        const { quiz, questions, quizBlob, newQuiz } = await getQuiz(
+          questionSetId
+        );
         _quiz = quiz;
         _questions = questions;
         _quizBlob = quizBlob;
@@ -100,10 +102,13 @@ const RhythmQuizPage = () => {
     const { quiz, questions, questionIdsToDelete } =
       buildQuizFromRhythmQuizState(state, rhythmQuizState);
 
-    dispatch({
-      type: ActionTypes.submitQuiz,
-      payload: { quiz, questions },
-    });
+    // debug
+    // const updatedState= {}
+    // dispatch({type: ActionTypes.setState,payload:updatedState})
+    // dispatch({
+    //   type: ActionTypes.submitQuiz,
+    //   payload: { quiz, questions },
+    // });
     await submitQuiz(quiz, questions, questionIdsToDelete);
 
     navigate(`/accentsQuestion/list`);

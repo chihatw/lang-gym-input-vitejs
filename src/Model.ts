@@ -1,5 +1,6 @@
 import { User as FirebaseUser } from 'firebase/auth';
 import { FSentences } from 'fsentence-types';
+import { Quiz } from './pages/TempPage/service';
 
 export type Mark = {
   start: number;
@@ -290,8 +291,8 @@ export type State = {
   articleBlob: Blob | null;
   sentences: ArticleSentence[];
   articleSentenceForms: ArticleSentenceForm[];
-  quizList: QuestionSet[];
   quiz: QuestionSet;
+  quizzes: Quiz[];
   quizBlob: Blob | null;
   questions: Question[];
   workout: Workout;
@@ -321,7 +322,6 @@ export const INITIAL_STATE: State = {
   articleBlob: null,
   sentences: [],
   articleSentenceForms: [],
-  quizList: [],
   quiz: INITIAL_QUESTION_SET,
   quizBlob: null,
   questions: [],
@@ -329,6 +329,7 @@ export const INITIAL_STATE: State = {
   workoutList: [],
   randomWorkouts: {},
   randomWorkoutBlobs: {},
+  quizzes: [],
   memo: {
     articles: {},
     articleBlobs: {},

@@ -90,10 +90,12 @@ const ArticlePage = () => {
     if (!dispatch) return;
     const { quiz, questionGroup, questions } = buildAccentQuizFromState(state);
     await createQuiz(quiz, questionGroup, questions);
-    dispatch({
-      type: ActionTypes.submitQuiz,
-      payload: { quiz, questions },
-    });
+    // debug
+    // const updatedState= {}
+    // dispatch({
+    //   type: ActionTypes.setState , <- subumit
+    //   payload: updatedState,
+    // });
     navigate(`/accentsQuestion/${quiz.id}`);
   };
 
@@ -101,10 +103,12 @@ const ArticlePage = () => {
     if (!dispatch) return;
     const { quiz, questionGroup, questions } = buildRhythmQuizFromState(state);
     await createQuiz(quiz, questionGroup, questions);
-    dispatch({
-      type: ActionTypes.submitQuiz,
-      payload: { quiz, questions },
-    });
+    // debug
+    // const updatedState= {}
+    // dispatch({
+    //   type: ActionTypes.setState <- subumit
+    //   payload: updatedState,
+    // });
     navigate(`/rhythmsQuestion/${quiz.id}`);
   };
 

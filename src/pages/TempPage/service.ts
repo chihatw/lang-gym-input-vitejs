@@ -49,6 +49,18 @@ export type Quiz = {
   questionCount: number;
 };
 
+export const INITIAL_QUIZ: Quiz = {
+  id: '',
+  uid: '',
+  type: '',
+  title: '',
+  scores: {},
+  questions: {},
+  createdAt: 0,
+  downloadURL: '',
+  questionCount: 0,
+};
+
 export type QuizQuestion = {
   end: number;
   start: number;

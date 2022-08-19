@@ -32,10 +32,12 @@ import { db, storage } from '../repositories/firebase';
 
 import { RhythmQuizState } from '../pages/Quiz/RhythmQuizPage/Model';
 import { getDownloadURL, ref } from 'firebase/storage';
+import { INITIAL_QUIZ, Quiz } from '../pages/TempPage/service';
 
 const SPACE = '　';
 
 const COLLECTIONS = {
+  quizzes: 'quizzes',
   questions: 'questions',
   questionSets: 'questionSets',
   questionGroups: 'questionGroups',
@@ -45,14 +47,21 @@ export const getQuiz = async (
   id: string
 ): Promise<{
   quiz: QuestionSet;
+  newQuiz: Quiz;
   questions: Question[];
   quizBlob: Blob | null;
 }> => {
   let quiz = INITIAL_QUESTION_SET;
   console.log('get questionSet');
   let snapshot = await getDoc(doc(db, COLLECTIONS.questionSets, id));
+
   if (!snapshot.exists()) {
-    return { quiz: INITIAL_QUESTION_SET, questions: [], quizBlob: null };
+    return {
+      quiz: INITIAL_QUESTION_SET,
+      questions: [],
+      quizBlob: null,
+      newQuiz: INITIAL_QUIZ,
+    };
   }
   quiz = buildQuestionSet(snapshot);
 
@@ -62,11 +71,21 @@ export const getQuiz = async (
   console.log('get questionGroup');
   snapshot = await getDoc(doc(db, COLLECTIONS.questionGroups, questionGroupId));
   if (!snapshot.exists()) {
-    return { quiz: INITIAL_QUESTION_SET, questions: [], quizBlob: null };
+    return {
+      quiz: INITIAL_QUESTION_SET,
+      questions: [],
+      quizBlob: null,
+      newQuiz: INITIAL_QUIZ,
+    };
   }
   const questionIds: string[] = snapshot.data().questions;
   if (!questionIds || !questionIds.length) {
-    return { quiz: INITIAL_QUESTION_SET, questions: [], quizBlob: null };
+    return {
+      quiz: INITIAL_QUESTION_SET,
+      questions: [],
+      quizBlob: null,
+      newQuiz: INITIAL_QUIZ,
+    };
   }
   await Promise.all(
     questionIds.map(async (questionId) => {
@@ -97,22 +116,27 @@ export const getQuiz = async (
     }
   }
 
-  return { quiz, questions, quizBlob };
+  snapshot = await getDoc(doc(db, COLLECTIONS.quizzes, id));
+  if (!snapshot.exists()) {
+    return { quiz, questions, quizBlob, newQuiz: INITIAL_QUIZ };
+  }
+  const newQuiz = buildQuiz(snapshot);
+  console.log({ newQuiz });
+  return { quiz, questions, quizBlob, newQuiz };
 };
 
-export const getQuizList = async () => {
-  let quizList: QuestionSet[] = [];
+export const getQuizList = async (): Promise<Quiz[]> => {
+  let quizzes: Quiz[] = [];
   let q = query(
-    collection(db, COLLECTIONS.questionSets),
+    collection(db, COLLECTIONS.quizzes),
     orderBy('createdAt', 'desc'),
     limit(10)
   );
-  console.log('get questionSets');
   let querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
-    quizList.push(buildQuestionSet(doc));
+    quizzes.push(buildQuiz(doc));
   });
-  return quizList;
+  return quizzes;
 };
 
 const buildQuestionSet = (doc: DocumentData) => {
@@ -220,7 +244,7 @@ export const buildRhythmInitialValues = (questions: Question[]) => {
     );
 
     audios.push(audio);
-    rhythmStringsObj.push(buildRhythmString(syllableUnits));
+    rhythmStringsObj.push(buildRhythmString(syllableUnits || []));
     disabledsArray.push(
       syllableUnits.map((wordRhythm: Rhythm[]) =>
         wordRhythm.map((r) => r.disabled)
@@ -691,29 +715,9 @@ const sentences2RhythmQuestions = ({
   });
 };
 
-export const deleteQuiz = async (
-  questionSetId: string,
-  questionGroupId: string
-) => {
-  let questionIds: string[] = [];
-
-  console.log('get questionGroup');
-  let snapshot = await getDoc(
-    doc(db, COLLECTIONS.questionGroups, questionGroupId)
-  );
-  if (!snapshot.exists()) return;
-  questionIds = snapshot.data().questions;
-
-  console.log('delete questionSet');
-  deleteDoc(doc(db, COLLECTIONS.questionSets, questionSetId));
-
-  console.log('delete questionGroup');
-  deleteDoc(doc(db, COLLECTIONS.questionGroups, questionGroupId));
-
-  for (const questionId of questionIds) {
-    console.log('delete question');
-    deleteDoc(doc(db, COLLECTIONS.questions, questionId));
-  }
+export const deleteQuiz = async (quizId: string) => {
+  console.log('delete quiz');
+  deleteDoc(doc(db, COLLECTIONS.quizzes, quizId));
 };
 
 const sentences2AccentsQuestions = ({
@@ -743,4 +747,28 @@ const sentences2AccentsQuestions = ({
     };
     return question;
   });
+};
+
+const buildQuiz = (doc: DocumentData): Quiz => {
+  const {
+    uid,
+    type,
+    title,
+    scores,
+    questions,
+    createdAt,
+    downloadURL,
+    questionCount,
+  } = doc.data();
+  return {
+    id: doc.id,
+    uid: uid || '',
+    type: type || '',
+    title: title || '',
+    scores: scores || {},
+    questions: questions || {},
+    createdAt: createdAt || 0,
+    downloadURL: downloadURL || '',
+    questionCount: questionCount || 0,
+  };
 };

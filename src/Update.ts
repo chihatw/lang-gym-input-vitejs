@@ -14,16 +14,17 @@ import {
   User,
   Workout,
 } from './Model';
+import { Quiz } from './pages/TempPage/service';
 
 export const ActionTypes = {
   setUser: 'setUser',
   setQuiz: 'setQuiz',
   setUsers: 'setUsers',
+  setState: 'setState',
   submitQuiz: 'submitQuiz',
   setArticle: 'setArticle',
   setWorkout: 'setWorkout',
   deleteQuiz: 'deleteQuiz',
-  setQuizList: 'setQuizList',
   deleteArticle: 'deleteArticle',
   startFetching: 'startFetching',
   deleteWorkout: 'deleteWorkout',
@@ -48,6 +49,8 @@ export type Action = {
   type: string;
   payload?:
     | null
+    | Quiz
+    | State
     | FirebaseUser
     | string
     | User[]
@@ -102,9 +105,13 @@ export type Action = {
 
 export const reducer = (state: State, action: Action): State => {
   const { type, payload } = action;
-  const { quizList, articleList, sentences, workoutList } = state;
+  const { articleList, sentences, workoutList, quizzes } = state;
 
   switch (type) {
+    case ActionTypes.setState: {
+      const updatedState = payload as State;
+      return updatedState;
+    }
     case ActionTypes.setRandomWorkouts: {
       const randomWorkouts = payload as { [key: string]: RandomWorkout };
       return R.compose(
@@ -208,13 +215,6 @@ export const reducer = (state: State, action: Action): State => {
       return R.compose(
         R.assocPath<boolean, State>(['isFetching'], false),
         R.assocPath<Article[], State>(['articleList'], articleList)
-      )(state);
-    }
-    case ActionTypes.setQuizList: {
-      const quizList = payload as QuestionSet[];
-      return R.compose(
-        R.assocPath<boolean, State>(['isFetching'], false),
-        R.assocPath<QuestionSet[], State>(['quizList'], quizList)
       )(state);
     }
     case ActionTypes.setUsers: {
@@ -328,45 +328,26 @@ export const reducer = (state: State, action: Action): State => {
       )(state);
     }
     case ActionTypes.submitQuiz: {
-      const { quiz, questions } = payload as {
-        quiz: QuestionSet;
-        questions: Question[];
-      };
-
-      let isCreateNew = !quizList.find((item) => item.id === quiz.id);
-      let updatedQuizList = [...quizList];
+      const quiz = payload as Quiz;
+      let isCreateNew = !quizzes.find((item) => item.id === quiz.id);
+      let updatedQuizzes = [...quizzes];
       if (isCreateNew) {
-        updatedQuizList.unshift(quiz);
+        updatedQuizzes.unshift(quiz);
       } else {
-        updatedQuizList = updatedQuizList.map((item) =>
+        updatedQuizzes = updatedQuizzes.map((item) =>
           item.id === quiz.id ? quiz : item
         );
       }
-
-      return R.compose(
-        R.assocPath<QuestionSet, State>(['quiz'], quiz),
-        R.assocPath<QuestionSet, State>(['memo', 'quizzes', quiz.id], quiz),
-        R.assocPath<Question[], State>(['questions'], questions),
-        R.assocPath<Question[], State>(
-          ['memo', 'questions', quiz.id],
-          questions
-        ),
-        R.assocPath<QuestionSet[], State>(['quizList'], updatedQuizList)
-      )(state);
+      return R.compose(R.assocPath<Quiz[], State>(['quizzes'], updatedQuizzes))(
+        state
+      );
     }
     case ActionTypes.deleteQuiz: {
-      const questionSetId = payload as string;
-      const updatedQuizList = quizList.filter(
-        (quiz) => quiz.id !== questionSetId
-      );
+      const quizId = payload as string;
+      const updatedQuizzes = quizzes.filter((quiz) => quiz.id !== quizId);
       return R.compose(
-        R.assocPath<QuestionSet[], State>(['quizList'], updatedQuizList),
-        R.assocPath<QuestionSet, State>(['quiz'], INITIAL_QUESTION_SET),
-        R.assocPath<null, State>(['quizBlob'], null),
-        R.assocPath<Question[], State>(['questions'], []),
-        R.dissocPath<State>(['memo', 'quizzes', questionSetId]),
-        R.dissocPath<State>(['memo', 'quizBlobs', questionSetId]),
-        R.dissocPath<State>(['memo', 'questions', questionSetId])
+        R.assocPath<Quiz[], State>(['quizzes'], updatedQuizzes),
+        R.dissocPath<State>(['quizBlobs', quizId])
       )(state);
     }
     case ActionTypes.setArticleForm: {
