@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useReducer } from 'react';
 
-import AppRoutes from './routes/AppRoutes';
+import AppRoutes from './AppRoutes';
 
 import { Action, ActionTypes, reducer } from './Update';
 import { INITIAL_STATE, State } from './Model';
@@ -44,7 +44,7 @@ const App = () => {
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>
-      <AppRoutes state={state} dispatch={dispatch} />
+      <AppRoutes />
     </AppContext.Provider>
   );
 };

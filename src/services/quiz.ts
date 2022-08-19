@@ -39,7 +39,6 @@ const COLLECTIONS = {
   questions: 'questions',
   questionSets: 'questionSets',
   questionGroups: 'questionGroups',
-  questionSetScores: 'questionSetScores',
 };
 
 export const getQuiz = async (

@@ -2,8 +2,8 @@ import React, { useContext } from 'react';
 import { Button, Container } from '@mui/material';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { auth } from '../../repositories/firebase';
-import { State } from '../../Model';
-import { Action, ActionTypes } from '../../Update';
+import {} from '../../Model';
+import { ActionTypes } from '../../Update';
 import { AppContext } from '../../App';
 
 const TopPage = () => {
@@ -58,6 +58,9 @@ const TopPage = () => {
           }}
         >
           ランダム練習一覧
+        </Button>
+        <Button variant='contained' onClick={() => navigate('/temp')}>
+          作業用
         </Button>
         <Button
           variant='contained'

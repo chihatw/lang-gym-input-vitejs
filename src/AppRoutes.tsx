@@ -1,35 +1,28 @@
 import React, { useContext } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 
-import TopPage from '../pages/TopPage';
-import SignInPage from '../pages/SignInPage';
-import ArticleInputPage from '../pages/ArticleInputPage';
+import TopPage from './pages/TopPage';
+import SignInPage from './pages/SignInPage';
+import ArticleInputPage from './pages/ArticleInputPage';
 
-import WorkoutPage from '../pages/Workout/WorkoutPage';
-import WorkoutListPage from '../pages/Workout/WorkoutListPage';
+import WorkoutPage from './pages/Workout/WorkoutPage';
+import WorkoutListPage from './pages/Workout/WorkoutListPage';
 
-import ArticleListPage from '../pages/Article/ArticleListPage';
-import EditArticlePage from '../pages/Article/EditArticlePage';
+import ArticleListPage from './pages/Article/ArticleListPage';
+import EditArticlePage from './pages/Article/EditArticlePage';
 
-import AccentQuizPage from '../pages/Quiz/AccentQuizPage';
-import RhythmQuizPage from '../pages/Quiz/RhythmQuizPage';
-import QuizListPage from '../pages/Quiz/QuizListPage';
-import ArticlePage from '../pages/Article/ArticlePage';
-import EditArticleSentenceFormPane from '../pages/Article/EditArticleSentenceFormPage';
-import PrintPitchesPage from '../pages/Article/PrintPitchesPage';
-import { State } from '../Model';
-import { Action } from '../Update';
-import RandomWorkoutList from '../pages/RandomWorkout/RandomWorkoutListPage';
-import RandomWorkoutEdit from '../pages/RandomWorkout/RandomWorkoutEdit';
-import { AppContext } from '../App';
+import AccentQuizPage from './pages/Quiz/AccentQuizPage';
+import RhythmQuizPage from './pages/Quiz/RhythmQuizPage';
+import QuizListPage from './pages/Quiz/QuizListPage';
+import ArticlePage from './pages/Article/ArticlePage';
+import EditArticleSentenceFormPane from './pages/Article/EditArticleSentenceFormPage';
+import PrintPitchesPage from './pages/Article/PrintPitchesPage';
+import RandomWorkoutList from './pages/RandomWorkout/RandomWorkoutListPage';
+import RandomWorkoutEdit from './pages/RandomWorkout/RandomWorkoutEdit';
+import { AppContext } from './App';
+import TempPage from './pages/TempPage';
 
-const AppRoutes = ({
-  state,
-  dispatch,
-}: {
-  state: State;
-  dispatch: React.Dispatch<Action>;
-}) => {
+const AppRoutes = () => {
   return (
     <Routes>
       <Route path='/' element={<TopPage />} />
@@ -78,6 +71,8 @@ const AppRoutes = ({
         path='/form/:articleId/index/:index'
         element={<EditArticleSentenceFormPane />}
       />
+
+      <Route path='/temp' element={<TempPage />} />
 
       <Route
         path='/login'
