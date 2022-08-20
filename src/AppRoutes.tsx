@@ -53,17 +53,12 @@ const AppRoutes = () => {
         <Route path=':workoutId' element={<RandomWorkoutEdit />} />
       </Route>
 
-      {/* accentsQuestion */}
+      {/* Quiz */}
 
-      <Route path='/accentsQuestion/*'>
+      <Route path='/quiz/*'>
         <Route path='list' element={<QuizListPage />} />
-        <Route path=':questionSetId' element={<AccentQuizPage />} />
-      </Route>
-
-      {/* rhythmsQuestion */}
-
-      <Route path='/rhythmsQuestion/*'>
-        <Route path=':questionSetId' element={<RhythmQuizPage />} />
+        <Route path='accent/:quizId' element={<AccentQuizPage />} />
+        <Route path='rhythm/:quizId' element={<RhythmQuizPage />} />
       </Route>
 
       {/* form */}

@@ -62,12 +62,12 @@ export const INITIAL_QUIZ: Quiz = {
 };
 
 export type QuizQuestion = {
-  end: number;
-  start: number;
-  japanese: string;
+  japanese: string; // pitchQuiz で利用
+  pitchStr: string; // pitchQuiz で利用
   disableds: number[]; // pitchQuiz の非題化を wordIndex で指定
-  pitchStr: string;
-  syllables: { [index: number]: Syllable[] };
+  end: number; // rhythmQuiz で利用
+  start: number; // rhythmQuiz で利用
+  syllables: { [index: number]: Syllable[] }; // rhythmQuiz で利用
 };
 
 export type RhythmAnswer = string[][]; // string にしないと firecloud に保存できない

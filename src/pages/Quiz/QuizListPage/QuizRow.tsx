@@ -18,14 +18,12 @@ const QuizRow = ({ index }: { index: number }) => {
   const { uid, title, scores, type, id } = quiz;
 
   const handleOpenEditPage = () => {
-    if (!dispatch) return;
-    dispatch({ type: ActionTypes.startFetching });
     switch (type) {
       case 'articleAccents':
-        navigate(`/accentsQuestion/${id}`);
+        navigate(`/quiz/accent/${id}`);
         return;
       case 'articleRhythms':
-        navigate(`/rhythmsQuestion/${id}`);
+        navigate(`/quiz/rhythm/${id}`);
         return;
       default:
     }

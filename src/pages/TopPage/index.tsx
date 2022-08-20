@@ -36,7 +36,7 @@ const TopPage = () => {
           variant='contained'
           onClick={() => {
             dispatch({ type: ActionTypes.startFetching });
-            navigate('accentsQuestion/list');
+            navigate('quiz/list');
           }}
         >
           問題一覧

@@ -27,12 +27,19 @@ import {
   Rhythm,
   SpecialMora,
   State,
+  User,
 } from '../Model';
 import { db, storage } from '../repositories/firebase';
 
 import { RhythmQuizState } from '../pages/Quiz/RhythmQuizPage/Model';
 import { getDownloadURL, ref } from 'firebase/storage';
-import { INITIAL_QUIZ, Quiz } from '../pages/TempPage/service';
+import {
+  INITIAL_QUIZ,
+  Quiz,
+  QuizQuestion,
+  QuizQuestions,
+} from '../pages/TempPage/service';
+import { AccentQuizFormState } from '../pages/Quiz/AccentQuizPage/Model';
 
 const SPACE = '　';
 
@@ -199,35 +206,58 @@ const buildQuestion = (doc: DocumentData) => {
   return question;
 };
 
-export const buildAccentInitialValues = (questions: Question[]) => {
-  const audios: Audio[] = [];
+export const buildAccentQuizFormState = (
+  quiz: Quiz,
+  users: User[]
+): AccentQuizFormState => {
+  const { uid, title, questions, scores, downloadURL, questionCount } = quiz;
+
+  const japaneseArray: string[] = [];
+  const pitchStrArray: string[] = [];
+  const disabledsArray: number[][] = [];
+  const starts: number[] = [];
+  const ends: number[] = [];
+  Object.values(questions).forEach((question) => {
+    const { japanese, pitchStr, disableds, start, end } = question;
+
+    japaneseArray.push(japanese);
+    pitchStrArray.push(pitchStr);
+    disabledsArray.push(disableds);
+    starts.push(start);
+    ends.push(end);
+  });
+
+  return {
+    users,
+    uid,
+    title,
+    scores,
+    japanese: japaneseArray.join('\n'),
+    pitchStr: pitchStrArray.join('\n'),
+    disabledsArray,
+    downloadURL,
+    starts,
+    ends,
+    questionCount,
+  };
+};
+
+export const buildAccentInitialValues = (questions: QuizQuestions) => {
   const japaneses: string[] = [];
   const accentStrings: string[] = [];
   const disabledsArray: number[][] = [];
 
-  questions.forEach((question) => {
-    const {
-      audio,
-      japanese,
-      accents,
-      disableds,
-    }: {
-      audio: Audio;
-      japanese: string;
-      accents: Accent[];
-      disableds: number[];
-    } = JSON.parse(question.question);
+  Object.values(questions).forEach((question) => {
+    const { japanese, pitchStr, disableds } = question;
 
-    audios.push(audio);
     japaneses.push(japanese);
-    accentStrings.push(buildAccentString(accents));
+    accentStrings.push(pitchStr);
     disabledsArray.push(disableds);
   });
   return {
     japanese: japaneses.join('\n'),
     accentString: accentStrings.join('\n'),
     disabledsArray,
-    audios,
   };
 };
 
@@ -532,33 +562,12 @@ export const buildQuizFromRhythmQuizState = (
   return { quiz: newQuiz, questions: newQuestions, questionIdsToDelete };
 };
 
-export const submitQuiz = async (
-  quiz: QuestionSet,
-  questions: Question[],
-  questionIdsToDelete: string[]
-) => {
-  const { questionGroups } = quiz;
-  const questionGroupId = questionGroups[0];
-  const questionIds = questions.map(({ id }) => id);
+export const submitQuiz = async (quiz: Quiz) => {
   console.log('update questionSet');
   const { id, ...omitted } = quiz;
-  await updateDoc(doc(db, COLLECTIONS.questionSets, id), {
+  await updateDoc(doc(db, COLLECTIONS.quizzes, id), {
     ...omitted,
   });
-  console.log('update questionGroup');
-  await updateDoc(doc(db, COLLECTIONS.questionGroups, questionGroupId), {
-    questions: questionIds,
-  });
-  for (const questionId of questionIdsToDelete) {
-    console.log('delete question');
-    await deleteDoc(doc(db, COLLECTIONS.questions, questionId));
-  }
-  for (const question of questions) {
-    console.log('update question');
-    const { id, ...omitted } = question;
-    await updateDoc(doc(db, COLLECTIONS.questions, id), { ...omitted });
-  }
-  return;
 };
 
 export const buildAccentQuizFromState = (

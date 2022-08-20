@@ -5,7 +5,6 @@ import {
   ArticleSentence,
   ArticleSentenceForm,
   INITIAL_ARTICLE,
-  INITIAL_QUESTION_SET,
   INITIAL_WORKOUT,
   Question,
   QuestionSet,
