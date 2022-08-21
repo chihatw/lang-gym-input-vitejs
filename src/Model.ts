@@ -1,5 +1,4 @@
 import { User as FirebaseUser } from 'firebase/auth';
-import { Quiz } from './pages/TempPage/service';
 
 export type Mark = {
   start: number;
@@ -93,6 +92,77 @@ export const INITIAL_USER: User = {
   id: '',
   createdAt: 0,
   displayname: '',
+};
+
+export const TYPES = {
+  articleAccents: 'articleAccents',
+  articleRhythms: 'articleRhythms',
+};
+
+export type Syllable = {
+  kana: string;
+  disabled: string;
+  longVowel: string;
+  specialMora: string;
+};
+
+export type QuizScores = { [createdAt: number]: QuizScore };
+export type QuizQuestions = { [index: number]: QuizQuestion };
+
+export type Quiz = {
+  id: string;
+  uid: string;
+  type: string;
+  title: string;
+  scores: QuizScores;
+  questions: QuizQuestions;
+  createdAt: number;
+  downloadURL: string;
+  questionCount: number;
+};
+
+export const INITIAL_QUIZ: Quiz = {
+  id: '',
+  uid: '',
+  type: '',
+  title: '',
+  scores: {},
+  questions: {},
+  createdAt: 0,
+  downloadURL: '',
+  questionCount: 0,
+};
+
+export type QuizQuestion = {
+  japanese: string; // pitchQuiz で利用
+  pitchStr: string; // pitchQuiz で利用
+  disableds: number[]; // pitchQuiz の非題化を wordIndex で指定
+  end: number; // rhythmQuiz で利用
+  start: number; // rhythmQuiz で利用
+  syllables: { [index: number]: Syllable[] }; // rhythmQuiz で利用
+};
+
+export type QuizScore = {
+  score: number;
+  createdAt: number;
+  pitchAnswers: string[];
+  rhythmAnswers: string[];
+};
+
+export const INITIAL_QUIZ_SCORE: QuizScore = {
+  score: 0,
+  createdAt: 0,
+  pitchAnswers: [],
+  rhythmAnswers: [],
+};
+
+export const INITIAL_QUIZ_QUESTION: QuizQuestion = {
+  end: 0,
+  start: 0,
+  pitchStr: '',
+  japanese: '',
+  disableds: [],
+  syllables: {},
 };
 
 export type WorkoutItem = {

@@ -12,8 +12,7 @@ import JapaneseMonitor from './JapaneseMonitor';
 import { PitchQuizFormState } from './Model';
 import RowPitchMonitor from './RowPitchMonitor';
 import ScoreTable from '../common/ScoreTable';
-import string2PitchesArray from 'string2pitches-array';
-import { QuizQuestion } from '../../TempPage/service';
+import { QuizQuestion } from '../../../Model';
 
 const PitchQuizForm = ({
   state,

@@ -1,5 +1,4 @@
-import { User } from '../../../Model';
-import { QuizQuestion, QuizScores } from '../../TempPage/service';
+import { User, QuizQuestion, QuizScores } from '../../../Model';
 
 export type PitchQuizFormState = {
   uid: string;

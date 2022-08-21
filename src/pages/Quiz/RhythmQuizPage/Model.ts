@@ -1,5 +1,4 @@
-import { User } from '../../../Model';
-import { QuizScores, Syllable } from '../../TempPage/service';
+import { User, QuizScores, Syllable } from '../../../Model';
 
 export type RhythmQuizFromState = {
   uid: string;

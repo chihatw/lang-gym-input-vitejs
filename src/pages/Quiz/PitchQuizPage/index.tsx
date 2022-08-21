@@ -6,9 +6,8 @@ import { pitchQuizFormReducer } from './Update';
 import { INITIAL_PITCH_QUIZ_FORM_STATE } from './Model';
 import PitchQuizForm from './PitchQuizForm';
 import string2PitchesArray from 'string2pitches-array';
-import { Quiz, QuizQuestions } from '../../TempPage/service';
 import { ActionTypes } from '../../../Update';
-import { State } from '../../../Model';
+import { State, Quiz, QuizQuestions } from '../../../Model';
 
 const PitchQuizPage = () => {
   const { quizId } = useParams();

@@ -9,14 +9,14 @@ import { rhythmQuizFormReducer } from './Update';
 import { INITIAL_RHYTHM_QUIZ_FORM_STATE } from './Model';
 import RhythmQuizForm from './RhythmQuizForm';
 import { AppContext } from '../../../App';
-import { State } from '../../../Model';
-import { ActionTypes } from '../../../Update';
 import {
+  State,
   Quiz,
   QuizQuestion,
   QuizQuestions,
   Syllable,
-} from '../../TempPage/service';
+} from '../../../Model';
+import { ActionTypes } from '../../../Update';
 
 const RhythmQuizPage = () => {
   const { quizId } = useParams();

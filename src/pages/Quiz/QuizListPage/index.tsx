@@ -6,8 +6,7 @@ import TableLayout from '../../../components/templates/TableLayout';
 import { getQuizList } from '../../../services/quiz';
 import { ActionTypes } from '../../../Update';
 import QuizRow from './QuizRow';
-import { State } from '../../../Model';
-import { Quiz } from '../../TempPage/service';
+import { State, Quiz } from '../../../Model';
 
 const QuizListPage = () => {
   const { state, dispatch } = useContext(AppContext);
