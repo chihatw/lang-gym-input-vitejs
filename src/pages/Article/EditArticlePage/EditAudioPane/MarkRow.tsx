@@ -9,7 +9,6 @@ import {
   TextField,
 } from '@mui/material';
 import { ArticleVoiceState } from '../Model';
-import { ArticleVoiceAction, ArticleVoiceActionTypes } from '../Update';
 import { createSourceNode } from '../../../../services/utils';
 import { buildSentenceLines } from '../../../../services/wave';
 import { Mark } from '../../../../Model';
@@ -21,7 +20,7 @@ const MarkRow = ({
 }: {
   index: number;
   state: ArticleVoiceState;
-  dispatch: React.Dispatch<ArticleVoiceAction>;
+  dispatch: React.Dispatch<ArticleVoiceState>;
 }) => {
   const { labels, marks, articleBlob, audioContext, scale } = state;
   const label: string = labels[index] || '';
@@ -38,10 +37,14 @@ const MarkRow = ({
       marks: newMarks,
       scale,
     });
-    dispatch({
-      type: ArticleVoiceActionTypes.changeMarks,
-      payload: { marks: newMarks, sentenceLines },
-    });
+
+    const updatedState: ArticleVoiceState = {
+      ...state,
+      sentenceLines,
+      marks: newMarks,
+    };
+
+    dispatch(updatedState);
   };
 
   const play = async (start: number, end: number) => {

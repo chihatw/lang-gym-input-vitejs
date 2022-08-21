@@ -2,7 +2,6 @@ import React from 'react';
 import CheckIcon from '@mui/icons-material/Check';
 import { Button, Table, TableBody } from '@mui/material';
 import { ArticleVoiceState } from '../Model';
-import { ArticleVoiceAction } from '../Update';
 import WaveCanvas from './WaveCanvas';
 import MarksSlider from './MarksSlider';
 import MarkRow from './MarkRow';
@@ -14,7 +13,7 @@ const EditAudioPane = ({
   deleteAudio,
 }: {
   state: ArticleVoiceState;
-  dispatch: React.Dispatch<ArticleVoiceAction>;
+  dispatch: React.Dispatch<ArticleVoiceState>;
   updateMarks: () => void;
   deleteAudio: () => void;
 }) => {

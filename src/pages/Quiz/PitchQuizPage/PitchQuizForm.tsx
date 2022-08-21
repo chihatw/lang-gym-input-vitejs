@@ -1,3 +1,4 @@
+import * as R from 'ramda';
 import React from 'react';
 import TableLayout from '../../../components/templates/TableLayout';
 import {
@@ -8,33 +9,75 @@ import {
   TextField,
 } from '@mui/material';
 import JapaneseMonitor from './JapaneseMonitor';
-import { AccentQuizFormState } from './Model';
+import { PitchQuizFormState } from './Model';
 import RowPitchMonitor from './RowPitchMonitor';
-import ScoreTable from './ScoreTable';
+import ScoreTable from '../common/ScoreTable';
+import string2PitchesArray from 'string2pitches-array';
+import { QuizQuestion } from '../../TempPage/service';
 
-const AccentQuizForm = ({
+const PitchQuizForm = ({
   state,
   dispatch,
   handleSubmit,
 }: {
-  state: AccentQuizFormState;
-  dispatch: React.Dispatch<AccentQuizFormState>;
+  state: PitchQuizFormState;
+  dispatch: React.Dispatch<PitchQuizFormState>;
   handleSubmit: () => void;
 }) => {
   const handleChangeUid = (uid: string) => {
-    const updatedState: AccentQuizFormState = { ...state, uid };
+    const updatedState: PitchQuizFormState = { ...state, uid };
     dispatch(updatedState);
   };
   const handleChangeTitle = (title: string) => {
-    const updatedState: AccentQuizFormState = { ...state, title };
+    const updatedState: PitchQuizFormState = { ...state, title };
     dispatch(updatedState);
   };
-  const handleChangeJapanese = (japanese: string) => {
-    const updatedState: AccentQuizFormState = { ...state, japanese };
+  const handleChangeJapanese = (input: string) => {
+    const japaneses = input.split('\n');
+    const updatedQuestions: QuizQuestion[] = [];
+    japaneses.forEach((japanese, index) => {
+      const questions = state.questions;
+      const question = questions[index];
+      const updatedQuestion: QuizQuestion = {
+        end: question?.end || 0,
+        start: question?.start || 0,
+        japanese,
+        disableds: question?.disableds || [],
+        pitchStr: question?.pitchStr || '',
+        syllables: question?.syllables || {},
+      };
+      updatedQuestions.push(updatedQuestion);
+    });
+
+    const updatedState = R.compose(
+      R.assocPath<string, PitchQuizFormState>(['input', 'japanese'], input),
+      R.assocPath<QuizQuestion[], PitchQuizFormState>(
+        ['questions'],
+        updatedQuestions
+      )
+    )(state);
+
     dispatch(updatedState);
   };
-  const handleChangePitchStr = (pitchStr: string) => {
-    const updatedState: AccentQuizFormState = { ...state, pitchStr };
+  const handleChangePitchStr = (input: string) => {
+    const pitchStrs = input.split('\n');
+    const updatedQuestions: QuizQuestion[] = [];
+    state.questions.forEach((question, index) => {
+      const pitchStr = pitchStrs[index];
+      const updatedQuestion: QuizQuestion = {
+        ...question,
+        pitchStr,
+      };
+      updatedQuestions.push(updatedQuestion);
+    });
+    const updatedState = R.compose(
+      R.assocPath<string, PitchQuizFormState>(['input', 'pitch'], input),
+      R.assocPath<QuizQuestion[], PitchQuizFormState>(
+        ['questions'],
+        updatedQuestions
+      )
+    )(state);
+
     dispatch(updatedState);
   };
   return (
@@ -69,29 +112,31 @@ const AccentQuizForm = ({
           size='small'
           fullWidth
           label='japanese'
-          value={state.japanese}
+          value={state.input.japanese}
           multiline
           rows={5}
           onChange={(e) => handleChangeJapanese(e.target.value)}
         />
 
-        {!!state.japanese && <JapaneseMonitor japanese={state.japanese} />}
+        {!!state.input.japanese && (
+          <JapaneseMonitor japanese={state.input.japanese} />
+        )}
 
         <TextField
           variant='outlined'
           size='small'
           fullWidth
           label='accentString'
-          value={state.pitchStr}
+          value={state.input.pitch}
           multiline
           rows={5}
           onChange={(e) => handleChangePitchStr(e.target.value)}
         />
 
-        {!!state.pitchStr && !!state.disabledsArray.length && (
+        {!!state.input.pitch && (
           <div style={{ fontSize: 12, color: '#555' }}>
             <div style={{ display: 'grid', rowGap: 8 }}>
-              {state.pitchStr.split('\n').map((_, sentenceIndex) => (
+              {state.questions.map((_, sentenceIndex) => (
                 <RowPitchMonitor
                   key={sentenceIndex}
                   state={state}
@@ -111,4 +156,4 @@ const AccentQuizForm = ({
   );
 };
 
-export default AccentQuizForm;
+export default PitchQuizForm;

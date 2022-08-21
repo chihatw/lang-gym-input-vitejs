@@ -1,12 +1,9 @@
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
-import { SentenceFormPane } from '@chihatw/sentence-form.sentence-form-pane';
 import { Card } from '@mui/material';
 import accentsForPitchesArray from 'accents-for-pitches-array';
 import React, { useContext } from 'react';
 import { AppContext } from '../../../../App';
 import AudioSlider from '../../../../components/AudioSlider';
-import { INITIAL_ARTICLE_SENTENCE_FORM, State } from '../../../../Model';
-import { Action } from '../../../../Update';
 import SentenceRowFooter from './SentenceRowFooter';
 
 const SentenceRow = ({
@@ -17,18 +14,15 @@ const SentenceRow = ({
   sentenceIndex: number;
 }) => {
   const { state } = useContext(AppContext);
-  const {
-    sentences: articleSentences,
-    articleSentenceForms,
-    audioContext,
-    articleBlob,
-  } = state;
+  const { article, sentences: articleSentences, audioContext, blobs } = state;
   const sentence = articleSentences[sentenceIndex];
   const { line, original, chinese, accents, japanese, start, end } = sentence;
 
-  const articleSentenceForm =
-    articleSentenceForms[sentenceIndex] || INITIAL_ARTICLE_SENTENCE_FORM;
-  const { sentences } = articleSentenceForm;
+  let blob: Blob | null = null;
+  if (article.downloadURL) {
+    blob = state.blobs[article.downloadURL];
+  }
+
   return (
     <Card>
       <div
@@ -45,15 +39,10 @@ const SentenceRow = ({
           <div style={{ color: '#aaa' }}>{original}</div>
           <div style={{ color: '#52a2aa' }}>{chinese}</div>
           <SentencePitchLine pitchesArray={accentsForPitchesArray(accents)} />
-          {!!Object.keys(sentences).length && (
-            <div style={{ maxWidth: isSm ? 500 : 800, overflowX: 'scroll' }}>
-              <SentenceFormPane sentences={sentences} />
-            </div>
-          )}
         </div>
-        {!!audioContext && !!articleBlob && (
+        {!!audioContext && !!blob && (
           <AudioSlider
-            blob={articleBlob}
+            blob={blob}
             audioContext={audioContext}
             spacer={5}
             start={start}

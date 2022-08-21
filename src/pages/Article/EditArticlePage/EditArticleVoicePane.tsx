@@ -1,3 +1,4 @@
+import * as R from 'ramda';
 import { Button, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import React, { useContext, useEffect, useReducer } from 'react';
@@ -15,8 +16,13 @@ import { AppContext } from '../../../App';
 
 const EditArticleVoicePane = () => {
   const { state, dispatch } = useContext(AppContext);
-  const { article, sentences, articleBlob } = state;
+  const { article, sentences, blobs } = state;
   const { id: articleId, downloadURL } = article;
+
+  let blob: Blob | null = null;
+  if (downloadURL) {
+    blob = blobs[downloadURL];
+  }
 
   const navigate = useNavigate();
 
@@ -65,9 +71,18 @@ const EditArticleVoicePane = () => {
         end: marks[index].end,
       })
     );
+
+    const updatedState = R.compose(
+      R.assocPath<ArticleSentence[], State>(['sentences'], newSentences),
+      R.assocPath<ArticleSentence[], State>(
+        ['memo', 'sentences', articleId],
+        newSentences
+      )
+    )(state);
+
     dispatch({
-      type: ActionTypes.updateSentences,
-      payload: { articleId, sentences: newSentences },
+      type: ActionTypes.setState,
+      payload: updatedState,
     });
 
     setSentences(newSentences);
@@ -106,7 +121,7 @@ const EditArticleVoicePane = () => {
   return (
     <Container maxWidth='sm'>
       <div style={{ display: 'grid', rowGap: 16 }}>
-        {articleBlob ? (
+        {blob ? (
           <EditAudioPane
             state={articleVoiceState}
             dispatch={articleVoiceDispatch}

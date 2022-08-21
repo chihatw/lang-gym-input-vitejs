@@ -1,6 +1,6 @@
 import { Button, Container, Table, TableBody, Typography } from '@mui/material';
 import React, { useContext, useEffect } from 'react';
-import { State } from '../../../Model';
+import { INITIAL_ARTICLE, State } from '../../../Model';
 import { Action, ActionTypes } from '../../../Update';
 import { getArticles } from '../../../services/article';
 import LinkButton from '../../../components/ui/LinkButton';
@@ -18,7 +18,12 @@ const ArticleListPage = () => {
       const _articleList = !!articleList.length
         ? articleList
         : await getArticles();
-      dispatch({ type: ActionTypes.setArticleList, payload: _articleList });
+      const updatedState: State = {
+        ...state,
+        articleList: _articleList,
+        isFetching: false,
+      };
+      dispatch({ type: ActionTypes.setState, payload: updatedState });
     };
     fetchData();
   }, [isFetching]);
@@ -37,7 +42,13 @@ const ArticleListPage = () => {
               onClick={() => {
                 if (!dispatch) return;
                 navigate('/article/initial');
-                dispatch({ type: ActionTypes.initialArticle });
+                const updatedState: State = {
+                  ...state,
+                  isFetching: true,
+                  article: INITIAL_ARTICLE,
+                  sentences: [],
+                };
+                dispatch({ type: ActionTypes.setState, payload: updatedState });
               }}
             >
               新規作成

@@ -11,11 +11,10 @@ import WorkoutListPage from './pages/Workout/WorkoutListPage';
 import ArticleListPage from './pages/Article/ArticleListPage';
 import EditArticlePage from './pages/Article/EditArticlePage';
 
-import AccentQuizPage from './pages/Quiz/AccentQuizPage';
+import PitchQuizPage from './pages/Quiz/PitchQuizPage';
 import RhythmQuizPage from './pages/Quiz/RhythmQuizPage';
 import QuizListPage from './pages/Quiz/QuizListPage';
 import ArticlePage from './pages/Article/ArticlePage';
-import EditArticleSentenceFormPane from './pages/Article/EditArticleSentenceFormPage';
 import PrintPitchesPage from './pages/Article/PrintPitchesPage';
 import RandomWorkoutList from './pages/RandomWorkout/RandomWorkoutListPage';
 import RandomWorkoutEdit from './pages/RandomWorkout/RandomWorkoutEdit';
@@ -57,15 +56,9 @@ const AppRoutes = () => {
 
       <Route path='/quiz/*'>
         <Route path='list' element={<QuizListPage />} />
-        <Route path='accent/:quizId' element={<AccentQuizPage />} />
+        <Route path='pitch/:quizId' element={<PitchQuizPage />} />
         <Route path='rhythm/:quizId' element={<RhythmQuizPage />} />
       </Route>
-
-      {/* form */}
-      <Route
-        path='/form/:articleId/index/:index'
-        element={<EditArticleSentenceFormPane />}
-      />
 
       <Route path='/temp' element={<TempPage />} />
 
@@ -84,8 +77,15 @@ const AppRoutes = () => {
 
 const GuestRoute = ({ children }: { children: JSX.Element }) => {
   const { state } = useContext(AppContext);
-  const { initializing, user } = state;
-  return !initializing ? user ? <Navigate to='/' /> : children : <></>;
+  return !state.initializing ? (
+    state.user ? (
+      <Navigate to='/' />
+    ) : (
+      children
+    )
+  ) : (
+    <></>
+  );
 };
 
 export default AppRoutes;

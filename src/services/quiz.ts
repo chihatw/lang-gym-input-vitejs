@@ -5,137 +5,63 @@ import {
   deleteDoc,
   doc,
   DocumentData,
-  getDoc,
   getDocs,
   limit,
   orderBy,
   query,
   setDoc,
-  updateDoc,
 } from 'firebase/firestore';
 import getMoras from 'get-moras';
 
-import {
-  Accent,
-  Audio,
-  INITIAL_QUESTION,
-  INITIAL_QUESTION_GROUP,
-  INITIAL_QUESTION_SET,
-  Question,
-  QuestionGroup,
-  QuestionSet,
-  Rhythm,
-  SpecialMora,
-  State,
-  User,
-} from '../Model';
+import { Accent, State } from '../Model';
 import { db, storage } from '../repositories/firebase';
 
-import { RhythmQuizState } from '../pages/Quiz/RhythmQuizPage/Model';
+import {
+  INITIAL_RHYTHM_QUIZ_FORM_STATE,
+  RhythmQuizFromState,
+} from '../pages/Quiz/RhythmQuizPage/Model';
 import { getDownloadURL, ref } from 'firebase/storage';
 import {
   INITIAL_QUIZ,
+  INITIAL_QUIZ_QUESTION,
   Quiz,
   QuizQuestion,
   QuizQuestions,
+  Syllable,
 } from '../pages/TempPage/service';
-import { AccentQuizFormState } from '../pages/Quiz/AccentQuizPage/Model';
+import {
+  PitchQuizFormState,
+  INITIAL_PITCH_QUIZ_FORM_STATE,
+} from '../pages/Quiz/PitchQuizPage/Model';
+import accentsForPitchesArray from 'accents-for-pitches-array';
+import pitchesArray2String from 'pitches-array2string';
 
 const SPACE = '　';
 
 const COLLECTIONS = {
   quizzes: 'quizzes',
-  questions: 'questions',
-  questionSets: 'questionSets',
-  questionGroups: 'questionGroups',
 };
 
-export const getQuiz = async (
-  id: string
-): Promise<{
-  quiz: QuestionSet;
-  newQuiz: Quiz;
-  questions: Question[];
-  quizBlob: Blob | null;
-}> => {
-  let quiz = INITIAL_QUESTION_SET;
-  console.log('get questionSet');
-  let snapshot = await getDoc(doc(db, COLLECTIONS.questionSets, id));
+export const getBlob = async (downloadURL: string) => {
+  let blob = null;
 
-  if (!snapshot.exists()) {
-    return {
-      quiz: INITIAL_QUESTION_SET,
-      questions: [],
-      quizBlob: null,
-      newQuiz: INITIAL_QUIZ,
-    };
-  }
-  quiz = buildQuestionSet(snapshot);
-
-  let questions: Question[] = [];
-  const { questionGroups } = quiz;
-  const questionGroupId = questionGroups[0];
-  console.log('get questionGroup');
-  snapshot = await getDoc(doc(db, COLLECTIONS.questionGroups, questionGroupId));
-  if (!snapshot.exists()) {
-    return {
-      quiz: INITIAL_QUESTION_SET,
-      questions: [],
-      quizBlob: null,
-      newQuiz: INITIAL_QUIZ,
-    };
-  }
-  const questionIds: string[] = snapshot.data().questions;
-  if (!questionIds || !questionIds.length) {
-    return {
-      quiz: INITIAL_QUESTION_SET,
-      questions: [],
-      quizBlob: null,
-      newQuiz: INITIAL_QUIZ,
-    };
-  }
-  await Promise.all(
-    questionIds.map(async (questionId) => {
-      console.log('get question');
-      snapshot = await getDoc(doc(db, COLLECTIONS.questions, questionId));
-      const question = snapshot.exists()
-        ? buildQuestion(snapshot)
-        : INITIAL_QUESTION;
-      questions.push(question);
-    })
-  );
-
-  let quizBlob = null;
-  if (questions.length) {
-    const question = questions[0];
-    const { audio }: { audio: Audio } = JSON.parse(question.question);
-    if (audio) {
-      let { downloadURL } = audio;
-      if (downloadURL) {
-        const header = downloadURL.slice(0, 4);
-        if (header !== 'http') {
-          downloadURL = await getDownloadURL(ref(storage, downloadURL));
-        }
-        console.log('create quiz blob');
-        const response = await fetch(downloadURL);
-        quizBlob = await response.blob();
-      }
+  if (downloadURL) {
+    const header = downloadURL.slice(0, 4);
+    if (header !== 'http') {
+      downloadURL = await getDownloadURL(ref(storage, downloadURL));
     }
+    console.log('create blob');
+    const response = await fetch(downloadURL);
+    blob = await response.blob();
   }
-
-  snapshot = await getDoc(doc(db, COLLECTIONS.quizzes, id));
-  if (!snapshot.exists()) {
-    return { quiz, questions, quizBlob, newQuiz: INITIAL_QUIZ };
-  }
-  const newQuiz = buildQuiz(snapshot);
-  console.log({ newQuiz });
-  return { quiz, questions, quizBlob, newQuiz };
+  return blob;
 };
 
 export const getQuizList = async (): Promise<Quiz[]> => {
   let quizzes: Quiz[] = [];
   let q = query(
     collection(db, COLLECTIONS.quizzes),
+    // 新しいものが前
     orderBy('createdAt', 'desc'),
     limit(10)
   );
@@ -146,99 +72,35 @@ export const getQuizList = async (): Promise<Quiz[]> => {
   return quizzes;
 };
 
-const buildQuestionSet = (doc: DocumentData) => {
-  const {
-    answered,
-    createdAt,
-    hasFreeAnswers,
-    questionCount,
-    questionGroups,
-    title,
-    type,
-    uid,
-    unlockedAt,
-    userDisplayname,
-  } = doc.data();
-  const questionSet: QuestionSet = {
-    id: doc.id,
-    answered: answered || false,
-    createdAt: createdAt || 0,
-    hasFreeAnswers: hasFreeAnswers || false,
-    questionCount: questionCount || 0,
-    questionGroups: questionGroups || [],
-    title: title || '',
-    type: type || 'articleAccents',
-    uid: uid || '',
-    unlockedAt: unlockedAt || 0,
-    userDisplayname: userDisplayname || '',
-  };
-  return questionSet;
-};
+export const buildPitchQuizFormState = (
+  state: State,
+  quizId: string
+): PitchQuizFormState => {
+  const quiz = state.quizzes.find((item) => item.id === quizId);
+  if (!quiz) return INITIAL_PITCH_QUIZ_FORM_STATE;
 
-const buildQuestion = (doc: DocumentData) => {
-  const {
-    answerExample,
-    answers,
-    choices,
-    createdAt,
-    feedback,
-    memo,
-    note,
-    question: _question,
-    questionGroup,
-    tags,
-    type,
-  } = doc.data();
-  const question: Question = {
-    id: doc.id,
-    answerExample: answerExample || '',
-    answers: answers || [],
-    choices: choices || [],
-    createdAt: createdAt || 0,
-    feedback: feedback || '',
-    memo: memo || '',
-    note: note || '',
-    question: _question || '',
-    questionGroup: questionGroup || '',
-    tags: tags || {},
-    type: type || '',
-  };
-  return question;
-};
-
-export const buildAccentQuizFormState = (
-  quiz: Quiz,
-  users: User[]
-): AccentQuizFormState => {
-  const { uid, title, questions, scores, downloadURL, questionCount } = quiz;
-
-  const japaneseArray: string[] = [];
-  const pitchStrArray: string[] = [];
-  const disabledsArray: number[][] = [];
-  const starts: number[] = [];
-  const ends: number[] = [];
-  Object.values(questions).forEach((question) => {
-    const { japanese, pitchStr, disableds, start, end } = question;
-
-    japaneseArray.push(japanese);
-    pitchStrArray.push(pitchStr);
-    disabledsArray.push(disableds);
-    starts.push(start);
-    ends.push(end);
-  });
+  let blob = null;
+  if (quiz.downloadURL) {
+    blob = state.blobs[quiz.downloadURL];
+  }
 
   return {
-    users,
-    uid,
-    title,
-    scores,
-    japanese: japaneseArray.join('\n'),
-    pitchStr: pitchStrArray.join('\n'),
-    disabledsArray,
-    downloadURL,
-    starts,
-    ends,
-    questionCount,
+    uid: quiz.uid,
+    blob: null,
+    users: state.users,
+    title: quiz.title,
+    questionCount: quiz.questionCount,
+    input: {
+      pitch: Object.values(quiz.questions)
+        .map(({ pitchStr }) => pitchStr)
+        .join('\n'),
+      japanese: Object.values(quiz.questions)
+        .map(({ japanese }) => japanese)
+        .join('\n'),
+    },
+    scores: quiz.scores,
+    audioContext: state.audioContext,
+    questions: Object.values(quiz.questions),
   };
 };
 
@@ -261,31 +123,47 @@ export const buildAccentInitialValues = (questions: QuizQuestions) => {
   };
 };
 
-export const buildRhythmInitialValues = (questions: Question[]) => {
-  const rhythmStringsObj: string[] = [];
-  const disabledsArray: string[][][] = [];
-  const audios: Audio[] = [];
-  questions.forEach((question) => {
-    const {
-      audio,
-      syllableUnits,
-    }: { audio: Audio; syllableUnits: Rhythm[][] } = JSON.parse(
-      question.question
-    );
+export const buildRhythmInitialValues = (
+  state: State,
+  quizId: string
+): RhythmQuizFromState => {
+  const quiz = state.quizzes.find((item) => item.id === quizId);
+  if (!quiz) return INITIAL_RHYTHM_QUIZ_FORM_STATE;
 
-    audios.push(audio);
-    rhythmStringsObj.push(buildRhythmString(syllableUnits || []));
-    disabledsArray.push(
-      syllableUnits.map((wordRhythm: Rhythm[]) =>
-        wordRhythm.map((r) => r.disabled)
-      )
+  const rhythmStrings: string[] = [];
+
+  const starts: number[] = [];
+  const ends: number[] = [];
+  Object.values(quiz.questions).forEach((question, sentenceIndex) => {
+    starts.push(question.start);
+    ends.push(question.end);
+
+    const rhythmString = buildRhythmString(Object.values(question.syllables));
+    rhythmStrings.push(rhythmString);
+  });
+
+  const rhythmArray = rhythmStrings.map((item) => buildSentenceRhythm(item));
+  Object.values(quiz.questions).forEach((question, sentenceIndex) => {
+    Object.values(question.syllables).forEach((wordRhythm, wordIndex) =>
+      wordRhythm.map((syllable, syllableIndex) => {
+        const { disabled } = syllable;
+        rhythmArray[sentenceIndex][wordIndex][syllableIndex].disabled =
+          disabled || '';
+      })
     );
   });
   return {
-    audios,
-    rhythmString: rhythmStringsObj.join('\n'),
-    disabledsArray,
-    rhythmArray: rhythmStringsObj.map((item) => buildSentenceRhythm(item)),
+    uid: quiz.uid || '',
+    users: state.users,
+    title: quiz.title || '',
+    starts,
+    ends,
+    scores: quiz.scores || {},
+    rhythmArray,
+    quizBlob: state.blobs[quiz.downloadURL] || null,
+    audioContext: state.audioContext || null,
+    rhythmString: rhythmStrings.join('\n'),
+    questionCount: quiz.questionCount || 0,
   };
 };
 
@@ -317,44 +195,42 @@ export const buildAccents = (accentString: string): Accent[] => {
 
 export const buildUpdatedRythmState = (
   rhythmString: string,
-  previousDisabledsArray: string[][][]
-): { rhythmArray: Rhythm[][][]; disabledsArray: string[][][] } => {
+  rhythmArray: Syllable[][][]
+): Syllable[][][] => {
   const rhythmStringLines = !!rhythmString ? rhythmString.split('\n') : [];
-  const rhythmArray: Rhythm[][][] = rhythmStringLines.map((s) =>
+  const updatedRhythmArray: Syllable[][][] = rhythmStringLines.map((s) =>
     buildSentenceRhythm(s)
   );
-  const disabledsArray = rhythmArray.map((sentenceRhythm, sentenceIndex) =>
-    sentenceRhythm.map((wordRhythm, wordIndex) =>
-      wordRhythm.map((_, syllableIndex) => {
-        try {
-          return previousDisabledsArray[sentenceIndex][wordIndex][
-            syllableIndex
-          ];
-        } catch (e) {
-          return '';
-        }
-      })
-    )
-  );
-  return { rhythmArray, disabledsArray };
+
+  rhythmArray.forEach((sentenceRhythm, sentenceIndex) => {
+    sentenceRhythm.forEach((wordRhythm, wordIndex) => {
+      wordRhythm.forEach((syllable, syllableIndex) => {
+        const { disabled } = syllable;
+        updatedRhythmArray[sentenceIndex][wordIndex][syllableIndex].disabled =
+          disabled;
+      });
+    });
+  });
+
+  return updatedRhythmArray;
 };
 
-export const buildSentenceRhythm = (moraString: string) => {
+export const buildSentenceRhythm = (moraString: string): Syllable[][] => {
   let index = -1;
   return moraString
     .split(SPACE) // 音節ごとに分ける
     .map((word, wordIndex) => {
       const moras: string[] = getMoras(word); // 拗音は2文字セット、それ以外は1文字に切り分ける
-      let syllables: Rhythm[] = [];
+      let syllables: Syllable[] = [];
       moras.forEach((mora, moraIndex) => {
         index++;
         // ①特殊拍以外のモーラで音節の配列を作る
         // 特殊拍は①の中に含める
         if (!isSpecialMora(mora, moras[moraIndex - 1])) {
           syllables.push({
-            syllable: mora,
-            index: index + wordIndex,
-            mora: getSpecialMora({
+            kana: mora,
+            // index: index + wordIndex,
+            specialMora: getSpecialMora({
               postMora: moras[moraIndex + 1],
               currentMora: mora,
               postPostMora: moras[moraIndex + 2],
@@ -423,6 +299,7 @@ const isSpecialMora = (targetMora: string, preTargetMora?: string) => {
 // ]
 
 // return "いまは　てっきょー"
+// will delete
 export const getMoraString = (accents: Accent[]) => {
   return accents
     .map((accent) => accent.moras.map((m) => kanaToHira(m)).join(''))
@@ -444,7 +321,7 @@ const getSpecialMora = ({
   currentMora: string;
   postMora?: string;
   postPostMora?: string;
-}): SpecialMora & '' => {
+}): string => {
   let result = '';
 
   if (!!postMora) {
@@ -464,7 +341,7 @@ const getSpecialMora = ({
       }
     }
   }
-  return result as never;
+  return result;
 };
 
 const getLongVowel = (
@@ -490,272 +367,110 @@ const getLongVowel = (
   return result;
 };
 
-const buildRhythmString = (sentenceRhythm: Rhythm[][]) => {
+const buildRhythmString = (
+  sentenceRhythm: { kana: string; longVowel: string; specialMora: string }[][]
+) => {
   return sentenceRhythm
-    .map((w) =>
-      w.map((r) => r.syllable + (!!r.longVowel ? r.longVowel : r.mora)).join('')
+    .map((wordRhythm) =>
+      wordRhythm
+        .map(
+          ({ kana, longVowel, specialMora }) =>
+            kana + (longVowel || specialMora)
+        )
+        .join('')
     )
     .join(SPACE);
 };
 
-export const buildQuizFromRhythmQuizState = (
-  state: State,
-  rhythmQuizState: RhythmQuizState
-): {
-  quiz: QuestionSet;
-  questions: Question[];
-  questionIdsToDelete: string[];
-} => {
-  const { quiz, questions } = state;
-  const { uid, users, title, audios, answered, rhythmString, disabledsArray } =
-    rhythmQuizState;
-
-  let questionCount = 0;
-  const rhythmStringLines = rhythmString.split('\n');
-  const sentenceRhythms = rhythmStringLines.map((s) => buildSentenceRhythm(s));
-  disabledsArray.forEach((sentenceDisabled) => {
-    sentenceDisabled.forEach((wordDisabled) => {
-      questionCount++;
-      if (
-        wordDisabled.length ===
-        wordDisabled.filter((disabled) => !!disabled).length
-      ) {
-        questionCount--;
-      }
-    });
-  });
-  const newQuiz: QuestionSet = {
-    ...quiz,
-    title,
-    uid,
-    answered: answered,
-    userDisplayname: users.filter((user) => user.id === uid)[0].displayname,
-    questionCount,
-  };
-  const newQuestions: Question[] = sentenceRhythms.map(
-    (sentenceRhythm, sentenceIndex) => {
-      const audio: Audio = audios[sentenceIndex];
-      const japanese = '';
-      const syllableUnits: Rhythm[][] = sentenceRhythm.map(
-        (wordRhythm, wordIndex) =>
-          wordRhythm.map((syllableRhythm, syllableIndex) => ({
-            ...syllableRhythm,
-            disabled: (disabledsArray[sentenceIndex][wordIndex][
-              syllableIndex
-            ] || '') as SpecialMora & '' & 'x',
-          }))
-      );
-      const question = JSON.stringify({
-        audio,
-        japanese,
-        syllableUnits,
-      });
-      return {
-        ...questions[sentenceIndex],
-        question,
-      };
-    }
-  );
-  const originalQuestionIds = questions.map((q) => q.id);
-  const questionIdsToDelete = originalQuestionIds.slice(disabledsArray.length);
-
-  return { quiz: newQuiz, questions: newQuestions, questionIdsToDelete };
-};
-
-export const submitQuiz = async (quiz: Quiz) => {
-  console.log('update questionSet');
+export const setQuiz = async (quiz: Quiz) => {
+  console.log('set quiz');
   const { id, ...omitted } = quiz;
-  await updateDoc(doc(db, COLLECTIONS.quizzes, id), {
+  await setDoc(doc(db, COLLECTIONS.quizzes, id), {
     ...omitted,
   });
 };
 
-export const buildAccentQuizFromState = (
-  state: State
-): {
-  quiz: QuestionSet;
-  questionGroup: QuestionGroup;
-  questions: Question[];
-} => {
-  const { article, sentences } = state;
-  const { title } = article;
-  const quizId = nanoid(8);
-  const questionGroupId = nanoid(8);
-  const questions = sentences2AccentsQuestions({
-    sentences,
-    questionGroupId,
-  });
-
-  const questionGroup: QuestionGroup = {
-    ...INITIAL_QUESTION_GROUP,
-    id: questionGroupId,
-    createdAt: Date.now(),
-    questions: questions.map(({ id }) => id),
-  };
-
+export const buildPitchQuizFromState = (state: State): Quiz => {
   let questionCount = 0;
-  sentences.forEach((sentence) => {
-    const accents = sentence.accents;
-    questionCount += accents.length;
+  const questions: QuizQuestions = {};
+  state.sentences.forEach((sentence, index) => {
+    questionCount += sentence.accents.length;
+    const pitchesArray = accentsForPitchesArray(sentence.accents);
+    const pitchStr = pitchesArray2String(pitchesArray);
+    questions[index] = {
+      ...INITIAL_QUIZ_QUESTION,
+      pitchStr,
+      japanese: sentence.japanese,
+    };
   });
 
-  const quiz: QuestionSet = {
-    ...INITIAL_QUESTION_SET,
-    id: quizId,
+  const quiz: Quiz = {
+    id: nanoid(8),
     uid: import.meta.env.VITE_ADMIN_UID,
     type: 'articleAccents',
-    title: `${title} - アクセント`,
+    title: `${state.article.title} - アクセント`,
+    scores: {},
+    questions,
     createdAt: Date.now(),
-    unlockedAt: Date.now(),
+    downloadURL: '',
     questionCount,
-    questionGroups: [questionGroupId],
-    userDisplayname: '原田',
   };
-  return { quiz, questionGroup, questions };
+  return quiz;
 };
 
-export const buildRhythmQuizFromState = (
-  state: State
-): {
-  quiz: QuestionSet;
-  questionGroup: QuestionGroup;
-  questions: Question[];
-} => {
-  const { article, sentences } = state;
-  const { downloadURL, title } = article;
-
-  const quizId = nanoid(8);
-  const questionGroupId = nanoid(8);
-  const questions = sentences2RhythmQuestions({
-    sentences,
-    downloadURL,
-    questionGroupId,
-  });
-
-  const questionGroup: QuestionGroup = {
-    ...INITIAL_QUESTION_GROUP,
-    id: questionGroupId,
-    createdAt: Date.now(),
-    questions: questions.map(({ id }) => id),
-  };
-
+export const buildRhythmQuizFromState = (state: State): Quiz => {
   let questionCount = 0;
-  questions.forEach((question) => {
-    const { syllableUnits }: { syllableUnits: Rhythm[][] } = JSON.parse(
-      question.question
-    );
-    questionCount += syllableUnits.length;
-    syllableUnits;
+  const questions: QuizQuestions = {};
+
+  state.sentences.forEach((sentence, index) => {
+    const syllables: { [index: number]: Syllable[] } = {};
+
+    const pitchesArray = accentsForPitchesArray(sentence.accents);
+    const moraString = pitchesArray
+      .map((wordPitch) => wordPitch.map((mora) => kanaToHira(mora[0])).join(''))
+      .join(SPACE);
+    const sentenceRhythm = buildSentenceRhythm(moraString);
+    questionCount += sentenceRhythm.length;
+    sentenceRhythm.forEach((wordRhythm, index) => {
+      syllables[index] = wordRhythm;
+    });
+
+    const question: QuizQuestion = {
+      ...INITIAL_QUIZ_QUESTION,
+      end: sentence.end,
+      start: sentence.start,
+      syllables,
+    };
+    questions[index] = question;
   });
 
-  const quiz: QuestionSet = {
-    id: quizId,
+  const quiz: Quiz = {
+    id: nanoid(8),
     uid: import.meta.env.VITE_ADMIN_UID,
     type: 'articleRhythms',
-    title: `${title} - 特殊拍`,
-    answered: false,
+    title: `${state.article.title} - 特殊拍`,
+    scores: {},
+    questions,
     createdAt: new Date().getTime(),
-    unlockedAt: new Date().getTime(),
+    downloadURL: state.article.downloadURL,
     questionCount,
-    hasFreeAnswers: false,
-    questionGroups: [questionGroupId],
-    userDisplayname: '原田',
   };
 
-  return { quiz, questionGroup, questions };
+  return quiz;
 };
 
-export const createQuiz = async (
-  quiz: QuestionSet,
-  questionGroup: QuestionGroup,
-  questions: Question[]
-) => {
-  const { id: questionSetId, ...omittedQuiz } = quiz;
-  console.log('set questionSet');
-  await setDoc(doc(db, COLLECTIONS.questionSets, questionSetId), {
-    ...omittedQuiz,
+export const createQuiz = async (quiz: Quiz) => {
+  const { id, ...omitted } = quiz;
+  console.log('set quiz');
+  await setDoc(doc(db, COLLECTIONS.quizzes, id), {
+    ...omitted,
   });
-
-  const { id: questionGroupId, ...omittedQuestionGroup } = questionGroup;
-  console.log('set questionGroup');
-  await setDoc(doc(db, COLLECTIONS.questionGroups, questionGroupId), {
-    ...omittedQuestionGroup,
-  });
-
-  for (const question of questions) {
-    const { id: questionId, ...omittedQuestion } = question;
-    console.log('set question');
-    await setDoc(doc(db, COLLECTIONS.questions, questionId), {
-      ...omittedQuestion,
-    });
-  }
   return;
-};
-
-const sentences2RhythmQuestions = ({
-  sentences,
-  downloadURL,
-  questionGroupId,
-}: {
-  sentences: {
-    end: number;
-    start: number;
-    accents: Accent[];
-  }[];
-  downloadURL: string;
-  questionGroupId: string;
-}): Question[] => {
-  return sentences.map(({ accents, end, start }, index) => {
-    const moraString = getMoraString(accents);
-    const question: Question = {
-      ...INITIAL_QUESTION,
-      id: nanoid(8),
-      answers: [moraString],
-      createdAt: new Date().getTime() + index,
-      question: JSON.stringify({
-        audio: { end, start, downloadURL },
-        japanese: '',
-        syllableUnits: buildSentenceRhythm(moraString),
-      }),
-      questionGroup: questionGroupId,
-      type: 'articleRhythms',
-    };
-    return question;
-  });
 };
 
 export const deleteQuiz = async (quizId: string) => {
   console.log('delete quiz');
   deleteDoc(doc(db, COLLECTIONS.quizzes, quizId));
-};
-
-const sentences2AccentsQuestions = ({
-  sentences,
-  questionGroupId,
-}: {
-  sentences: {
-    japanese: string;
-    accents: Accent[];
-  }[];
-  questionGroupId: string;
-}): Question[] => {
-  return sentences.map(({ japanese, accents }, index) => {
-    const question: Question = {
-      ...INITIAL_QUESTION,
-      id: nanoid(8),
-      answers: [buildAccentString(accents)],
-      createdAt: new Date().getTime() + index,
-      question: JSON.stringify({
-        japanese,
-        disableds: [],
-        audio: { start: 0, end: 0, downloadURL: '' },
-        accents,
-      }),
-      questionGroup: questionGroupId,
-      type: 'articleAccents',
-    };
-    return question;
-  });
 };
 
 const buildQuiz = (doc: DocumentData): Quiz => {

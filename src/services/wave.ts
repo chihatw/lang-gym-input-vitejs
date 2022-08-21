@@ -5,10 +5,6 @@ import {
   ArticleVoiceState,
   SentenceLine,
 } from '../pages/Article/EditArticlePage/Model';
-import {
-  ArticleVoiceAction,
-  ArticleVoiceActionTypes,
-} from '../pages/Article/EditArticlePage/Update';
 import { blobToAudioBuffer } from './utils';
 
 const CANVAS_WIDTH = 550;
@@ -19,7 +15,7 @@ const ACCURANCY = 1000;
 
 export const setArticleVoiceInitialValue = async (
   state: State,
-  dispatch: React.Dispatch<ArticleVoiceAction>
+  dispatch: React.Dispatch<ArticleVoiceState>
 ) => {
   let scale = 0;
   let peaks: number[] = [];
@@ -32,8 +28,12 @@ export const setArticleVoiceInitialValue = async (
   let blankDuration = INITIAL_BLANK_DURATION;
   let sampleRate = 0;
 
-  const { sentences, article, audioContext, articleBlob } = state;
+  const { sentences, article, audioContext, blobs } = state;
   const { downloadURL } = article;
+  let blob: Blob | null = null;
+  if (downloadURL) {
+    blob = blobs[downloadURL];
+  }
   for (const sentence of sentences) {
     const { end, start, japanese } = sentence;
     marks.push({ end, start });
@@ -43,10 +43,10 @@ export const setArticleVoiceInitialValue = async (
     }
   }
 
-  if (downloadURL && !!audioContext && !!articleBlob) {
+  if (downloadURL && !!audioContext && !!blob) {
     sampleRate = audioContext.sampleRate;
 
-    const buffer = await blobToAudioBuffer(articleBlob, audioContext);
+    const buffer = await blobToAudioBuffer(blob, audioContext);
     channelData = buffer.getChannelData(0);
     if (!!channelData) {
       scale = (CANVAS_WIDTH * audioContext.sampleRate) / channelData.length;
@@ -74,15 +74,12 @@ export const setArticleVoiceInitialValue = async (
         sampleRate,
         downloadURL,
         channelData,
-        articleBlob,
+        articleBlob: blob,
         sentenceLines,
         blankDuration,
         audioContext,
       };
-      dispatch({
-        type: ArticleVoiceActionTypes.initialize,
-        payload: initialState,
-      });
+      dispatch(initialState);
     }
   }
 

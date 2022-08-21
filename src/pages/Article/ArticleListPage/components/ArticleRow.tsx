@@ -4,15 +4,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import SubjectIcon from '@mui/icons-material/Subject';
-import FlashOnIcon from '@mui/icons-material/FlashOn';
-import FlashOffIcon from '@mui/icons-material/FlashOff';
 import { TableRow, TableCell } from '@mui/material';
 
 import TitleDateCell from './TitleDateCell';
 import IconButtonCell from './IconButtonCell';
 import PrintIcon from '@mui/icons-material/Print';
-import { Article, State } from '../../../../Model';
-import { Action, ActionTypes } from '../../../../Update';
+import { Article } from '../../../../Model';
+import { ActionTypes } from '../../../../Update';
 import { useNavigate } from 'react-router-dom';
 import { deleteArticle, setArticle } from '../../../../services/article';
 import { deleteFile } from '../../../../repositories/file';
@@ -22,26 +20,13 @@ const ArticleRow = ({ index }: { index: number }) => {
   const { state, dispatch } = useContext(AppContext);
   const { articleList } = state;
   const article = articleList[index];
-  const {
-    id: articleId,
-    isShowParse,
-    isShowAccents,
-    title,
-    downloadURL,
-  } = article;
+  const { id: articleId, isShowAccents, title, downloadURL } = article;
   const navigate = useNavigate();
 
   const handleToggleShowAccents = () => {
     if (!dispatch) return;
     dispatch({ type: ActionTypes.toggleIsShowAccents, payload: articleId });
     const newArticle: Article = { ...article, isShowAccents: !isShowAccents };
-    setArticle(newArticle);
-  };
-
-  const handleToggleShowParses = () => {
-    if (!dispatch) return;
-    dispatch({ type: ActionTypes.toggleIsShowParses, payload: articleId });
-    const newArticle: Article = { ...article, isShowParse: !isShowParse };
     setArticle(newArticle);
   };
 
@@ -103,10 +88,6 @@ const ArticleRow = ({ index }: { index: number }) => {
           )
         }
         onClick={handleToggleShowAccents}
-      />
-      <IconButtonCell
-        icon={isShowParse ? <FlashOnIcon /> : <FlashOffIcon />}
-        onClick={handleToggleShowParses}
       />
       <IconButtonCell icon={<DeleteIcon />} onClick={handleDelete} />
     </TableRow>

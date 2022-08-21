@@ -1,7 +1,6 @@
 import React from 'react';
 import AudioSlider from '../../../../../components/AudioSlider';
-import { RhythmQuizState } from '../../Model';
-import { RhythmQuizAction } from '../../Update';
+import { RhythmQuizFromState } from '../../Model';
 import SentenceHeader from './SentenceHeader';
 import SyllableDisable from './SyllableDisable';
 
@@ -10,15 +9,14 @@ const SentenceDisableds = ({
   state,
   dispatch,
 }: {
-  state: RhythmQuizState;
-  dispatch: React.Dispatch<RhythmQuizAction>;
+  state: RhythmQuizFromState;
+  dispatch: React.Dispatch<RhythmQuizFromState>;
   sentenceIndex: number;
 }) => {
-  const { rhythmArray, quizBlob, audioContext, audios } = state;
-
+  const { rhythmArray, quizBlob, audioContext, starts, ends } = state;
   const sentenceRhythm = rhythmArray[sentenceIndex];
-  const audio = audios[sentenceIndex];
-  const { start, end } = audio;
+  const start = starts[sentenceIndex];
+  const end = ends[sentenceIndex];
 
   return (
     <div style={{ display: 'grid', rowGap: 16 }}>

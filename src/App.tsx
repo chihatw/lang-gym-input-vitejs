@@ -17,11 +17,12 @@ const App = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      let _users = !!state.users.length ? state.users : await getUsers();
-      dispatch({ type: ActionTypes.setUsers, payload: _users });
+      const _users = !!state.users.length ? state.users : await getUsers();
+      const updatedState: State = { ...state, users: _users };
+      dispatch({ type: ActionTypes.setState, payload: updatedState });
     };
     fetchData();
-  }, [state.users]);
+  }, [state.users, state.user]);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {

@@ -1,26 +1,9 @@
 import { User as FirebaseUser } from 'firebase/auth';
-import { FSentences } from 'fsentence-types';
 import { Quiz } from './pages/TempPage/service';
 
 export type Mark = {
   start: number;
   end: number;
-};
-
-export type SpecialMora = 'っ' | 'ん' | 'ー' | 'ーん' | 'ーっ';
-
-export type Rhythm = {
-  mora: SpecialMora & '';
-  index: number;
-  syllable: string;
-  disabled: SpecialMora & '' & 'x';
-  longVowel?: string;
-};
-
-export type Audio = {
-  start: number;
-  end: number;
-  downloadURL: string;
 };
 
 export type Article = {
@@ -98,100 +81,6 @@ export const INITIAL_ARTICLE_SENTENCE: ArticleSentence = {
   kanaAccentsStr: '',
   storagePath: '',
   storageDuration: 0,
-};
-
-export type ArticleSentenceForm = {
-  id: string;
-  lineIndex: number;
-  articleId: string;
-  sentences: FSentences;
-};
-
-export const INITIAL_ARTICLE_SENTENCE_FORM: ArticleSentenceForm = {
-  id: '',
-  lineIndex: 0,
-  articleId: '',
-  sentences: {},
-};
-
-export type QuestionSet = {
-  id: string;
-  uid: string;
-  type: 'articleRhythms' | 'general' | 'articleAccents';
-  title: string;
-  answered: boolean;
-  createdAt: number;
-  unlockedAt: number;
-  questionCount: number;
-  hasFreeAnswers: boolean;
-  questionGroups: string[];
-  userDisplayname: string;
-};
-
-export const INITIAL_QUESTION_SET: QuestionSet = {
-  id: '',
-  uid: '',
-  type: 'articleAccents',
-  title: '',
-  answered: false,
-  createdAt: 0,
-  unlockedAt: 0,
-  questionCount: 0,
-  hasFreeAnswers: false,
-  questionGroups: [],
-  userDisplayname: '',
-};
-
-export type QuestionGroup = {
-  id: string;
-  tags: Tags; // will delete
-  example: string;
-  feedback: string;
-  questions: string[];
-  createdAt: number;
-  explanation: string;
-  hasFreeAnswers: boolean;
-};
-
-export const INITIAL_QUESTION_GROUP: QuestionGroup = {
-  id: '',
-  tags: {},
-  example: '',
-  feedback: '',
-  questions: [],
-  createdAt: 0,
-  explanation: '',
-  hasFreeAnswers: false,
-};
-
-export type Question = {
-  id: string;
-  answerExample: string;
-  answers: string[];
-  choices: string[];
-  createdAt: number;
-  feedback: string;
-  memo: string;
-  note: string;
-  question: string;
-  questionGroup: string;
-  tags: Tags;
-  type: string;
-};
-
-export const INITIAL_QUESTION: Question = {
-  id: '',
-  tags: {},
-  memo: '',
-  note: '',
-  type: 'describe',
-  answers: [''],
-  choices: [],
-  feedback: '',
-  question: '',
-  createdAt: 0,
-  answerExample: '',
-  questionGroup: '',
 };
 
 export type User = {
@@ -288,25 +177,16 @@ export type State = {
   users: User[];
   articleList: Article[];
   article: Article;
-  articleBlob: Blob | null;
   sentences: ArticleSentence[];
-  articleSentenceForms: ArticleSentenceForm[];
-  quiz: QuestionSet;
   quizzes: Quiz[];
-  quizBlob: Blob | null;
-  questions: Question[];
+  blobs: { [downloadURL: string]: Blob };
   workout: Workout;
   workoutList: Workout[];
   randomWorkouts: { [workoutId: string]: RandomWorkout };
   randomWorkoutBlobs: { [workoutId: string]: Blob | null };
   memo: {
     articles: { [id: string]: Article };
-    articleBlobs: { [id: string]: Blob | null };
     sentences: { [id: string]: ArticleSentence[] };
-    articleSentenceForms: { [id: string]: ArticleSentenceForm[] };
-    quizzes: { [id: string]: QuestionSet };
-    quizBlobs: { [id: string]: Blob | null };
-    questions: { [id: string]: Question[] };
     workouts: { [id: string]: Workout };
   };
 };
@@ -319,12 +199,8 @@ export const INITIAL_STATE: State = {
   users: [],
   articleList: [],
   article: INITIAL_ARTICLE,
-  articleBlob: null,
+  blobs: {},
   sentences: [],
-  articleSentenceForms: [],
-  quiz: INITIAL_QUESTION_SET,
-  quizBlob: null,
-  questions: [],
   workout: INITIAL_WORKOUT,
   workoutList: [],
   randomWorkouts: {},
@@ -332,12 +208,7 @@ export const INITIAL_STATE: State = {
   quizzes: [],
   memo: {
     articles: {},
-    articleBlobs: {},
     sentences: {},
-    articleSentenceForms: {},
-    quizzes: {},
-    quizBlobs: {},
-    questions: {},
     workouts: {},
   },
 };

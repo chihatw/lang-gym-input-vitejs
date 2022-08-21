@@ -1,13 +1,11 @@
-import { useParams } from 'react-router-dom';
 import { LocalizationProvider, MobileDatePicker } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { YoutubeEmbeded } from '@chihatw/lang-gym-h.ui.youtube-embeded';
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useReducer, useState } from 'react';
+import React from 'react';
 import {
   Button,
   Container,
-  Divider,
   FormControl,
   InputLabel,
   MenuItem,
@@ -16,7 +14,6 @@ import {
   Typography,
 } from '@mui/material';
 import { ArticleEditState } from './Model';
-import { ArticleEditAction, ArticleEditActionTypes } from './Update';
 
 const EditArticleForm = ({
   state,
@@ -24,30 +21,32 @@ const EditArticleForm = ({
   handleSubmit,
 }: {
   state: ArticleEditState;
-  dispatch: React.Dispatch<ArticleEditAction>;
+  dispatch: React.Dispatch<ArticleEditState>;
   handleSubmit: () => void;
 }) => {
   const navigate = useNavigate();
   const { title, uid, users, date, embedId, articleMarksString } = state;
 
   const handleChangeUid = (uid: string) => {
-    dispatch({ type: ArticleEditActionTypes.changeUid, payload: uid });
+    const updatedState: ArticleEditState = { ...state, uid };
+    dispatch(updatedState);
   };
   const handlePickDate = (date: Date | null) => {
     if (!date) return;
-    dispatch({ type: ArticleEditActionTypes.changeDate, payload: date });
+    const updatedState: ArticleEditState = { ...state, date };
+    dispatch(updatedState);
   };
   const handleChangeTitle = (title: string) => {
-    dispatch({ type: ArticleEditActionTypes.changeTitle, payload: title });
+    const updatedState: ArticleEditState = { ...state, title };
+    dispatch(updatedState);
   };
   const handleChangeEmbedId = (embedId: string) => {
-    dispatch({ type: ArticleEditActionTypes.changeEmbedId, payload: embedId });
+    const updatedState: ArticleEditState = { ...state, embedId };
+    dispatch(updatedState);
   };
   const handleChangeArticleMarksString = (articleMarksString: string) => {
-    dispatch({
-      type: ArticleEditActionTypes.changeMarksString,
-      payload: articleMarksString,
-    });
+    const updatedState: ArticleEditState = { ...state, articleMarksString };
+    dispatch(updatedState);
   };
   return (
     <Container maxWidth='sm' sx={{ paddingTop: 4 }}>

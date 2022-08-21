@@ -1,3 +1,4 @@
+import * as R from 'ramda';
 import { Button, TextField } from '@mui/material';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import accentsForPitchesArray from 'accents-for-pitches-array';
@@ -24,7 +25,7 @@ const EditSentencePane = ({
   sentenceIndex: number;
 }) => {
   const { state, dispatch } = useContext(AppContext);
-  const { article, sentences, audioContext, articleBlob } = state;
+  const { article, sentences, audioContext, blobs } = state;
   const { id: articleId } = article;
   const sentence = sentences[sentenceIndex];
 
@@ -104,14 +105,29 @@ const EditSentencePane = ({
       original,
       kanaAccentsStr,
     };
-    dispatch({
-      type: ActionTypes.updateSentence,
-      payload: { articleId, sentence: newSentence },
-    });
+
+    const updatedSentences = state.sentences.map((item) =>
+      item.id === newSentence.id ? newSentence : item
+    );
+
+    const updatedState = R.compose(
+      R.assocPath<ArticleSentence[], State>(['sentences'], updatedSentences),
+      R.assocPath<ArticleSentence[], State>(
+        ['memo', 'sentences', articleId],
+        updatedSentences
+      )
+    )(state);
+
+    dispatch({ type: ActionTypes.setState, payload: updatedState });
     await updateSentence(newSentence);
 
     callback();
   };
+
+  let blob: Blob | null = null;
+  if (article.downloadURL) {
+    blob = blobs[article.downloadURL];
+  }
 
   return (
     <div style={{ display: 'grid', rowGap: 16 }}>
@@ -163,13 +179,13 @@ const EditSentencePane = ({
           pitchesArray={accentsForPitchesArray(buildAccents(accentString))}
         />
       </div>
-      {!!audioContext && !!articleBlob && (
+      {!!audioContext && !!blob && (
         <AudioSlider
           start={start}
           end={end}
           spacer={5}
           audioContext={audioContext}
-          blob={articleBlob}
+          blob={blob}
         />
       )}
 

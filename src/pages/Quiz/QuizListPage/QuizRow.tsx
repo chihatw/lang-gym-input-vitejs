@@ -18,9 +18,11 @@ const QuizRow = ({ index }: { index: number }) => {
   const { uid, title, scores, type, id } = quiz;
 
   const handleOpenEditPage = () => {
+    if (!dispatch) return;
+    dispatch({ type: ActionTypes.startFetching });
     switch (type) {
       case 'articleAccents':
-        navigate(`/quiz/accent/${id}`);
+        navigate(`/quiz/pitch/${id}`);
         return;
       case 'articleRhythms':
         navigate(`/quiz/rhythm/${id}`);
@@ -31,8 +33,12 @@ const QuizRow = ({ index }: { index: number }) => {
 
   const handleDelete = () => {
     if (!dispatch) return;
-    dispatch({ type: ActionTypes.deleteQuiz, payload: id });
-    deleteQuiz(id);
+    if (window.confirm('delete?')) {
+      const updatedQuizzez = state.quizzes.filter((item) => item.id !== id);
+      const updateState = { ...state, quizzes: updatedQuizzez };
+      dispatch({ type: ActionTypes.setState, payload: updateState });
+      deleteQuiz(id);
+    }
   };
 
   const user = state.users.find((item) => item.id === uid) || INITIAL_USER;

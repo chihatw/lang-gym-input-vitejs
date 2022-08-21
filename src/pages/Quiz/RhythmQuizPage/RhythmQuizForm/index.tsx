@@ -1,10 +1,12 @@
 import { Button, TextField } from '@mui/material';
 import React from 'react';
 import TableLayout from '../../../../components/templates/TableLayout';
-import { buildUpdatedRythmState } from '../../../../services/quiz';
-import { RhythmQuizState } from '../Model';
-import { RhythmQuizAction, RhythmQuizActionTypes } from '../Update';
-import AnsweredCheckbox from './AnsweredCheckbox';
+import {
+  buildSentenceRhythm,
+  buildUpdatedRythmState,
+} from '../../../../services/quiz';
+import ScoreTable from '../../common/ScoreTable';
+import { RhythmQuizFromState } from '../Model';
 import SelectUid from './SelectUid';
 import SentenceDisableds from './SentenceDisableds';
 
@@ -13,27 +15,34 @@ const RhythmQuizForm = ({
   dispatch,
   onSubmit,
 }: {
-  state: RhythmQuizState;
-  dispatch: React.Dispatch<RhythmQuizAction>;
+  state: RhythmQuizFromState;
+  dispatch: React.Dispatch<RhythmQuizFromState>;
   onSubmit: () => void;
 }) => {
-  const { users, title, rhythmString, disabledsArray, questionCount } = state;
+  const handleChangeTitle = (title: string) => {
+    const updatedState: RhythmQuizFromState = { ...state, title };
+    dispatch(updatedState);
+  };
 
   const handleChangeRhythmString = (rhythmString: string) => {
     rhythmString = rhythmString.replaceAll(' ', '　');
-    const { rhythmArray, disabledsArray: _disabledsArray } =
-      buildUpdatedRythmState(rhythmString, disabledsArray);
-    dispatch({
-      type: RhythmQuizActionTypes.changeRhythmString,
-      payload: { rhythmArray, rhythmString, disabledsArray: _disabledsArray },
-    });
+    const updatedRhythmArray = buildUpdatedRythmState(
+      rhythmString,
+      state.rhythmArray
+    );
+    const updatedState: RhythmQuizFromState = {
+      ...state,
+      rhythmString,
+      rhythmArray: updatedRhythmArray,
+    };
+    dispatch(updatedState);
   };
 
   return (
-    <TableLayout title={title} backURL='/accentsQuestion/list'>
+    <TableLayout title={state.title} backURL='/quiz/list'>
       <div style={{ display: 'grid', rowGap: 16 }}>
-        {!!users.length && (
-          <SelectUid users={users} state={state} dispatch={dispatch} />
+        {!!state.users.length && (
+          <SelectUid state={state} dispatch={dispatch} />
         )}
 
         <TextField
@@ -41,23 +50,16 @@ const RhythmQuizForm = ({
           size='small'
           fullWidth
           label='title'
-          value={title}
-          onChange={(e) => {
-            dispatch({
-              type: RhythmQuizActionTypes.changeTitle,
-              payload: e.target.value,
-            });
-          }}
+          value={state.title}
+          onChange={(e) => handleChangeTitle(e.target.value)}
         />
-
-        <AnsweredCheckbox state={state} dispatch={dispatch} />
-        <div>{`questionCount: ${questionCount}`}</div>
+        <div>{`questionCount: ${state.questionCount}`}</div>
         <TextField
           variant='outlined'
           size='small'
           fullWidth
           label='rhythmString'
-          value={rhythmString}
+          value={state.rhythmString}
           multiline
           rows={5}
           onChange={(e) => handleChangeRhythmString(e.target.value)}
@@ -71,7 +73,7 @@ const RhythmQuizForm = ({
             rowGap: 16,
           }}
         >
-          {disabledsArray.map((_, sentenceIndex) => (
+          {state.rhythmArray.map((_, sentenceIndex) => (
             <SentenceDisableds
               key={sentenceIndex}
               state={state}
@@ -80,7 +82,7 @@ const RhythmQuizForm = ({
             />
           ))}
         </div>
-
+        <ScoreTable state={state} dispatch={dispatch} />
         <Button fullWidth variant='contained' onClick={onSubmit}>
           送信
         </Button>

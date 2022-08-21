@@ -1,31 +1,25 @@
 import { FormControl, MenuItem, Select } from '@mui/material';
 import React from 'react';
-import { User } from '../../../../Model';
-import { RhythmQuizState } from '../Model';
-import { RhythmQuizAction, RhythmQuizActionTypes } from '../Update';
+import { RhythmQuizFromState } from '../Model';
 
 const SelectUid = ({
   state,
   dispatch,
-  users,
 }: {
-  state: RhythmQuizState;
-  dispatch: React.Dispatch<RhythmQuizAction>;
-  users: User[];
+  state: RhythmQuizFromState;
+  dispatch: React.Dispatch<RhythmQuizFromState>;
 }) => {
-  const { uid } = state;
+  const handleChangeUid = (uid: string) => {
+    const updatedState: RhythmQuizFromState = { ...state, uid };
+    dispatch(updatedState);
+  };
   return (
     <FormControl fullWidth>
       <Select
-        value={uid}
-        onChange={(e) => {
-          dispatch({
-            type: RhythmQuizActionTypes.changeUid,
-            payload: e.target.value,
-          });
-        }}
+        value={state.uid}
+        onChange={(e) => handleChangeUid(e.target.value)}
       >
-        {users.map((u) => (
+        {state.users.map((u) => (
           <MenuItem key={u.id} value={u.id}>
             {u.displayname}
           </MenuItem>

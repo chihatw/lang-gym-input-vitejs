@@ -1,34 +1,33 @@
 import React from 'react';
-import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import string2PitchesArray from 'string2pitches-array';
 
-import Speaker from '../../../components/Speaker';
-import { AccentQuizFormState } from './Model';
+import { PitchQuizFormState } from './Model';
 import WordPitchMonitor from './WordPitchMonitor';
+import AudioSlider from '../../../components/AudioSlider';
 
 const RowPitchMonitor = ({
   state,
   dispatch,
   sentenceIndex,
 }: {
-  state: AccentQuizFormState;
-  dispatch: React.Dispatch<AccentQuizFormState>;
+  state: PitchQuizFormState;
+  dispatch: React.Dispatch<PitchQuizFormState>;
   sentenceIndex: number;
 }) => {
-  const line = state.pitchStr.split('\n')[sentenceIndex];
-  const pitchesArray = string2PitchesArray(line);
+  const question = state.questions[sentenceIndex];
+  const pitchesArray = string2PitchesArray(question.pitchStr);
   return (
     <div key={sentenceIndex}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <div style={{ paddingRight: 16 }}>{sentenceIndex}</div>
-        {!!state.downloadURL ? (
-          <Speaker
-            start={state.starts[sentenceIndex]}
-            end={state.ends[sentenceIndex]}
-            downloadURL={state.downloadURL}
+        {!!state.blob && !!state.audioContext && (
+          <AudioSlider
+            audioContext={state.audioContext}
+            blob={state.blob}
+            spacer={5}
+            start={question.start}
+            end={question.end}
           />
-        ) : (
-          <VolumeOffIcon color='primary' />
         )}
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap' }}>

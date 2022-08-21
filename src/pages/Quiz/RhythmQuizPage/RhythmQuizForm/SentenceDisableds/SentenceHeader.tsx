@@ -1,40 +1,61 @@
 import DeleteIcon from '@mui/icons-material/Delete';
 import { IconButton, TextField } from '@mui/material';
 import React from 'react';
-import { RhythmQuizState } from '../../Model';
-import { RhythmQuizAction, RhythmQuizActionTypes } from '../../Update';
+import { RhythmQuizFromState } from '../../Model';
 
 const SentenceHeader = ({
   state,
   sentenceIndex,
   dispatch,
 }: {
-  state: RhythmQuizState;
+  state: RhythmQuizFromState;
   sentenceIndex: number;
-  dispatch: React.Dispatch<RhythmQuizAction>;
+  dispatch: React.Dispatch<RhythmQuizFromState>;
 }) => {
-  const { audios, rhythmString, disabledsArray, rhythmArray } = state;
-  const audio = audios[sentenceIndex];
-  const { start, end } = audio;
+  const start = state.starts[sentenceIndex];
+  const end = state.ends[sentenceIndex];
+
+  const handleChangeStart = (start: number) => {
+    const updatedStarts = [...state.starts];
+    updatedStarts.splice(sentenceIndex, 1, start);
+    const updatedState: RhythmQuizFromState = {
+      ...state,
+      starts: updatedStarts,
+    };
+    dispatch(updatedState);
+  };
+
+  const handleChangeEnd = (end: number) => {
+    const updatedEnds = [...state.ends];
+    updatedEnds.splice(sentenceIndex, 1, end);
+    const updatedState: RhythmQuizFromState = {
+      ...state,
+      ends: updatedEnds,
+    };
+    dispatch(updatedState);
+  };
 
   const handleDelete = () => {
-    const rhythmStringLines = rhythmString.split('\n');
-    rhythmStringLines.splice(sentenceIndex, 1);
-    const clonedRhythmArray = [...rhythmArray];
-    clonedRhythmArray.splice(sentenceIndex, 1);
-    const clonedDisabledsArray = [...disabledsArray];
-    clonedDisabledsArray.splice(sentenceIndex, 1);
-    const clonedAudios = [...audios];
-    clonedAudios.splice(sentenceIndex, 1);
-    dispatch({
-      type: RhythmQuizActionTypes.deleteLine,
-      payload: {
-        audios: clonedAudios,
-        rhythmArray: clonedRhythmArray,
-        rhythmString: rhythmStringLines.join('\n'),
-        disabledsArray: clonedDisabledsArray,
-      },
-    });
+    const updatedrhythmStringLines = state.rhythmString.split('\n');
+    updatedrhythmStringLines.splice(sentenceIndex, 1);
+
+    const updatedRhythmArray = [...state.rhythmArray];
+    updatedRhythmArray.splice(sentenceIndex, 1);
+
+    const updatedStarts = [...state.starts];
+    updatedStarts.splice(sentenceIndex, 1);
+
+    const updatedEnds = [...state.ends];
+    updatedEnds.splice(sentenceIndex, 1);
+
+    const updatedState: RhythmQuizFromState = {
+      ...state,
+      rhythmString: updatedrhythmStringLines.join('\n'),
+      rhythmArray: updatedRhythmArray,
+      starts: updatedStarts,
+      ends: updatedEnds,
+    };
+    dispatch(updatedState);
   };
   return (
     <div style={{ display: 'flex', alignItems: 'center', columnGap: 16 }}>
@@ -52,12 +73,7 @@ const SentenceHeader = ({
           size='small'
           value={start}
           label='start'
-          onChange={(e) =>
-            dispatch({
-              type: RhythmQuizActionTypes.changeStart,
-              payload: { index: sentenceIndex, value: Number(e.target.value) },
-            })
-          }
+          onChange={(e) => handleChangeStart(Number(e.target.value))}
         />
         <TextField
           inputProps={{ step: 0.1 }}
@@ -65,12 +81,7 @@ const SentenceHeader = ({
           size='small'
           value={end}
           label='end'
-          onChange={(e) =>
-            dispatch({
-              type: RhythmQuizActionTypes.changeEnd,
-              payload: { index: sentenceIndex, value: Number(e.target.value) },
-            })
-          }
+          onChange={(e) => handleChangeEnd(Number(e.target.value))}
         />
       </div>
       <IconButton size='small' onClick={handleDelete}>

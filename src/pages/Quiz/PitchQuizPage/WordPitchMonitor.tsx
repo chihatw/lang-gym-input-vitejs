@@ -1,10 +1,11 @@
+import * as R from 'ramda';
 import React from 'react';
 
 import { Checkbox } from '@mui/material';
 import { PitchLine } from '@chihatw/pitch-line.pitch-line';
 import string2PitchesArray from 'string2pitches-array';
 
-import { AccentQuizFormState } from './Model';
+import { PitchQuizFormState } from './Model';
 
 const WordPitchMonitor = ({
   state,
@@ -12,36 +13,32 @@ const WordPitchMonitor = ({
   sentenceIndex,
   wordIndex,
 }: {
-  state: AccentQuizFormState;
-  dispatch: React.Dispatch<AccentQuizFormState>;
+  state: PitchQuizFormState;
+  dispatch: React.Dispatch<PitchQuizFormState>;
   sentenceIndex: number;
   wordIndex: number;
 }) => {
-  const isDisable = state.disabledsArray[sentenceIndex]
-    ? state.disabledsArray[sentenceIndex].includes(wordIndex)
-    : false;
-  const line = state.pitchStr.split('\n')[sentenceIndex];
-  if (!line) return <></>;
-  const pitchesArray = string2PitchesArray(line);
+  const question = state.questions[sentenceIndex];
+  const isDisable = question.disableds.includes(wordIndex);
+  const pitchesArray = string2PitchesArray(question.pitchStr);
   const pitches = pitchesArray[wordIndex];
+
   const handleCheckDisabled = () => {
-    let updatedDisabledsArray = [...state.disabledsArray];
-    let sentenceDisableds = state.disabledsArray[sentenceIndex]
-      ? [...state.disabledsArray[sentenceIndex]]
-      : [];
+    let updatedDisableds = [...question.disableds];
 
     // チェックを外す
-    if (sentenceDisableds.includes(wordIndex)) {
-      sentenceDisableds = sentenceDisableds.filter((i) => i !== wordIndex);
+    if (updatedDisableds.includes(wordIndex)) {
+      updatedDisableds = updatedDisableds.filter((i) => i !== wordIndex);
     } else {
       // チェックをつける
-      sentenceDisableds.push(wordIndex);
+      updatedDisableds.push(wordIndex);
     }
-    updatedDisabledsArray.splice(sentenceIndex, 1, sentenceDisableds);
-    const updatedState: AccentQuizFormState = {
-      ...state,
-      disabledsArray: updatedDisabledsArray,
-    };
+    const updatedState = R.compose(
+      R.assocPath<number[], PitchQuizFormState>(
+        ['questions', sentenceIndex, 'disableds'],
+        updatedDisableds
+      )
+    )(state);
     dispatch(updatedState);
   };
   return (

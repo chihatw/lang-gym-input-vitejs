@@ -1,27 +1,28 @@
-import { Audio, Rhythm, User } from '../../../Model';
+import { User } from '../../../Model';
+import { QuizScores, Syllable } from '../../TempPage/service';
 
-export type RhythmQuizState = {
+export type RhythmQuizFromState = {
   uid: string;
+  ends: number[];
   users: User[];
   title: string;
-  audios: Audio[];
+  scores: QuizScores;
+  starts: number[];
   quizBlob: Blob | null;
-  answered: boolean;
-  rhythmArray: Rhythm[][][];
-  audioContext: AudioContext | null;
+  rhythmArray: Syllable[][][];
   rhythmString: string;
-  disabledsArray: string[][][];
+  audioContext: AudioContext | null;
   questionCount: number;
 };
 
-export const INITIAL_RHYTHM_QUIZ_STATE: RhythmQuizState = {
+export const INITIAL_RHYTHM_QUIZ_FORM_STATE: RhythmQuizFromState = {
   uid: '',
+  ends: [],
+  starts: [],
   users: [],
   title: '',
-  audios: [],
-  answered: false,
+  scores: {},
   rhythmArray: [],
-  disabledsArray: [],
   quizBlob: null,
   audioContext: null,
   rhythmString: '',

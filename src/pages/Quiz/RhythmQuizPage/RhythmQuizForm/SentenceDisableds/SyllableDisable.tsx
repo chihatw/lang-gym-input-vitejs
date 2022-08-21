@@ -1,7 +1,6 @@
 import { Checkbox } from '@mui/material';
 import React from 'react';
-import { RhythmQuizState } from '../../Model';
-import { RhythmQuizAction, RhythmQuizActionTypes } from '../../Update';
+import { RhythmQuizFromState } from '../../Model';
 
 const SyllableDisabled = ({
   state,
@@ -10,27 +9,35 @@ const SyllableDisabled = ({
   syllableIndex,
   dispatch,
 }: {
-  state: RhythmQuizState;
+  state: RhythmQuizFromState;
   sentenceIndex: number;
   wordIndex: number;
   syllableIndex: number;
-  dispatch: React.Dispatch<RhythmQuizAction>;
+  dispatch: React.Dispatch<RhythmQuizFromState>;
 }) => {
-  const { rhythmArray, disabledsArray } = state;
+  const { rhythmArray } = state;
   const wordRhythm = rhythmArray[sentenceIndex][wordIndex];
   const syllableRhythm = wordRhythm[syllableIndex];
-  const { longVowel, mora, syllable } = syllableRhythm;
-  const isDisabled = !!disabledsArray[sentenceIndex][wordIndex][syllableIndex];
+  const { longVowel, specialMora, kana } = syllableRhythm;
+  const isDisabled =
+    !!rhythmArray[sentenceIndex][wordIndex][syllableIndex].disabled;
 
   const handleChange = () => {
-    let specialMora = '';
+    let _specialMora = '';
     if (!isDisabled) {
-      specialMora = mora || 'x';
+      _specialMora = specialMora || 'x';
     }
-    dispatch({
-      type: RhythmQuizActionTypes.changeDisabled,
-      payload: { sentenceIndex, wordIndex, syllableIndex, specialMora },
-    });
+
+    const updatedRhythmArray = [...state.rhythmArray];
+
+    updatedRhythmArray[sentenceIndex][wordIndex][syllableIndex].disabled =
+      _specialMora;
+
+    const updatedState: RhythmQuizFromState = {
+      ...state,
+      rhythmArray: updatedRhythmArray,
+    };
+    dispatch(updatedState);
   };
 
   return (
@@ -41,8 +48,8 @@ const SyllableDisabled = ({
       }}
     >
       <div style={{ textAlign: 'center' }}>
-        <span>{syllable}</span>
-        <span style={{ color: '#f50057' }}>{longVowel || mora}</span>
+        <span>{kana}</span>
+        <span style={{ color: '#f50057' }}>{longVowel || specialMora}</span>
       </div>
       <Checkbox
         size='small'

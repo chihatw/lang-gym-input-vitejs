@@ -4,12 +4,7 @@ import accentsForPitchesArray from 'accents-for-pitches-array';
 import React, { useContext, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { AppContext } from '../../../App';
-import {
-  ArticleSentence,
-  ArticleSentenceForm,
-  INITIAL_ARTICLE,
-  State,
-} from '../../../Model';
+import { ArticleSentence, INITIAL_ARTICLE, State } from '../../../Model';
 import { getArticle } from '../../../services/article';
 
 import { ActionTypes } from '../../../Update';
@@ -17,44 +12,26 @@ import { ActionTypes } from '../../../Update';
 const PrintPitchesPage = () => {
   const { state, dispatch } = useContext(AppContext);
   const { articleId } = useParams();
+  if (!articleId) return <></>;
   const { isFetching, memo, sentences } = state;
 
   useEffect(() => {
     if (!isFetching || !dispatch) return;
 
-    if (!articleId) {
-      dispatch({
-        type: ActionTypes.setArticle,
-        payload: {
-          article: INITIAL_ARTICLE,
-          sentences: [],
-          articleBlob: null,
-          articleSentenceForms: [],
-        },
-      });
-      return;
-    }
-
     const fetchData = async () => {
       let _article = INITIAL_ARTICLE;
       let _sentences: ArticleSentence[] = [];
-      let _articleSentenceForms: ArticleSentenceForm[] = [];
 
       const memoArticle = memo.articles[articleId];
       const memoSentences = memo.sentences[articleId];
-      const memoArticleSentenceForms = memo.articleSentenceForms[articleId];
 
-      if (memoArticle && memoSentences && memoArticleSentenceForms) {
+      if (memoArticle && memoSentences) {
         _article = memoArticle;
         _sentences = memoSentences;
-        _articleSentenceForms = memoArticleSentenceForms;
       } else {
-        const { article, sentences, articleSentenceForms } = await getArticle(
-          articleId
-        );
+        const { article, sentences } = await getArticle(articleId);
         _article = article;
         _sentences = sentences;
-        _articleSentenceForms = articleSentenceForms;
       }
 
       dispatch({
@@ -62,7 +39,6 @@ const PrintPitchesPage = () => {
         payload: {
           article: _article,
           sentences: _sentences,
-          articleSentenceForms: _articleSentenceForms,
           articleBlob: null,
         },
       });

@@ -1,15 +1,15 @@
 import { Slider } from '@mui/material';
 import React from 'react';
+import { updateSentence } from '../../../../services/article';
 import { buildMarks, buildSentenceLines } from '../../../../services/wave';
 import { ArticleVoiceState } from '../Model';
-import { ArticleVoiceAction, ArticleVoiceActionTypes } from '../Update';
 
 const MarksSlider = ({
   state,
   dispatch,
 }: {
   state: ArticleVoiceState;
-  dispatch: React.Dispatch<ArticleVoiceAction>;
+  dispatch: React.Dispatch<ArticleVoiceState>;
 }) => {
   const { blankDuration, sampleRate, channelData, scale } = state;
 
@@ -21,10 +21,15 @@ const MarksSlider = ({
       blankDuration,
     });
     const sentenceLines = buildSentenceLines({ marks, scale });
-    dispatch({
-      type: ArticleVoiceActionTypes.changeBlankDuration,
-      payload: { blankDuration, marks, sentenceLines },
-    });
+
+    const updatedState: ArticleVoiceState = {
+      ...state,
+      sentenceLines,
+      marks,
+      blankDuration,
+    };
+
+    dispatch(updatedState);
   };
 
   return (

@@ -1,3 +1,4 @@
+import * as R from 'ramda';
 import React, { useContext, useEffect, useState } from 'react';
 import string2PitchesArray from 'string2pitches-array';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
@@ -118,9 +119,17 @@ const InitializeSentencesPane = () => {
       sentences.push(sentence);
     });
 
+    const updatedState = R.compose(
+      R.assocPath<ArticleSentence[], State>(['sentences'], sentences),
+      R.assocPath<ArticleSentence[], State>(
+        ['memo', 'sentences', articleId],
+        sentences
+      )
+    )(state);
+
     dispatch({
-      type: ActionTypes.updateSentences,
-      payload: { articleId, sentences },
+      type: ActionTypes.setState,
+      payload: updatedState,
     });
     setSentences(sentences);
   };

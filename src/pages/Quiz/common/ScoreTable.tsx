@@ -1,24 +1,30 @@
 import Delete from '@mui/icons-material/Delete';
 import { IconButton } from '@mui/material';
 import React from 'react';
-import { AccentQuizFormState } from './Model';
+import { PitchQuizFormState } from '../PitchQuizPage/Model';
+import { RhythmQuizFromState } from '../RhythmQuizPage/Model';
 
 const ScoreTable = ({
   state,
   dispatch,
 }: {
-  state: AccentQuizFormState;
-  dispatch: React.Dispatch<AccentQuizFormState>;
+  state: PitchQuizFormState | RhythmQuizFromState;
+  dispatch:
+    | React.Dispatch<PitchQuizFormState>
+    | React.Dispatch<RhythmQuizFromState>;
 }) => {
   const removeScore = (createdAt: number) => {
     if (window.confirm('delete?')) {
       const updatedScores = { ...state.scores };
       delete updatedScores[createdAt];
-      const updatedState: AccentQuizFormState = {
+      const updatedState: PitchQuizFormState | RhythmQuizFromState = {
         ...state,
         scores: updatedScores,
       };
-      dispatch(updatedState);
+
+      (dispatch as React.Dispatch<PitchQuizFormState | RhythmQuizFromState>)(
+        updatedState
+      );
     }
   };
   return (

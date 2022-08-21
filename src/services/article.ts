@@ -18,7 +18,6 @@ import { db, storage } from '../repositories/firebase';
 import {
   Article,
   ArticleSentence,
-  ArticleSentenceForm,
   INITIAL_ARTICLE,
   State,
   Tags,
@@ -34,7 +33,6 @@ const COLLECTIONS = {
   aSentences: 'aSentences',
   assignments: 'assignments',
   sentenceParseNews: 'sentenceParseNews',
-  articleSentenceForms: 'articleSentenceForms',
 };
 
 export const getArticle = async (id: string) => {
@@ -57,18 +55,6 @@ export const getArticle = async (id: string) => {
     sentences.push(buildSentence(doc));
   });
 
-  let articleSentenceForms: ArticleSentenceForm[] = [];
-  q = query(
-    collection(db, COLLECTIONS.articleSentenceForms),
-    where('articleId', '==', id),
-    orderBy('lineIndex')
-  );
-  console.log('get articleSentenceForms');
-  querySnapshot = await getDocs(q);
-  querySnapshot.forEach((doc) => {
-    articleSentenceForms.push(buildArticleSentenceForm(doc));
-  });
-
   let articleBlob: Blob | null = null;
   let { downloadURL } = article;
   if (downloadURL) {
@@ -85,7 +71,6 @@ export const getArticle = async (id: string) => {
   return {
     article,
     sentences,
-    articleSentenceForms,
     articleBlob,
   };
 };
@@ -137,27 +122,8 @@ export const deleteArticle = async (articleId: string) => {
     await deleteDoc(doc(db, COLLECTIONS.sentences, _doc.id));
   });
 
-  q = query(
-    collection(db, COLLECTIONS.articleSentenceForms),
-    where('articleId', '==', articleId)
-  );
-  console.log('get articleSentenceForms');
-  querySnapshot = await getDocs(q);
-  querySnapshot.forEach(async (_doc) => {
-    console.log('delete articleSentenceForm');
-    await deleteDoc(doc(db, COLLECTIONS.articleSentenceForms, _doc.id));
-  });
-
   console.log('delete article');
   await deleteDoc(doc(db, COLLECTIONS.articles, articleId));
-};
-
-export const setArticleSentenceForm = async (
-  articleSentenceForm: ArticleSentenceForm
-) => {
-  const { id, ...omitted } = articleSentenceForm;
-  console.log('set articleSentenceForm');
-  setDoc(doc(db, COLLECTIONS.articleSentenceForms, id), { ...omitted });
 };
 
 export const buildArticleEditState = (state: State): ArticleEditState => {
@@ -269,17 +235,6 @@ const buildSentence = (doc: DocumentData) => {
     storageDuration: storageDuration || 0,
   };
   return sentence;
-};
-
-const buildArticleSentenceForm = (doc: DocumentData) => {
-  const { articleId, lineIndex, sentences } = doc.data();
-  const articleSentenceForm: ArticleSentenceForm = {
-    id: doc.id || '',
-    articleId: articleId || '',
-    lineIndex: lineIndex || 0,
-    sentences: sentences || {},
-  };
-  return articleSentenceForm;
 };
 
 export const kanaAccentsStr2Kana = (value: string) => {
