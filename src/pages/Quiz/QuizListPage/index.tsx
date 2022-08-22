@@ -3,7 +3,7 @@ import { Table, TableBody } from '@mui/material';
 import React, { useContext, useEffect } from 'react';
 import { AppContext } from '../../../App';
 import TableLayout from '../../../components/templates/TableLayout';
-import { getQuizList } from '../../../services/quiz';
+import { getQuizzes } from '../../../services/quiz';
 import { ActionTypes } from '../../../Update';
 import QuizRow from './QuizRow';
 import { State, Quiz } from '../../../Model';
@@ -16,7 +16,7 @@ const QuizListPage = () => {
     const fetchData = async () => {
       const _quizzes: Quiz[] = !!state.quizzes.length
         ? state.quizzes
-        : await getQuizList();
+        : await getQuizzes();
       const updatedState = R.compose(
         R.assocPath<boolean, State>(['isFetching'], false),
         R.assocPath<Quiz[], State>(['quizzes'], _quizzes)

@@ -1,14 +1,13 @@
+import * as R from 'ramda';
 import { Button, TextField } from '@mui/material';
 import React from 'react';
 import TableLayout from '../../../../components/templates/TableLayout';
-import {
-  buildSentenceRhythm,
-  buildUpdatedRythmState,
-} from '../../../../services/quiz';
+import { QuizQuestion, Syllable } from '../../../../Model';
+import { buildSentenceRhythm } from '../../../../services/quiz';
 import ScoreTable from '../../common/ScoreTable';
 import { RhythmQuizFromState } from '../Model';
 import SelectUid from './SelectUid';
-import SentenceDisableds from './SentenceDisableds';
+import SentenceRhythmMonitor from './SentenceRhythmMonitor';
 
 const RhythmQuizForm = ({
   state,
@@ -24,17 +23,35 @@ const RhythmQuizForm = ({
     dispatch(updatedState);
   };
 
-  const handleChangeRhythmString = (rhythmString: string) => {
-    rhythmString = rhythmString.replaceAll(' ', '　');
-    const updatedRhythmArray = buildUpdatedRythmState(
-      rhythmString,
-      state.rhythmArray
-    );
-    const updatedState: RhythmQuizFromState = {
-      ...state,
-      rhythmString,
-      rhythmArray: updatedRhythmArray,
-    };
+  const handleChangeKana = (kana: string) => {
+    kana = kana.replaceAll(' ', '　');
+    const kanas = kana.split('\n');
+    const updatedQuestions: QuizQuestion[] = [];
+    kanas.forEach((kana, index) => {
+      const question = state.questions[index];
+      const syllables: { [index: number]: Syllable[] } = {};
+      const { sentenceRhythm } = buildSentenceRhythm(kana);
+      sentenceRhythm.forEach((wordRhythm, wordIndex) => {
+        syllables[wordIndex] = wordRhythm;
+      });
+
+      const updatedQuestion: QuizQuestion = {
+        end: question?.end || 0,
+        start: question?.start || 0,
+        japanese: question?.japanese || '',
+        disableds: question?.disableds || [],
+        pitchStr: question?.pitchStr || '',
+        syllables,
+      };
+      updatedQuestions.push(updatedQuestion);
+    });
+    const updatedState = R.compose(
+      R.assocPath<string, RhythmQuizFromState>(['input', 'kana'], kana),
+      R.assocPath<QuizQuestion[], RhythmQuizFromState>(
+        ['questions'],
+        updatedQuestions
+      )
+    )(state);
     dispatch(updatedState);
   };
 
@@ -59,10 +76,10 @@ const RhythmQuizForm = ({
           size='small'
           fullWidth
           label='rhythmString'
-          value={state.rhythmString}
+          value={state.input.kana}
           multiline
           rows={5}
-          onChange={(e) => handleChangeRhythmString(e.target.value)}
+          onChange={(e) => handleChangeKana(e.target.value)}
         />
 
         <div
@@ -73,8 +90,8 @@ const RhythmQuizForm = ({
             rowGap: 16,
           }}
         >
-          {state.rhythmArray.map((_, sentenceIndex) => (
-            <SentenceDisableds
+          {state.questions.map((_, sentenceIndex) => (
+            <SentenceRhythmMonitor
               key={sentenceIndex}
               state={state}
               dispatch={dispatch}

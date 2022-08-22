@@ -1,29 +1,29 @@
-import { User, QuizScores, Syllable } from '../../../Model';
+import { User, QuizScores, QuizQuestion } from '../../../Model';
 
 export type RhythmQuizFromState = {
   uid: string;
-  ends: number[];
+  blob: Blob | null;
   users: User[];
   title: string;
-  scores: QuizScores;
-  starts: number[];
-  quizBlob: Blob | null;
-  rhythmArray: Syllable[][][];
-  rhythmString: string;
-  audioContext: AudioContext | null;
   questionCount: number;
+  input: {
+    kana: string;
+  };
+  questions: QuizQuestion[];
+  scores: QuizScores;
+  audioContext: AudioContext | null;
 };
 
 export const INITIAL_RHYTHM_QUIZ_FORM_STATE: RhythmQuizFromState = {
   uid: '',
-  ends: [],
-  starts: [],
+  blob: null,
   users: [],
   title: '',
-  scores: {},
-  rhythmArray: [],
-  quizBlob: null,
-  audioContext: null,
-  rhythmString: '',
   questionCount: 0,
+  input: {
+    kana: '',
+  },
+  questions: [],
+  scores: {},
+  audioContext: null,
 };

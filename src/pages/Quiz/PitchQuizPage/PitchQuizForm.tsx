@@ -35,8 +35,7 @@ const PitchQuizForm = ({
     const japaneses = input.split('\n');
     const updatedQuestions: QuizQuestion[] = [];
     japaneses.forEach((japanese, index) => {
-      const questions = state.questions;
-      const question = questions[index];
+      const question = state.questions[index];
       const updatedQuestion: QuizQuestion = {
         end: question?.end || 0,
         start: question?.start || 0,

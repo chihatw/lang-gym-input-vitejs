@@ -9,13 +9,7 @@ import { rhythmQuizFormReducer } from './Update';
 import { INITIAL_RHYTHM_QUIZ_FORM_STATE } from './Model';
 import RhythmQuizForm from './RhythmQuizForm';
 import { AppContext } from '../../../App';
-import {
-  State,
-  Quiz,
-  QuizQuestion,
-  QuizQuestions,
-  Syllable,
-} from '../../../Model';
+import { State, Quiz, QuizQuestions } from '../../../Model';
 import { ActionTypes } from '../../../Update';
 
 const RhythmQuizPage = () => {
@@ -66,36 +60,13 @@ const RhythmQuizPage = () => {
 
   const onSubmit = async () => {
     if (!dispatch) return;
-
     let questionCount = 0;
-    const questions: QuizQuestions = {};
-    rhythmQuizFormState.rhythmArray.forEach((sentenceRhythm, sentenceIndex) => {
-      // 問題数算出
-      sentenceRhythm.forEach((wordDisabled) => {
-        if (
-          wordDisabled.length !==
-          wordDisabled.filter((syllable) => !!syllable.disabled).length
-        ) {
-          questionCount++;
-        }
-      });
+    const updatedQuestions: QuizQuestions = {};
+    rhythmQuizFormState.questions.forEach((question, sentenceIndex) => {
+      updatedQuestions[sentenceIndex] = question;
 
-      const syllables: { [index: number]: Syllable[] } = {};
-
-      sentenceRhythm.forEach((wordRhythm, wordIndex) => {
-        syllables[wordIndex] = wordRhythm;
-      });
-
-      const question: QuizQuestion = {
-        japanese: '',
-        pitchStr: '',
-        disableds: [],
-        end: rhythmQuizFormState.ends[sentenceIndex],
-        start: rhythmQuizFormState.starts[sentenceIndex],
-        syllables,
-      };
-
-      questions[sentenceIndex] = question;
+      questionCount += Object.keys(question.syllables).length;
+      questionCount -= question.disableds.length;
     });
 
     const updatedQuiz: Quiz = {
@@ -103,23 +74,18 @@ const RhythmQuizPage = () => {
       uid: rhythmQuizFormState.uid,
       title: rhythmQuizFormState.title,
       scores: rhythmQuizFormState.scores,
-      questions,
+      questions: updatedQuestions,
       questionCount,
     };
-
     const updatedQuizzes = state.quizzes.map((item) =>
       item.id === quizId ? updatedQuiz : item
     );
-
     const updatedState: State = {
       ...state,
       quizzes: updatedQuizzes,
     };
-
     dispatch({ type: ActionTypes.setState, payload: updatedState });
-
     await setQuiz(updatedQuiz);
-
     navigate(`/quiz/list`);
   };
 

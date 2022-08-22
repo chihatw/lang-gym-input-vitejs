@@ -101,7 +101,6 @@ export const TYPES = {
 
 export type Syllable = {
   kana: string;
-  disabled: string;
   longVowel: string;
   specialMora: string;
 };
@@ -136,7 +135,7 @@ export const INITIAL_QUIZ: Quiz = {
 export type QuizQuestion = {
   japanese: string; // pitchQuiz で利用
   pitchStr: string; // pitchQuiz で利用
-  disableds: number[]; // pitchQuiz の非題化を wordIndex で指定
+  disableds: number[]; // pitchQuiz, rhythmQuiz の非題化を wordIndex で指定
   end: number; // rhythmQuiz で利用
   start: number; // rhythmQuiz で利用
   syllables: { [index: number]: Syllable[] }; // rhythmQuiz で利用

@@ -35,17 +35,15 @@ const PitchQuizPage = () => {
   const handleSubmit = async () => {
     if (!dispatch) return;
     let questionCount = 0;
+    const updatedQuestions: QuizQuestions = {};
     pitchQuizFormState.questions.forEach((question, sentenceIndex) => {
+      updatedQuestions[sentenceIndex] = question;
+
       const pitchesArray = string2PitchesArray(question.pitchStr);
       questionCount += pitchesArray.length;
       questionCount -= question.disableds.length;
     });
 
-    const updatedQuestions: QuizQuestions = {};
-
-    pitchQuizFormState.questions.forEach((question, index) => {
-      updatedQuestions[index] = question;
-    });
     const updatedQuiz: Quiz = {
       ...quiz,
       uid: pitchQuizFormState.uid,

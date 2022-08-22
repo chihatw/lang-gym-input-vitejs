@@ -1,7 +1,9 @@
+import * as R from 'ramda';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { IconButton, TextField } from '@mui/material';
 import React from 'react';
 import { RhythmQuizFromState } from '../../Model';
+import { QuizQuestion } from '../../../../../Model';
 
 const SentenceHeader = ({
   state,
@@ -12,49 +14,45 @@ const SentenceHeader = ({
   sentenceIndex: number;
   dispatch: React.Dispatch<RhythmQuizFromState>;
 }) => {
-  const start = state.starts[sentenceIndex];
-  const end = state.ends[sentenceIndex];
+  const question = state.questions[sentenceIndex];
 
   const handleChangeStart = (start: number) => {
-    const updatedStarts = [...state.starts];
-    updatedStarts.splice(sentenceIndex, 1, start);
-    const updatedState: RhythmQuizFromState = {
-      ...state,
-      starts: updatedStarts,
-    };
+    const updatedState = R.compose(
+      R.assocPath<number, RhythmQuizFromState>(
+        ['questions', sentenceIndex, 'start'],
+        start
+      )
+    )(state);
     dispatch(updatedState);
   };
 
   const handleChangeEnd = (end: number) => {
-    const updatedEnds = [...state.ends];
-    updatedEnds.splice(sentenceIndex, 1, end);
-    const updatedState: RhythmQuizFromState = {
-      ...state,
-      ends: updatedEnds,
-    };
+    const updatedState = R.compose(
+      R.assocPath<number, RhythmQuizFromState>(
+        ['questions', sentenceIndex, 'end'],
+        end
+      )
+    )(state);
     dispatch(updatedState);
   };
 
   const handleDelete = () => {
-    const updatedrhythmStringLines = state.rhythmString.split('\n');
-    updatedrhythmStringLines.splice(sentenceIndex, 1);
+    const kanas = state.input.kana.split('\n');
+    kanas.splice(sentenceIndex, 1);
 
-    const updatedRhythmArray = [...state.rhythmArray];
-    updatedRhythmArray.splice(sentenceIndex, 1);
+    const updatedQuestions = [...state.questions];
+    updatedQuestions.splice(sentenceIndex, 1);
 
-    const updatedStarts = [...state.starts];
-    updatedStarts.splice(sentenceIndex, 1);
-
-    const updatedEnds = [...state.ends];
-    updatedEnds.splice(sentenceIndex, 1);
-
-    const updatedState: RhythmQuizFromState = {
-      ...state,
-      rhythmString: updatedrhythmStringLines.join('\n'),
-      rhythmArray: updatedRhythmArray,
-      starts: updatedStarts,
-      ends: updatedEnds,
-    };
+    const updatedState = R.compose(
+      R.assocPath<string, RhythmQuizFromState>(
+        ['input', 'kana'],
+        kanas.join('\n')
+      ),
+      R.assocPath<QuizQuestion[], RhythmQuizFromState>(
+        ['questions'],
+        updatedQuestions
+      )
+    )(state);
     dispatch(updatedState);
   };
   return (
@@ -71,7 +69,7 @@ const SentenceHeader = ({
           inputProps={{ step: 0.1 }}
           type='number'
           size='small'
-          value={start}
+          value={question.start}
           label='start'
           onChange={(e) => handleChangeStart(Number(e.target.value))}
         />
@@ -79,7 +77,7 @@ const SentenceHeader = ({
           inputProps={{ step: 0.1 }}
           type='number'
           size='small'
-          value={end}
+          value={question.end}
           label='end'
           onChange={(e) => handleChangeEnd(Number(e.target.value))}
         />
