@@ -4,15 +4,19 @@ import { IconButton } from '@mui/material';
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../../../../App';
-import { State } from '../../../../../Model';
+import { ArticleSentence, State } from '../../../../../Model';
 import { Action } from '../../../../../Update';
 import EditSentencePane from './EditSentencePane';
 
-const SentenceRowFooter = ({ sentenceIndex }: { sentenceIndex: number }) => {
-  const { state, dispatch } = useContext(AppContext);
-  const { article } = state;
-  const { id: articleId } = article;
-  const navigate = useNavigate();
+const SentenceRowFooter = ({
+  blob,
+  articleId,
+  sentence,
+}: {
+  blob: Blob | null;
+  articleId: string;
+  sentence: ArticleSentence;
+}) => {
   const [open, setOpen] = useState(false);
   return (
     <div style={{ display: 'grid', rowGap: 16 }}>
@@ -25,20 +29,13 @@ const SentenceRowFooter = ({ sentenceIndex }: { sentenceIndex: number }) => {
         <IconButton size='small' onClick={() => setOpen(!open)}>
           <EditIcon />
         </IconButton>
-
         <span style={{ width: '2em' }} />
-        <IconButton
-          size='small'
-          onClick={() => {
-            navigate(`/form/${articleId}/index/${sentenceIndex}`);
-          }}
-        >
-          <AccountTreeIcon />
-        </IconButton>
       </div>
       {open && (
         <EditSentencePane
-          sentenceIndex={sentenceIndex}
+          articleId={articleId}
+          blob={blob}
+          sentence={sentence}
           callback={() => setOpen(false)}
         />
       )}

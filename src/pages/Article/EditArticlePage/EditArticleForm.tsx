@@ -52,7 +52,7 @@ const EditArticleForm = ({
     <Container maxWidth='sm' sx={{ paddingTop: 4 }}>
       <div style={{ display: 'grid', rowGap: 16 }}>
         <div>
-          <Typography variant='h5'>{title}</Typography>
+          <Typography variant='h5'>{title || '新規作成'}</Typography>
           <div style={{ height: 16 }} />
           <Button variant='contained' onClick={() => navigate('/article/list')}>
             戻る

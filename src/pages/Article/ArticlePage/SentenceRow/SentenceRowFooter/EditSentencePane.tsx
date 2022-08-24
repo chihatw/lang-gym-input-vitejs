@@ -4,7 +4,7 @@ import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import accentsForPitchesArray from 'accents-for-pitches-array';
 import React, { useState, useEffect, useContext } from 'react';
 
-import { Action, ActionTypes } from '../../../../../Update';
+import { ActionTypes } from '../../../../../Update';
 import AudioSlider from '../../../../../components/AudioSlider';
 
 import { ArticleSentence, State } from '../../../../../Model';
@@ -13,21 +13,22 @@ import {
   updateSentence,
   kanaAccentsStr2Kana,
   kanaAccentsStr2AccentsString,
-  buildTags,
 } from '../../../../../services/article';
 import { AppContext } from '../../../../../App';
 
 const EditSentencePane = ({
   callback,
-  sentenceIndex,
+  articleId,
+  sentence,
+  blob,
 }: {
   callback: () => void;
-  sentenceIndex: number;
+  articleId: string;
+  sentence: ArticleSentence;
+  blob: Blob | null;
 }) => {
   const { state, dispatch } = useContext(AppContext);
-  const { article, sentences, audioContext, blobs } = state;
-  const { id: articleId } = article;
-  const sentence = sentences[sentenceIndex];
+  const { audioContext } = state;
 
   const [end, setEnd] = useState(0);
   const [kana, setKana] = useState('');
@@ -98,7 +99,7 @@ const EditSentencePane = ({
       end,
       kana,
       start,
-      tags: buildTags([japanese, original, chinese, kana]),
+      tags: {},
       accents: buildAccents(accentString),
       chinese,
       japanese,
@@ -106,14 +107,13 @@ const EditSentencePane = ({
       kanaAccentsStr,
     };
 
-    const updatedSentences = state.sentences.map((item) =>
+    const updatedSentences = state.sentences[articleId].map((item) =>
       item.id === newSentence.id ? newSentence : item
     );
 
     const updatedState = R.compose(
-      R.assocPath<ArticleSentence[], State>(['sentences'], updatedSentences),
       R.assocPath<ArticleSentence[], State>(
-        ['memo', 'sentences', articleId],
+        ['sentences', articleId],
         updatedSentences
       )
     )(state);
@@ -123,11 +123,6 @@ const EditSentencePane = ({
 
     callback();
   };
-
-  let blob: Blob | null = null;
-  if (article.downloadURL) {
-    blob = blobs[article.downloadURL];
-  }
 
   return (
     <div style={{ display: 'grid', rowGap: 16 }}>

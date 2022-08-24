@@ -1,7 +1,7 @@
 import { Button, Container, Table, TableBody, Typography } from '@mui/material';
 import React, { useContext, useEffect } from 'react';
-import { INITIAL_ARTICLE, State } from '../../../Model';
-import { Action, ActionTypes } from '../../../Update';
+import { Article, State } from '../../../Model';
+import { ActionTypes } from '../../../Update';
 import { getArticles } from '../../../services/article';
 import LinkButton from '../../../components/ui/LinkButton';
 import { useNavigate } from 'react-router-dom';
@@ -11,22 +11,27 @@ import { AppContext } from '../../../App';
 const ArticleListPage = () => {
   const { state, dispatch } = useContext(AppContext);
   const navigate = useNavigate();
-  const { isFetching, articleList } = state;
   useEffect(() => {
-    if (!isFetching || !dispatch) return;
+    if (!state.isFetching || !dispatch) return;
     const fetchData = async () => {
-      const _articleList = !!articleList.length
-        ? articleList
-        : await getArticles();
+      let _articles: { [key: string]: Article } = {};
+      if (Object.keys(state.articles).length) {
+        _articles = state.articles;
+      } else {
+        const articles = await getArticles();
+        for (const article of articles) {
+          _articles[article.id] = article;
+        }
+      }
       const updatedState: State = {
         ...state,
-        articleList: _articleList,
+        articles: _articles,
         isFetching: false,
       };
       dispatch({ type: ActionTypes.setState, payload: updatedState });
     };
     fetchData();
-  }, [isFetching]);
+  }, [state.isFetching, state.articles]);
 
   return (
     <Container maxWidth={'sm'} sx={{ paddingTop: 2 }}>
@@ -45,8 +50,6 @@ const ArticleListPage = () => {
                 const updatedState: State = {
                   ...state,
                   isFetching: true,
-                  article: INITIAL_ARTICLE,
-                  sentences: [],
                 };
                 dispatch({ type: ActionTypes.setState, payload: updatedState });
               }}
@@ -57,9 +60,11 @@ const ArticleListPage = () => {
         </div>
         <Table>
           <TableBody>
-            {articleList.map((_, index) => (
-              <ArticleRow key={index} index={index} />
-            ))}
+            {Object.values(state.articles)
+              .sort((a, b) => b.createdAt - a.createdAt)
+              .map((article, index) => (
+                <ArticleRow key={index} article={article} />
+              ))}
           </TableBody>
         </Table>
       </div>

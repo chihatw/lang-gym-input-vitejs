@@ -6,7 +6,7 @@ import React, { useContext, useEffect, useReducer } from 'react';
 import { deleteFile, uploadStorage } from '../../../repositories/file';
 
 import { Article, ArticleSentence, State } from '../../../Model';
-import { Action, ActionTypes } from '../../../Update';
+import { ActionTypes } from '../../../Update';
 import { setArticleVoiceInitialValue } from '../../../services/wave';
 import { articleVoiceReducer } from './Update';
 import { INITIAL_ARTICLE_VOICE_STATE } from './Model';
@@ -14,15 +14,16 @@ import EditAudioPane from './EditAudioPane';
 import { setSentences, setArticle } from '../../../services/article';
 import { AppContext } from '../../../App';
 
-const EditArticleVoicePane = () => {
+const EditArticleVoicePane = ({
+  article,
+  blob,
+  sentences,
+}: {
+  article: Article;
+  blob: Blob | null;
+  sentences: ArticleSentence[];
+}) => {
   const { state, dispatch } = useContext(AppContext);
-  const { article, sentences, blobs } = state;
-  const { id: articleId, downloadURL } = article;
-
-  let blob: Blob | null = null;
-  if (downloadURL) {
-    blob = blobs[downloadURL];
-  }
 
   const navigate = useNavigate();
 
@@ -32,12 +33,17 @@ const EditArticleVoicePane = () => {
   );
 
   useEffect(() => {
-    setArticleVoiceInitialValue(state, articleVoiceDispatch);
+    setArticleVoiceInitialValue(
+      state,
+      article,
+      sentences,
+      articleVoiceDispatch
+    );
   }, [state]);
 
   const uploadAudio = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!dispatch) return;
-    const path = `/articles/${articleId}`;
+    const path = `/articles/${article.id}`;
     if (!e.target.files) return;
     const file = e.target.files[0];
 
@@ -75,7 +81,7 @@ const EditArticleVoicePane = () => {
     const updatedState = R.compose(
       R.assocPath<ArticleSentence[], State>(['sentences'], newSentences),
       R.assocPath<ArticleSentence[], State>(
-        ['memo', 'sentences', articleId],
+        ['sentences', article.id],
         newSentences
       )
     )(state);
@@ -93,13 +99,13 @@ const EditArticleVoicePane = () => {
 
     if (window.confirm('audio ファイルを削除しますか')) {
       let path = '';
-      const header = downloadURL.slice(0, 4);
+      const header = article.downloadURL.slice(0, 4);
       if (header === 'http') {
-        const audioURL = new URL(downloadURL);
+        const audioURL = new URL(article.downloadURL);
         path = audioURL.pathname.split('/').slice(-1)[0].replace('%2F', '/');
         deleteFile(path);
       } else {
-        path = downloadURL;
+        path = article.downloadURL;
       }
 
       const newArticle: Article = { ...article, downloadURL: '' };

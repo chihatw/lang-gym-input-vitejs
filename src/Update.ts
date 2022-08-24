@@ -14,16 +14,13 @@ import {
 export const ActionTypes = {
   setUser: 'setUser',
   setState: 'setState',
-  setArticle: 'setArticle',
   setWorkout: 'setWorkout',
-  deleteArticle: 'deleteArticle',
   startFetching: 'startFetching',
   deleteWorkout: 'deleteWorkout',
   setWorkoutList: 'setWorkoutList',
   setAudioContext: 'setAudioContext',
   setWorkoutSingle: 'setWorkoutSingle',
   setRandomWorkouts: 'setRandomWorkouts',
-  toggleIsShowAccents: 'toggleIsShowAccents',
   deleteArticleAudioFile: 'deleteArticleAudioFile',
   uploadArticleAudioFile: 'uploadArticleAudioFile',
 };
@@ -73,7 +70,7 @@ export type Action = {
 
 export const reducer = (state: State, action: Action): State => {
   const { type, payload } = action;
-  const { articleList, workoutList } = state;
+  const { workoutList } = state;
 
   switch (type) {
     case ActionTypes.setState: {
@@ -89,32 +86,7 @@ export const reducer = (state: State, action: Action): State => {
         )
       )(state);
     }
-    case ActionTypes.toggleIsShowAccents: {
-      const articleId = payload as string;
-      const article = articleList.find((item) => item.id === articleId);
-      if (!article) return state;
 
-      const { isShowAccents } = article;
-      const updatedList = articleList.map((item) =>
-        item.id == articleId
-          ? {
-              ...item,
-              isShowAccents: !isShowAccents,
-            }
-          : item
-      );
-      return R.compose(
-        R.assocPath<Article[], State>(['articleList'], updatedList),
-        R.assocPath<boolean, State>(
-          ['article', 'isShowAccents'],
-          !isShowAccents
-        ),
-        R.assocPath<boolean, State>(
-          ['memo', 'articles', articleId, 'isShowAccents'],
-          !isShowAccents
-        )
-      )(state);
-    }
     case ActionTypes.setUser: {
       const user = payload as FirebaseUser | null;
       return R.compose(
@@ -133,57 +105,6 @@ export const reducer = (state: State, action: Action): State => {
         state
       );
     }
-    case ActionTypes.deleteArticle: {
-      const articleId = payload as string;
-      const updatedList = articleList.filter((item) => item.id !== articleId);
-
-      return R.compose(
-        R.assocPath<Article[], State>(['articleList'], updatedList),
-        R.assocPath<Article, State>(['article'], INITIAL_ARTICLE),
-        R.assocPath<ArticleSentence[], State>(['sentences'], []),
-        R.assocPath<null, State>(['articleBlob'], null),
-        R.dissocPath<State>(['memo', 'articles', articleId]),
-        R.dissocPath<State>(['memo', 'sentences', articleId]),
-        R.dissocPath<State>(['memo', 'articleBlobs', articleId])
-      )(state);
-    }
-    case ActionTypes.setArticle: {
-      const { article, sentences, articleBlob } = payload as {
-        article: Article;
-        sentences: ArticleSentence[];
-        articleBlob: Blob | null;
-      };
-
-      let updatedList = [...articleList];
-
-      const isCreateNew = !updatedList.find((item) => item.id === article.id);
-
-      if (isCreateNew) {
-        updatedList.unshift(article);
-      } else {
-        updatedList = updatedList.map((item) =>
-          item.id === article.id ? article : item
-        );
-      }
-
-      return R.compose(
-        R.assocPath<boolean, State>(['isFetching'], false),
-        R.assocPath<Article[], State>(['articleList'], updatedList),
-        R.assocPath<Article, State>(['article'], article),
-        R.assocPath<Blob | null, State>(['articleBlob'], articleBlob),
-        R.assocPath<ArticleSentence[], State>(['sentences'], sentences),
-        R.assocPath<Article, State>(['memo', 'articles', article.id], article),
-        R.assocPath<Blob | null, State>(
-          ['memo', 'articleBlobs', article.id],
-          articleBlob
-        ),
-        R.assocPath<ArticleSentence[], State>(
-          ['memo', 'sentences', article.id],
-          sentences
-        )
-      )(state);
-    }
-
     case ActionTypes.setWorkoutList: {
       const { workoutList, users } = payload as {
         workoutList: Workout[];

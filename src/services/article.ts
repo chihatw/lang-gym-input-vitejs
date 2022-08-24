@@ -126,25 +126,26 @@ export const deleteArticle = async (articleId: string) => {
   await deleteDoc(doc(db, COLLECTIONS.articles, articleId));
 };
 
-export const buildArticleEditState = (state: State): ArticleEditState => {
-  const { users, article, sentences } = state;
-  const { id, uid, createdAt, title, embedID } = article;
-
-  if (!id) {
+export const buildArticleEditState = (
+  state: State,
+  articleId: string
+): ArticleEditState => {
+  if (!articleId) {
     return {
-      uid: users.length ? users[0].id : '',
+      uid: state.users.length ? state.users[0].id : '',
       date: new Date(),
-      users,
+      users: state.users,
       title: '',
       embedId: '',
       articleMarksString: '',
     };
   }
 
+  const article = state.articles[articleId];
   let articleMarksString = '';
-  if (sentences.length) {
+  if (state.sentences[articleId] && state.sentences[articleId].length) {
     const lines: string[] = [];
-    sentences.forEach(({ japanese }, index) => {
+    state.sentences[articleId].forEach(({ japanese }, index) => {
       const items: string[] = [];
       const mark = article.marks[index];
       const initial = index === 0 ? '' : '0:00';
@@ -158,11 +159,11 @@ export const buildArticleEditState = (state: State): ArticleEditState => {
   }
 
   return {
-    uid,
-    date: new Date(createdAt),
-    users,
-    title,
-    embedId: embedID,
+    uid: article.uid,
+    date: new Date(article.createdAt),
+    users: state.users,
+    title: article.title,
+    embedId: article.embedID,
     articleMarksString,
   };
 };

@@ -344,10 +344,13 @@ export const setQuiz = async (quiz: Quiz) => {
   });
 };
 
-export const buildPitchQuizFromState = (state: State): Quiz => {
+export const buildPitchQuizFromState = (
+  state: State,
+  articleId: string
+): Quiz => {
   let questionCount = 0;
   const questions: QuizQuestions = {};
-  state.sentences.forEach((sentence, index) => {
+  state.sentences[articleId].forEach((sentence, index) => {
     questionCount += sentence.accents.length;
     const pitchesArray = accentsForPitchesArray(sentence.accents);
     const pitchStr = pitchesArray2String(pitchesArray);
@@ -362,7 +365,7 @@ export const buildPitchQuizFromState = (state: State): Quiz => {
     id: nanoid(8),
     uid: import.meta.env.VITE_ADMIN_UID,
     type: 'articleAccents',
-    title: `${state.article.title} - アクセント`,
+    title: `${state.articles[articleId].title} - アクセント`,
     scores: {},
     questions,
     createdAt: Date.now(),
@@ -372,11 +375,14 @@ export const buildPitchQuizFromState = (state: State): Quiz => {
   return quiz;
 };
 
-export const buildRhythmQuizFromState = (state: State): Quiz => {
+export const buildRhythmQuizFromState = (
+  state: State,
+  articleId: string
+): Quiz => {
   let questionCount = 0;
   const questions: QuizQuestions = {};
 
-  state.sentences.forEach((sentence, index) => {
+  state.sentences[articleId].forEach((sentence, index) => {
     const syllables: { [index: number]: Syllable[] } = {};
 
     const pitchesArray = accentsForPitchesArray(sentence.accents);
@@ -402,11 +408,11 @@ export const buildRhythmQuizFromState = (state: State): Quiz => {
     id: nanoid(8),
     uid: import.meta.env.VITE_ADMIN_UID,
     type: 'articleRhythms',
-    title: `${state.article.title} - 特殊拍`,
+    title: `${state.articles[articleId].title} - 特殊拍`,
     scores: {},
     questions,
     createdAt: new Date().getTime(),
-    downloadURL: state.article.downloadURL,
+    downloadURL: state.articles[articleId].downloadURL,
     questionCount,
   };
 

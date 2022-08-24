@@ -25,6 +25,10 @@ const ArticlePage = () => {
   const { state, dispatch } = useContext(AppContext);
   const { articleId } = useParams();
   if (!articleId) return <></>;
+
+  const article = state.articles[articleId];
+  if (!article) return <></>;
+
   const navigate = useNavigate();
   const [isSm, setIsSm] = useState(true);
 
@@ -32,45 +36,37 @@ const ArticlePage = () => {
     if (!state.isFetching || !dispatch) return;
 
     const fetchData = async () => {
-      let _article = INITIAL_ARTICLE;
       let _sentences: ArticleSentence[] = [];
       let _articleBlob: Blob | null = null;
 
-      const memoArticle = state.memo.articles[articleId];
-      const memoSentences = state.memo.sentences[articleId];
-
+      const memoSentences = state.sentences[articleId];
       let memoArticleBlob = undefined;
-      if (!!memoArticle && memoArticle.downloadURL) {
-        memoArticleBlob = state.blobs[memoArticle.downloadURL];
+
+      if (article.downloadURL) {
+        memoArticleBlob = state.blobs[article.downloadURL];
       }
 
-      if (memoArticle && memoSentences && memoArticleBlob !== undefined) {
-        _article = memoArticle;
+      if (memoSentences && memoArticleBlob !== undefined) {
         _sentences = memoSentences;
         _articleBlob = memoArticleBlob;
       } else {
-        const { article, sentences, articleBlob } = await getArticle(articleId);
-        _article = article;
+        const { sentences, articleBlob } = await getArticle(articleId);
         _sentences = sentences;
         _articleBlob = articleBlob;
       }
 
       const updatedBlobs = { ...state.blobs };
-      if (_article.downloadURL && _articleBlob) {
-        updatedBlobs[_article.downloadURL] = _articleBlob;
+      if (article.downloadURL && _articleBlob) {
+        updatedBlobs[article.downloadURL] = _articleBlob;
       }
-
       const updatedState = R.compose(
         R.assocPath<boolean, State>(['isFetching'], false),
-        R.assocPath<Article, State>(['article'], _article),
         R.assocPath<{ [downloadURL: string]: Blob | null }, State>(
           ['blobs'],
           updatedBlobs
         ),
-        R.assocPath<ArticleSentence[], State>(['sentences'], _sentences),
-        R.assocPath<Article, State>(['memo', 'articles', articleId], _article),
         R.assocPath<ArticleSentence[], State>(
-          ['memo', 'sentences', articleId],
+          ['sentences', articleId],
           _sentences
         )
       )(state);
@@ -82,7 +78,7 @@ const ArticlePage = () => {
 
   const handleCreatePitchQuiz = async () => {
     if (!dispatch) return;
-    const quiz = buildPitchQuizFromState(state);
+    const quiz = buildPitchQuizFromState(state, articleId);
     await createQuiz(quiz);
     const updatedQuizzes = [...state.quizzes];
     updatedQuizzes.unshift(quiz);
@@ -100,7 +96,7 @@ const ArticlePage = () => {
 
   const handleCreateRhythmQuiz = async () => {
     if (!dispatch) return;
-    const quiz = buildRhythmQuizFromState(state);
+    const quiz = buildRhythmQuizFromState(state, articleId);
     await createQuiz(quiz);
     const updatedQuizzes = [...state.quizzes];
     updatedQuizzes.unshift(quiz);
@@ -119,11 +115,11 @@ const ArticlePage = () => {
   // データ取得中
   if (state.isFetching) return <></>;
   // article が 初期値
-  if (!state.article.title) return <Navigate to={'/article/list'} />;
+  if (!article.title) return <Navigate to={'/article/list'} />;
   return (
     <TableLayout
       maxWidth={isSm ? 'sm' : 'md'}
-      title={state.article.title}
+      title={article.title}
       backURL={`/article/list`}
     >
       <div style={{ marginBottom: 16 }}>
@@ -131,13 +127,14 @@ const ArticlePage = () => {
           switch width
         </Button>
       </div>
-      {!!state.sentences.length ? (
+      {!!state.sentences[articleId].length ? (
         <div style={{ display: 'grid', rowGap: 16 }}>
-          {state.sentences.map((_, sentenceIndex) => (
+          {state.sentences[articleId].map((sentence, sentenceIndex) => (
             <SentenceRow
               key={sentenceIndex}
-              isSm={isSm}
-              sentenceIndex={sentenceIndex}
+              articleId={articleId}
+              sentence={sentence}
+              blob={state.blobs[article.downloadURL]}
             />
           ))}
 
@@ -149,7 +146,7 @@ const ArticlePage = () => {
           </Button>
         </div>
       ) : (
-        <InitializeSentencesPane />
+        <InitializeSentencesPane articleId={articleId} />
       )}
     </TableLayout>
   );

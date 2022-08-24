@@ -1,3 +1,4 @@
+import * as R from 'ramda';
 import EditIcon from '@mui/icons-material/Edit';
 import React, { useContext } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -9,43 +10,54 @@ import { TableRow, TableCell } from '@mui/material';
 import TitleDateCell from './TitleDateCell';
 import IconButtonCell from './IconButtonCell';
 import PrintIcon from '@mui/icons-material/Print';
-import { Article } from '../../../../Model';
+import { Article, State } from '../../../../Model';
 import { ActionTypes } from '../../../../Update';
 import { useNavigate } from 'react-router-dom';
 import { deleteArticle, setArticle } from '../../../../services/article';
 import { deleteFile } from '../../../../repositories/file';
 import { AppContext } from '../../../../App';
 
-const ArticleRow = ({ index }: { index: number }) => {
+const ArticleRow = ({ article }: { article: Article }) => {
   const { state, dispatch } = useContext(AppContext);
-  const { articleList } = state;
-  const article = articleList[index];
-  const { id: articleId, isShowAccents, title, downloadURL } = article;
+
   const navigate = useNavigate();
 
   const handleToggleShowAccents = () => {
     if (!dispatch) return;
-    dispatch({ type: ActionTypes.toggleIsShowAccents, payload: articleId });
-    const newArticle: Article = { ...article, isShowAccents: !isShowAccents };
-    setArticle(newArticle);
+
+    const updatedArticle: Article = {
+      ...article,
+      isShowAccents: !article.isShowAccents,
+    };
+
+    const updatedState = R.assocPath<Article, State>(
+      ['articles', article.id],
+      updatedArticle
+    )(state);
+
+    dispatch({ type: ActionTypes.setState, payload: updatedState });
+
+    setArticle(updatedArticle);
   };
 
   const handleDelete = async () => {
     if (!dispatch) return;
-    if (window.confirm(`${title}を削除しますか`)) {
+    if (window.confirm(`${article.title}を削除しますか`)) {
       let path = '';
-      const header = downloadURL.slice(0, 4);
+      const header = article.downloadURL.slice(0, 4);
       if (header === 'http') {
-        const audioURL = new URL(downloadURL);
+        const audioURL = new URL(article.downloadURL);
         path = audioURL.pathname.split('/').slice(-1)[0].replace('%2F', '/');
       } else {
-        path = downloadURL;
+        path = article.downloadURL;
       }
       if (path) {
         deleteFile(path);
       }
-      dispatch({ type: ActionTypes.deleteArticle, payload: articleId });
-      deleteArticle(articleId);
+
+      const updatedState = R.dissocPath<State>(['articles', article.id])(state);
+      dispatch({ type: ActionTypes.setState, payload: updatedState });
+      deleteArticle(article.id);
     }
   };
 
@@ -76,12 +88,12 @@ const ArticleRow = ({ index }: { index: number }) => {
         onClick={() => {
           if (!dispatch) return;
           dispatch({ type: ActionTypes.startFetching });
-          navigate(`/article/print/${articleId}`);
+          navigate(`/article/print/${article.id}`);
         }}
       />
       <IconButtonCell
         icon={
-          isShowAccents ? (
+          article.isShowAccents ? (
             <VisibilityOutlinedIcon />
           ) : (
             <VisibilityOffOutlinedIcon />

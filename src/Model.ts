@@ -240,22 +240,20 @@ export const INITIAL_RANDOM_WORKOUT: RandomWorkout = {
 
 export type State = {
   user: FirebaseUser | null;
-  initializing: boolean;
-  isFetching: boolean;
-  audioContext: AudioContext | null;
   users: User[];
-  articleList: Article[];
-  article: Article;
-  sentences: ArticleSentence[];
+  isFetching: boolean;
+  initializing: boolean;
+  audioContext: AudioContext | null;
+  articles: { [id: string]: Article };
+  sentences: { [id: string]: ArticleSentence[] };
   quizzes: Quiz[];
   blobs: { [downloadURL: string]: Blob };
   workout: Workout;
   workoutList: Workout[];
   randomWorkouts: { [workoutId: string]: RandomWorkout };
   randomWorkoutBlobs: { [workoutId: string]: Blob | null };
+
   memo: {
-    articles: { [id: string]: Article };
-    sentences: { [id: string]: ArticleSentence[] };
     workouts: { [id: string]: Workout };
   };
 };
@@ -266,18 +264,15 @@ export const INITIAL_STATE: State = {
   isFetching: false,
   audioContext: null,
   users: [],
-  articleList: [],
-  article: INITIAL_ARTICLE,
   blobs: {},
-  sentences: [],
+  articles: {},
+  sentences: {},
   workout: INITIAL_WORKOUT,
   workoutList: [],
   randomWorkouts: {},
   randomWorkoutBlobs: {},
   quizzes: [],
   memo: {
-    articles: {},
-    sentences: {},
     workouts: {},
   },
 };

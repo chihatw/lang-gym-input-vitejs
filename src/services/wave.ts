@@ -1,6 +1,5 @@
-import { has } from 'ramda';
 import React from 'react';
-import { Mark, State } from '../Model';
+import { Article, ArticleSentence, Mark, State } from '../Model';
 import {
   ArticleVoiceState,
   SentenceLine,
@@ -15,6 +14,8 @@ const ACCURANCY = 1000;
 
 export const setArticleVoiceInitialValue = async (
   state: State,
+  article: Article,
+  sentences: ArticleSentence[],
   dispatch: React.Dispatch<ArticleVoiceState>
 ) => {
   let scale = 0;
@@ -28,7 +29,7 @@ export const setArticleVoiceInitialValue = async (
   let blankDuration = INITIAL_BLANK_DURATION;
   let sampleRate = 0;
 
-  const { sentences, article, audioContext, blobs } = state;
+  const { audioContext, blobs } = state;
   const { downloadURL } = article;
   let blob: Blob | null = null;
   if (downloadURL) {

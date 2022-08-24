@@ -18,13 +18,13 @@ import {
   setSentences,
 } from '../../../services/article';
 import { nanoid } from 'nanoid';
-import { Action, ActionTypes } from '../../../Update';
+import { ActionTypes } from '../../../Update';
 import { AppContext } from '../../../App';
 
-const InitializeSentencesPane = () => {
+const InitializeSentencesPane = ({ articleId }: { articleId: string }) => {
   const { state, dispatch } = useContext(AppContext);
-  const { article } = state;
-  const { id: articleId } = article;
+
+  const article = state.articles[articleId];
 
   const [kanaArray, setKanaArray] = useState<string[]>([]);
   const [chineseArray, setChineseArray] = useState<string[]>([]);
@@ -120,11 +120,7 @@ const InitializeSentencesPane = () => {
     });
 
     const updatedState = R.compose(
-      R.assocPath<ArticleSentence[], State>(['sentences'], sentences),
-      R.assocPath<ArticleSentence[], State>(
-        ['memo', 'sentences', articleId],
-        sentences
-      )
+      R.assocPath<ArticleSentence[], State>(['sentences', articleId], sentences)
     )(state);
 
     dispatch({

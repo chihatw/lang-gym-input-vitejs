@@ -29,51 +29,53 @@ import { AppContext } from '../../../App';
 const EditArticlePage = () => {
   const { state, dispatch } = useContext(AppContext);
   const { articleId } = useParams();
-  if (!articleId) return <></>;
-
+  const article = state.articles[articleId || ''];
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!state.isFetching || !dispatch) return;
+    if (!articleId) {
+      const updatedState = R.compose(
+        R.assocPath<boolean, State>(['isFetching'], false)
+      )(state);
+
+      dispatch({
+        type: ActionTypes.setState,
+        payload: updatedState,
+      });
+      return;
+    }
     const fetchData = async () => {
-      let _article = INITIAL_ARTICLE;
       let _sentences: ArticleSentence[] = [];
       let _articleBlob: Blob | null = null;
 
-      const memoArticle = state.memo.articles[articleId];
-      const memoSentences = state.memo.sentences[articleId];
+      const memoSentences = state.sentences[articleId];
       let memoArticleBlob = undefined;
-      if (!!memoArticle && !!memoArticle.downloadURL) {
-        memoArticleBlob = state.blobs[memoArticle.downloadURL];
+      if (!!article.downloadURL) {
+        memoArticleBlob = state.blobs[article.downloadURL];
       }
 
-      if (memoArticle && memoSentences && memoArticleBlob !== undefined) {
-        _article = memoArticle;
+      if (memoSentences && memoArticleBlob !== undefined) {
         _sentences = memoSentences;
         _articleBlob = memoArticleBlob;
       } else {
-        const { article, sentences, articleBlob } = await getArticle(articleId);
-        _article = article;
+        const { sentences, articleBlob } = await getArticle(articleId);
         _sentences = sentences;
         _articleBlob = articleBlob;
       }
-
       const updatedBlobs = { ...state.blobs };
       if (_articleBlob) {
-        updatedBlobs[_article.downloadURL] = _articleBlob;
+        updatedBlobs[article.downloadURL] = _articleBlob;
       }
 
       const updatedState = R.compose(
         R.assocPath<boolean, State>(['isFetching'], false),
-        R.assocPath<Article, State>(['article'], _article),
         R.assocPath<{ [downloadURL: string]: Blob | null }, State>(
           ['blobs'],
           updatedBlobs
         ),
-        R.assocPath<ArticleSentence[], State>(['sentences'], _sentences),
-        R.assocPath<Article, State>(['memo', 'articles', articleId], _article),
         R.assocPath<ArticleSentence[], State>(
-          ['memo', 'sentences', articleId],
+          ['sentences', articleId || ''],
           _sentences
         )
       )(state);
@@ -92,7 +94,7 @@ const EditArticlePage = () => {
   );
 
   useEffect(() => {
-    const initialState = buildArticleEditState(state);
+    const initialState = buildArticleEditState(state, articleId || '');
     articleEditDispatch(initialState);
   }, [state]);
 
@@ -100,22 +102,21 @@ const EditArticlePage = () => {
     if (!dispatch) return;
     const { uid, date, users, title } = articleEditState;
 
+    const articleId = nanoid(8);
     const article: Article = {
       ...INITIAL_ARTICLE,
-      id: nanoid(8),
+      id: articleId,
       uid,
       title,
       createdAt: date.getTime(),
       userDisplayname: users.filter((u) => u.id === uid)[0].displayname,
     };
-    dispatch({
-      type: ActionTypes.setArticle,
-      payload: {
-        article,
-        sentences: [],
-        articleBlob: null,
-      },
-    });
+
+    const updatedState = R.assocPath<Article, State>(
+      ['articles', articleId],
+      article
+    )(state);
+    dispatch({ type: ActionTypes.setState, payload: updatedState });
     setArticle(article);
     navigate(`/article/list`);
   };
@@ -127,7 +128,7 @@ const EditArticlePage = () => {
     const articleMarks = buildArticleMarks(articleMarksString);
 
     const newArticle: Article = {
-      ...state.article,
+      ...article,
       uid,
       marks: articleMarks,
       title,
@@ -136,23 +137,8 @@ const EditArticlePage = () => {
       userDisplayname: users.filter((u) => u.id === uid)[0].displayname,
     };
 
-    let updatedList = [...state.articleList];
-    const isCreateNew = !updatedList.find((item) => item.id === newArticle.id);
-    if (isCreateNew) {
-      updatedList.unshift(newArticle);
-    } else {
-      updatedList = updatedList.map((item) =>
-        item.id === newArticle.id ? newArticle : item
-      );
-    }
-
     const updatedState = R.compose(
-      R.assocPath<Article, State>(['article'], newArticle),
-      R.assocPath<Article[], State>(['articleList'], updatedList),
-      R.assocPath<Article, State>(
-        ['memo', 'articles', newArticle.id],
-        newArticle
-      )
+      R.assocPath<Article, State>(['articles', newArticle.id], newArticle)
     )(state);
 
     dispatch({ type: ActionTypes.setState, payload: updatedState });
@@ -161,12 +147,14 @@ const EditArticlePage = () => {
   };
 
   const handleSubmit = () => {
-    if (!!state.article.id) {
+    if (articleId) {
       update();
     } else {
       create();
     }
   };
+
+  if (state.isFetching) return <></>;
   return (
     <div style={{ display: 'grid', rowGap: 16, paddingBottom: 120 }}>
       <EditArticleForm
@@ -174,10 +162,14 @@ const EditArticlePage = () => {
         dispatch={articleEditDispatch}
         handleSubmit={handleSubmit}
       />
-      {!!state.article.id && (
+      {!!articleId && (
         <>
           <Divider />
-          <EditArticleVoicePane />
+          <EditArticleVoicePane
+            article={article}
+            blob={state.blobs[article.downloadURL]}
+            sentences={state.sentences[articleId || '']}
+          />
         </>
       )}
     </div>

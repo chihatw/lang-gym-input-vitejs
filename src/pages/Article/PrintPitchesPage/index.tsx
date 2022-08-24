@@ -1,3 +1,4 @@
+import * as R from 'ramda';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import { Container, Divider } from '@mui/material';
 import accentsForPitchesArray from 'accents-for-pitches-array';
@@ -13,43 +14,44 @@ const PrintPitchesPage = () => {
   const { state, dispatch } = useContext(AppContext);
   const { articleId } = useParams();
   if (!articleId) return <></>;
-  const { isFetching, memo, sentences } = state;
+
+  const article = state.articles[articleId];
+  if (!article) return <></>;
 
   useEffect(() => {
-    if (!isFetching || !dispatch) return;
+    if (!state.isFetching || !dispatch) return;
 
     const fetchData = async () => {
-      let _article = INITIAL_ARTICLE;
       let _sentences: ArticleSentence[] = [];
 
-      const memoArticle = memo.articles[articleId];
-      const memoSentences = memo.sentences[articleId];
-
-      if (memoArticle && memoSentences) {
-        _article = memoArticle;
-        _sentences = memoSentences;
+      if (state.sentences[articleId]) {
+        _sentences = state.sentences[articleId];
       } else {
-        const { article, sentences } = await getArticle(articleId);
-        _article = article;
+        const { sentences } = await getArticle(articleId);
         _sentences = sentences;
       }
 
+      const updatedState = R.compose(
+        R.assocPath<boolean, State>(['isFetching'], false),
+        R.assocPath<ArticleSentence[], State>(
+          ['sentences', articleId],
+          _sentences
+        )
+      )(state);
       dispatch({
-        type: ActionTypes.setArticle,
-        payload: {
-          article: _article,
-          sentences: _sentences,
-          articleBlob: null,
-        },
+        type: ActionTypes.setState,
+        payload: updatedState,
       });
     };
     fetchData();
-  }, [isFetching, articleId]);
+  }, [state.isFetching, articleId]);
+
+  if (state.isFetching) return <></>;
 
   return (
     <Container sx={{ paddingTop: 5, width: '180mm' }}>
       <div style={{ display: 'grid', rowGap: 8 }}>
-        {sentences.map((sentence) => (
+        {state.sentences[articleId].map((sentence) => (
           <PitchesRow key={sentence.id} sentence={sentence} />
         ))}
       </div>
