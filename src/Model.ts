@@ -238,6 +238,74 @@ export const INITIAL_RANDOM_WORKOUT: RandomWorkout = {
   recordCount: 0,
 };
 
+export type WorkingMemoryAnswerLog = {
+  tapped: { [index: number]: string };
+  duration: number;
+};
+
+export const INITIAL_WORKING_MEMORY_ANSWER_LOG: WorkingMemoryAnswerLog = {
+  tapped: {},
+  duration: 0,
+};
+
+export type WorkingMemoryAnswer = {
+  log: { [index: number]: WorkingMemoryAnswerLog };
+  cueIds: string[];
+  offset: number;
+  duration: number;
+  createdAt: number;
+  correctRatio: number;
+};
+
+export const INITIAL_WORKING_MEMORY_ANSWER: WorkingMemoryAnswer = {
+  log: {},
+  cueIds: [],
+  offset: 0,
+  duration: 0,
+  createdAt: 0,
+  correctRatio: 0,
+};
+
+export type WorkingMemoryCue = {
+  end: number;
+  id: string;
+  start: number;
+  pitchStr: string;
+};
+
+export const INITIAL_WORKING_MEMORY_CUE: WorkingMemoryCue = {
+  end: 0,
+  id: '',
+  start: 0,
+  pitchStr: '',
+};
+
+export type WorkingMemory = {
+  id: string;
+  uid: string;
+  cues: { [id: string]: WorkingMemoryCue };
+  title: string;
+  offset: number;
+  answers: { [createdAt: number]: WorkingMemoryAnswer };
+  cueCount: number;
+  isActive: boolean;
+  createdAt: number;
+  storagePath: string;
+};
+
+export const INITIAL_WORKING_MEMORY: WorkingMemory = {
+  id: '',
+  uid: '',
+  cues: {},
+  title: '',
+  offset: 0,
+  answers: {},
+  cueCount: 0,
+  isActive: false,
+  createdAt: 0,
+  storagePath: '',
+};
+
 export type State = {
   user: FirebaseUser | null;
   users: User[];
@@ -252,7 +320,7 @@ export type State = {
   workoutList: Workout[];
   randomWorkouts: { [workoutId: string]: RandomWorkout };
   randomWorkoutBlobs: { [workoutId: string]: Blob | null };
-
+  workingMemories: { [workoutId: string]: WorkingMemory };
   memo: {
     workouts: { [id: string]: Workout };
   };
@@ -271,6 +339,7 @@ export const INITIAL_STATE: State = {
   workoutList: [],
   randomWorkouts: {},
   randomWorkoutBlobs: {},
+  workingMemories: {},
   quizzes: [],
   memo: {
     workouts: {},

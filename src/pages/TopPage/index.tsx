@@ -59,6 +59,15 @@ const TopPage = () => {
         >
           ランダム練習一覧
         </Button>
+        <Button
+          variant='contained'
+          onClick={() => {
+            dispatch({ type: ActionTypes.startFetching });
+            navigate('memory/list');
+          }}
+        >
+          作業記憶練習一覧
+        </Button>
         <Button variant='contained' onClick={() => navigate('/temp')}>
           作業用
         </Button>
