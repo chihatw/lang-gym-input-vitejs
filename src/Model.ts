@@ -238,72 +238,59 @@ export const INITIAL_RANDOM_WORKOUT: RandomWorkout = {
   recordCount: 0,
 };
 
-export type WorkingMemoryAnswerLog = {
-  tapped: { [index: number]: string };
-  duration: number;
-};
-
-export const INITIAL_WORKING_MEMORY_ANSWER_LOG: WorkingMemoryAnswerLog = {
-  tapped: {},
-  duration: 0,
-};
-
-export type WorkingMemoryAnswer = {
-  log: { [index: number]: WorkingMemoryAnswerLog };
+export type WorkingMemoryLog = {
+  id: string;
   cueIds: string[];
   offset: number;
-  duration: number;
   createdAt: number;
+  removedAt: number;
+  practice: {
+    [index: number]: {
+      createdAt: number;
+      playedAts: number[];
+      selected: string;
+    };
+  };
+  result: {
+    createdAt: number;
+    tappeds: string[];
+  };
   correctRatio: number;
 };
 
-export const INITIAL_WORKING_MEMORY_ANSWER: WorkingMemoryAnswer = {
-  log: {},
+export const INITIAL_WORKING_MEMORY_LOG: WorkingMemoryLog = {
+  id: '',
   cueIds: [],
   offset: 0,
-  duration: 0,
   createdAt: 0,
+  removedAt: 0,
+  practice: {},
+  result: { createdAt: 0, tappeds: [] },
   correctRatio: 0,
-};
-
-export type WorkingMemoryCue = {
-  end: number;
-  id: string;
-  start: number;
-  pitchStr: string;
-};
-
-export const INITIAL_WORKING_MEMORY_CUE: WorkingMemoryCue = {
-  end: 0,
-  id: '',
-  start: 0,
-  pitchStr: '',
 };
 
 export type WorkingMemory = {
   id: string;
   uid: string;
-  cues: { [id: string]: WorkingMemoryCue };
+  cueIds: string[];
   title: string;
   offset: number;
-  answers: { [createdAt: number]: WorkingMemoryAnswer };
+  logs: { [id: string]: WorkingMemoryLog };
   cueCount: number;
   isActive: boolean;
   createdAt: number;
-  storagePath: string;
 };
 
 export const INITIAL_WORKING_MEMORY: WorkingMemory = {
   id: '',
   uid: '',
-  cues: {},
+  cueIds: [],
   title: '',
   offset: 0,
-  answers: {},
+  logs: {},
   cueCount: 0,
   isActive: false,
   createdAt: 0,
-  storagePath: '',
 };
 
 export type State = {

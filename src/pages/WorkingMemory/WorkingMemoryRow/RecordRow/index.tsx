@@ -1,14 +1,20 @@
 import React from 'react';
-import { WorkingMemoryAnswer } from '../../../../Model';
-import LogRow from './LogRow';
+import { WorkingMemoryLog } from '../../../../Model';
+import PracticeTable from './PracticeTable';
 
-const RecordRow = ({ answer }: { answer: WorkingMemoryAnswer }) => {
-  const date = new Date(answer.createdAt);
+const RecordRow = ({ log }: { log: WorkingMemoryLog }) => {
+  const date = new Date(log.createdAt);
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   const hours = String(date.getHours()).padStart(2, '0');
   const minutes = String(date.getMinutes()).padStart(2, '0');
+
+  let duration = 0;
+  if (log.result.createdAt) {
+    duration = log.result.createdAt - log.createdAt;
+  }
+  duration = Math.round(duration / 100) / 10;
   return (
     <div style={{ display: 'grid', rowGap: 8 }}>
       <div
@@ -19,19 +25,12 @@ const RecordRow = ({ answer }: { answer: WorkingMemoryAnswer }) => {
         }}
       >
         <div>{`${year}/${month}/${day} ${hours}:${minutes}`}</div>
-        <div>{`前${answer.offset}項 正解率:${answer.correctRatio}% 回答時間: ${answer.duration} 秒`}</div>
+        <div>{`前${log.offset}項 正解率:${log.correctRatio}% 回答時間: ${duration} 秒`}</div>
       </div>
-      <div style={{ display: 'grid', rowGap: 8, paddingLeft: 8 }}>
-        {Object.values(answer.log).map((log, index) => (
-          <LogRow
-            index={index}
-            log={log}
-            key={index}
-            answer={answer.cueIds[index]}
-            listening={answer.cueIds[index + answer.offset] || '--'}
-          />
-        ))}
-      </div>
+      <PracticeTable log={log} />
+      <div style={{ color: '#aaa', fontSize: 12 }}>{`${log.result.tappeds.join(
+        ', '
+      )}`}</div>
     </div>
   );
 };

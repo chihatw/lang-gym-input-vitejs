@@ -46,27 +46,17 @@ export const getWorkingMemories = async (): Promise<{
 };
 
 const buildWorkingMemory = (doc: DocumentData): WorkingMemory => {
-  const {
-    uid,
-    cues,
-    title,
-    offset,
-    answers,
-    cueCount,
-    isActive,
-    createdAt,
-    storagePath,
-  } = doc.data();
+  const { uid, logs, cueIds, title, offset, cueCount, isActive, createdAt } =
+    doc.data();
   return {
     id: doc.id,
     uid: uid || '',
-    cues: cues || {},
+    cueIds: cueIds || [],
     title: title || '',
     offset: offset || 0,
-    answers: answers || {},
+    logs: logs || {},
     cueCount: cueCount || 0,
     isActive: isActive || false,
     createdAt: createdAt || 0,
-    storagePath: storagePath || '',
   };
 };

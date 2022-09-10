@@ -22,17 +22,17 @@ const WorkingMemoryRow = ({
           }}
         >
           <div style={{ display: 'flex' }}>
-            <div style={{ flexBasis: 40 }}>
+            <div style={{ flexBasis: 80 }}>
               {state.users.find((item) => item.id === workingMemory.uid)
                 ?.displayname || ''}
             </div>
             <div>{workingMemory.title}</div>
           </div>
           <div style={{ display: 'grid', rowGap: 16, paddingLeft: 8 }}>
-            {Object.values(workingMemory.answers)
-              .sort((a, b) => b.createdAt - a.createdAt)
-              .map((answer, index) => (
-                <RecordRow key={index} answer={answer} />
+            {Object.values(workingMemory.logs)
+              .sort((a, b) => a.createdAt - b.createdAt)
+              .map((log, index) => (
+                <RecordRow key={index} log={log} />
               ))}
           </div>
         </div>
