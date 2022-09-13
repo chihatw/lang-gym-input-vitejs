@@ -6,6 +6,10 @@ const KANAS: { [key: string]: string } = {
   taa: 'ター',
   tan: 'タン',
   tata: 'タタ',
+  ma1: '媽',
+  ma2: '麻',
+  ma3: '馬',
+  ma4: '罵',
 };
 
 const PracticeTableRow = ({
