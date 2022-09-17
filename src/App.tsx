@@ -9,8 +9,8 @@ import { getUsers } from './services/user';
 
 export const AppContext = createContext<{
   state: State;
-  dispatch: React.Dispatch<Action> | null;
-}>({ state: INITIAL_STATE, dispatch: null });
+  dispatch: React.Dispatch<Action>;
+}>({ state: INITIAL_STATE, dispatch: () => {} });
 
 const App = () => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);

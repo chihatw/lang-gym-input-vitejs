@@ -1,5 +1,5 @@
 import { Container } from '@mui/material';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../../App';
 import LinkButton from '../../components/ui/LinkButton';
 import { State } from '../../Model';
@@ -9,14 +9,16 @@ import WorkingMemoryRow from './WorkingMemoryRow';
 
 const WorkingMemoryListPage = () => {
   const { state, dispatch } = useContext(AppContext);
+  const [initializing, setInitializing] = useState(true);
   useEffect(() => {
-    if (!state.isFetching || !dispatch) return;
+    if (!state.users.length) return;
+    console.log({ initializing });
+    if (!initializing) return;
     const fetchData = async () => {
       const _workingMemories = Object.keys(state.workingMemories).length
         ? state.workingMemories
         : await getWorkingMemories();
 
-      console.log({ _workingMemories });
       const updatedState: State = {
         ...state,
         isFetching: false,
@@ -27,9 +29,10 @@ const WorkingMemoryListPage = () => {
         type: ActionTypes.setState,
         payload: updatedState,
       });
+      setInitializing(false);
     };
     fetchData();
-  }, [state.isFetching]);
+  }, [initializing, state.users]);
   return (
     <Container maxWidth='sm' sx={{ paddingTop: 2, paddingBottom: 30 }}>
       <div style={{ display: 'grid', rowGap: 16, color: '#555' }}>
