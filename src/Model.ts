@@ -272,25 +272,27 @@ export const INITIAL_WORKING_MEMORY_LOG: WorkingMemoryLog = {
 export type WorkingMemory = {
   id: string;
   uid: string;
-  cueIds: string[];
-  title: string;
-  offset: number;
   logs: { [id: string]: WorkingMemoryLog };
-  cueCount: number;
+  step: number;
+  title: string;
+  cueIds: string[];
+  offset: number;
   isActive: boolean;
   createdAt: number;
+  baseCueCount: number;
 };
 
 export const INITIAL_WORKING_MEMORY: WorkingMemory = {
   id: '',
   uid: '',
-  cueIds: [],
-  title: '',
-  offset: 0,
   logs: {},
-  cueCount: 0,
+  step: 0,
+  title: '',
+  cueIds: [],
+  offset: 0,
   isActive: false,
   createdAt: 0,
+  baseCueCount: 0,
 };
 
 export type State = {

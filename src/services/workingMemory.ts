@@ -4,25 +4,13 @@ import {
   doc,
   DocumentData,
   getDocs,
+  limit,
   orderBy,
   query,
   setDoc,
 } from 'firebase/firestore';
-import { nanoid } from 'nanoid';
-import string2PitchesArray from 'string2pitches-array';
-import {
-  INITIAL_RANDOM_WORKOUT,
-  INITIAL_WORKING_MEMORY,
-  RandomWorkout,
-  RandomWorkoutCue,
-  State,
-  User,
-  WorkingMemory,
-} from '../Model';
-import {
-  INITIAL_RANDOM_WORKOUT_FORM_STATE,
-  RandomWorkoutFormState,
-} from '../pages/RandomWorkout/RandomWorkoutEdit/Model';
+import { WorkingMemory } from '../Model';
+import { WorkingMemoryFormState } from '../pages/WorkingMemory/WorkingMemoryEditPage/Model';
 import { db } from '../repositories/firebase';
 
 const COLLECTIONS = {
@@ -35,7 +23,8 @@ export const getWorkingMemories = async (): Promise<{
   const workingMemories: { [id: string]: WorkingMemory } = {};
   const q = query(
     collection(db, COLLECTIONS.workingMemories),
-    orderBy('createdAt', 'desc')
+    orderBy('createdAt', 'desc'),
+    limit(10)
   );
   console.log('get workingMemories');
   const querySnapshot = await getDocs(q);
@@ -45,18 +34,54 @@ export const getWorkingMemories = async (): Promise<{
   return workingMemories;
 };
 
+export const setWorkingMemory = (workingMemory: WorkingMemory) => {
+  console.log('set WorkingMemory');
+  const { id, ...omitted } = workingMemory;
+  setDoc(doc(db, COLLECTIONS.workingMemories, id), { ...omitted });
+};
+
+export const deleteWorkingMemory = (id: string) => {
+  console.log('delete WorkingMemory');
+  deleteDoc(doc(db, COLLECTIONS.workingMemories, id));
+};
+
+export const buildWorkingMemoryFormState = (
+  workingMemory: WorkingMemory
+): WorkingMemoryFormState => {
+  return {
+    id: workingMemory.id,
+    baseCueCount: workingMemory.baseCueCount,
+    cueIdsStr: workingMemory.cueIds.join('\n'),
+    isActive: workingMemory.isActive,
+    offset: workingMemory.offset,
+    step: workingMemory.step,
+    title: workingMemory.title,
+    uid: workingMemory.uid,
+  };
+};
+
 const buildWorkingMemory = (doc: DocumentData): WorkingMemory => {
-  const { uid, logs, cueIds, title, offset, cueCount, isActive, createdAt } =
-    doc.data();
+  const {
+    uid,
+    logs,
+    step,
+    title,
+    cueIds,
+    offset,
+    isActive,
+    createdAt,
+    baseCueCount,
+  } = doc.data();
   return {
     id: doc.id,
     uid: uid || '',
-    cueIds: cueIds || [],
-    title: title || '',
-    offset: offset || 0,
     logs: logs || {},
-    cueCount: cueCount || 0,
+    step: step || 0,
+    title: title || '',
+    cueIds: cueIds || [],
+    offset: offset || 0,
     isActive: isActive || false,
     createdAt: createdAt || 0,
+    baseCueCount: baseCueCount || 0,
   };
 };

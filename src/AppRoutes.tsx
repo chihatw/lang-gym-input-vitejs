@@ -21,6 +21,7 @@ import RandomWorkoutEdit from './pages/RandomWorkout/RandomWorkoutEdit';
 import { AppContext } from './App';
 import TempPage from './pages/TempPage';
 import WorkingMemoryListPage from './pages/WorkingMemory/WorkingMemoryListPage';
+import WorkingMemoryEditPage from './pages/WorkingMemory/WorkingMemoryEditPage';
 
 const AppRoutes = () => {
   return (
@@ -56,6 +57,8 @@ const AppRoutes = () => {
       {/* WorkingMemory */}
       <Route path='/memory'>
         <Route path='list' element={<WorkingMemoryListPage />} />
+        <Route path='new' element={<WorkingMemoryEditPage />} />
+        <Route path=':workoutId' element={<WorkingMemoryEditPage />} />
       </Route>
 
       {/* Quiz */}
