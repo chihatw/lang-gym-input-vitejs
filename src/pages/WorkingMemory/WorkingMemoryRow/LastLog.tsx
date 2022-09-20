@@ -18,7 +18,7 @@ const LastLog = ({ workingMemory }: { workingMemory: WorkingMemory }) => {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
 
-  let duration = lastLog.result.createdAt - lastLog.createdAt;
+  let duration = lastLog.result.createdAt - lastLog.practice[0].createdAt;
   duration = Math.round(duration / 100) / 10;
 
   const handleClearLogs = () => {

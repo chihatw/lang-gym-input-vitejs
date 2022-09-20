@@ -37,9 +37,8 @@ const PracticeTableRow = ({
     ? log.cueIds[index] !== log.practice[index + log.offset].selected
     : false;
 
-  let minutes = Math.floor(totalDuration / 60);
-  console.log({ minutes });
-  let seconds = Math.round(totalDuration % 60);
+  const minutes = Math.floor(totalDuration / 60);
+  const seconds = Math.round(totalDuration % 60);
 
   return (
     <div key={index} style={{ display: 'flex' }}>
