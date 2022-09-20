@@ -76,7 +76,7 @@ const WorkingMemoryRow = ({
           {open && (
             <div style={{ display: 'grid', rowGap: 16, paddingLeft: 8 }}>
               {Object.values(workingMemory.logs)
-                .sort((a, b) => a.createdAt - b.createdAt)
+                .sort((a, b) => b.createdAt - a.createdAt)
                 .map((log, index) => (
                   <RecordRow key={index} log={log} />
                 ))}

@@ -34,6 +34,9 @@ const PracticeTableHeader = () => {
       <div style={{ flexBasis: 40, textAlign: 'right', fontSize: 10 }}>
         経過
       </div>
+      <div style={{ flexBasis: 80, textAlign: 'right', fontSize: 10 }}>
+        累計経過
+      </div>
     </div>
   );
 };
