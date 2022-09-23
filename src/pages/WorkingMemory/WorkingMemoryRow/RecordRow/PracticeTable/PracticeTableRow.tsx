@@ -10,6 +10,16 @@ const KANAS: { [key: string]: string } = {
   ma2: '麻',
   ma3: '馬',
   ma4: '罵',
+  ['0' as string]: '0',
+  ['1' as string]: '1',
+  ['2' as string]: '2',
+  ['3' as string]: '3',
+  ['4' as string]: '4',
+  ['5' as string]: '5',
+  ['6' as string]: '6',
+  ['7' as string]: '7',
+  ['8' as string]: '8',
+  ['9' as string]: '9',
 };
 
 const PracticeTableRow = ({
