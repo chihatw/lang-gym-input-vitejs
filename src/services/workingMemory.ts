@@ -13,6 +13,8 @@ import { WorkingMemory } from '../Model';
 import { WorkingMemoryFormState } from '../pages/WorkingMemory/WorkingMemoryEditPage/Model';
 import { db } from '../repositories/firebase';
 
+const MAX_COUNT = 20;
+
 const COLLECTIONS = {
   workingMemories: 'workingMemories',
 };
@@ -24,7 +26,7 @@ export const getWorkingMemories = async (): Promise<{
   const q = query(
     collection(db, COLLECTIONS.workingMemories),
     orderBy('createdAt', 'desc'),
-    limit(10)
+    limit(MAX_COUNT)
   );
   console.log('get workingMemories');
   const querySnapshot = await getDocs(q);
