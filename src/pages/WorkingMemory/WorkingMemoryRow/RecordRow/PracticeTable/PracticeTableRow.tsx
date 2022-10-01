@@ -6,6 +6,13 @@ const KANAS: { [key: string]: string } = {
   taa: 'ター',
   tan: 'タン',
   tata: 'タタ',
+  taata: 'タータ',
+  tanta: 'タンタ',
+  tatata: 'タタタ',
+  tatta: 'タッタ',
+  tataa: 'タター',
+  tatan: 'タタン',
+  tatax: 'タタッ',
   ma1: '媽',
   ma2: '麻',
   ma3: '馬',
@@ -74,7 +81,7 @@ const PracticeTableRow = ({
       </div>
       <div
         style={{
-          flexBasis: 72,
+          flexBasis: 100,
           textAlign: 'left',
           fontSize: 10,
         }}

@@ -24,7 +24,7 @@ const PracticeTableHeader = () => {
       </div>
       <div
         style={{
-          flexBasis: 72,
+          flexBasis: 100,
           textAlign: 'center',
           fontSize: 10,
         }}
