@@ -33,19 +33,8 @@ const RandomWorkoutForm = ({
   dispatch: React.Dispatch<RandomWorkoutFormAction>;
 }) => {
   const navigate = useNavigate();
-  const {
-    id,
-    uid,
-    cues,
-    title,
-    users,
-    cuesStr,
-    beatCount,
-    targetBpm,
-    roundCount,
-    recordCount,
-  } = state;
   const handleChengeRecordCount = (recordCount: number) => {
+    recordCount = Math.max(0, recordCount);
     dispatch({
       type: RandomWorkoutFormActionTypes.setState,
       payload: { ...state, recordCount },
@@ -64,19 +53,21 @@ const RandomWorkoutForm = ({
     });
   };
   const handleChangeTargetBpm = (targetBpm: number) => {
+    targetBpm = Math.max(0, targetBpm);
     dispatch({
       type: RandomWorkoutFormActionTypes.setState,
       payload: { ...state, targetBpm },
     });
   };
   const handleChangeRoundCount = (roundCount: number) => {
+    roundCount = Math.max(0, roundCount);
     dispatch({
       type: RandomWorkoutFormActionTypes.setState,
       payload: { ...state, roundCount },
     });
   };
   const handleChangeCuesStr = (cuesStr: string) => {
-    const updatedCues = cuesStrToCues(cuesStr, cues);
+    const updatedCues = cuesStrToCues(cuesStr, state.cues);
     const updatedBeatCount = calcBeatCount(updatedCues);
     dispatch({
       type: RandomWorkoutFormActionTypes.setState,
@@ -102,40 +93,43 @@ const RandomWorkoutForm = ({
 
   return (
     <div style={{ display: 'grid', rowGap: 16 }}>
-      <h2>{!!id ? `${title} - 更新` : '新規作成'}</h2>
+      <h2>{!!state.id ? `${state.title} - 更新` : '新規作成'}</h2>
       <div>
         <Button variant='contained' onClick={() => navigate('/random/list')}>
           戻る
         </Button>
       </div>
+      <div
+        style={{ fontSize: 12, color: '#ccc' }}
+      >{`createdAt: ${state.createdAt}`}</div>
       <FormControl fullWidth>
         <InputLabel>user</InputLabel>
         <Select
           size='small'
-          value={uid}
+          value={state.uid}
           variant='standard'
           onChange={(e) => handleChangeUid(e.target.value as string)}
         >
-          {users.map((u) => (
+          {state.users.map((u) => (
             <MenuItem key={u.id} value={u.id}>
               {u.displayname}
             </MenuItem>
           ))}
         </Select>
       </FormControl>
-      <div>{`beatCount: ${beatCount}`}</div>
+      <div>{`beatCount: ${state.beatCount}`}</div>
       <TextField
         size='small'
         fullWidth
         label='title'
-        value={title}
+        value={state.title}
         onChange={(e) => handleChangeTitle(e.target.value)}
       />
       <TextField
         size='small'
         fullWidth
         label='targetBpm'
-        value={targetBpm}
+        value={state.targetBpm}
         type='number'
         onChange={(e) => handleChangeTargetBpm(Number(e.target.value))}
       />
@@ -143,7 +137,7 @@ const RandomWorkoutForm = ({
         size='small'
         fullWidth
         label='recordCount'
-        value={recordCount}
+        value={state.recordCount}
         type='number'
         onChange={(e) => {
           handleChengeRecordCount(Number(e.target.value));
@@ -153,7 +147,7 @@ const RandomWorkoutForm = ({
         size='small'
         fullWidth
         label='roundCount'
-        value={roundCount}
+        value={state.roundCount}
         type='number'
         onChange={(e) => handleChangeRoundCount(Number(e.target.value))}
       />
@@ -163,11 +157,11 @@ const RandomWorkoutForm = ({
         rows={10}
         label='cuesStr'
         onChange={(e) => handleChangeCuesStr(e.target.value)}
-        value={cuesStr}
+        value={state.cuesStr}
       />
       <Table>
         <TableBody>
-          {cues.map((cue, cueIndex) => (
+          {state.cues.map((cue, cueIndex) => (
             <TableRow key={cue.id}>
               <TableCell>{cue.label}</TableCell>
               <TableCell>
@@ -191,7 +185,7 @@ const RandomWorkoutForm = ({
         </TableBody>
       </Table>
       <Button variant='contained' sx={{ color: 'white' }} onClick={submit}>
-        {!!id ? `更新` : '新規作成'}
+        {!!state.id ? `更新` : '新規作成'}
       </Button>
     </div>
   );

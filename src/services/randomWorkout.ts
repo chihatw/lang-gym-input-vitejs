@@ -4,8 +4,10 @@ import {
   doc,
   DocumentData,
   getDocs,
+  orderBy,
   query,
   setDoc,
+  where,
 } from 'firebase/firestore';
 import { nanoid } from 'nanoid';
 import string2PitchesArray from 'string2pitches-array';
@@ -28,7 +30,10 @@ const COLLECTIONS = {
 
 export const getRandomWorkouts = async () => {
   const randomWorkouts: { [key: string]: RandomWorkout } = {};
-  let q = query(collection(db, COLLECTIONS.randomWorkouts));
+  let q = query(
+    collection(db, COLLECTIONS.randomWorkouts),
+    orderBy('createdAt')
+  );
   console.log('get randomWorkouts');
   let querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
@@ -66,6 +71,7 @@ const buildRandomWorkout = (doc: DocumentData) => {
     targetBpm,
     beatCount,
     roundCount,
+    createdAt,
     resultTime,
     storagePath,
     recordCount,
@@ -78,6 +84,7 @@ const buildRandomWorkout = (doc: DocumentData) => {
     cueIds: cueIds || [],
     targetBpm: targetBpm || 0,
     resultBpm: resultBpm || 0,
+    createdAt: createdAt || 0,
     beatCount: beatCount || 0,
     roundCount: roundCount || 0,
     resultTime: resultTime || 0,

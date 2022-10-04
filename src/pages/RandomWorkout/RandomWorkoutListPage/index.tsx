@@ -1,5 +1,5 @@
 import { Button, Container, Typography } from '@mui/material';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../../App';
 import LinkButton from '../../../components/ui/LinkButton';
@@ -10,20 +10,21 @@ import RandomWorkoutRow from './RandomWorkoutRow';
 const RandomWorkoutListPage = () => {
   const { state, dispatch } = useContext(AppContext);
   const navigate = useNavigate();
-  const { isFetching, randomWorkouts } = state;
+  const [initializing, setInitializing] = useState(true);
   useEffect(() => {
-    if (!isFetching || !dispatch) return;
+    if (state.initializing || !initializing) return;
     const fetchData = async () => {
-      const _randomWorkouts = Object.keys(randomWorkouts).length
-        ? randomWorkouts
+      const randomWorkouts = Object.keys(state.randomWorkouts).length
+        ? state.randomWorkouts
         : await getRandomWorkouts();
       dispatch({
         type: ActionTypes.setRandomWorkouts,
-        payload: _randomWorkouts,
+        payload: randomWorkouts,
       });
+      setInitializing(false);
     };
     fetchData();
-  }, [isFetching]);
+  }, [initializing, state.initializing]);
 
   const openEditPage = () => {
     if (!dispatch) return;
@@ -43,7 +44,7 @@ const RandomWorkoutListPage = () => {
             新規作成
           </Button>
         </div>
-        {Object.values(randomWorkouts).map((_, index) => (
+        {Object.values(state.randomWorkouts).map((_, index) => (
           <RandomWorkoutRow key={index} index={index} />
         ))}
       </div>
