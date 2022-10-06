@@ -23,7 +23,11 @@ import {
   Tags,
 } from '../Model';
 import { getDownloadURL, ref } from 'firebase/storage';
-import { ArticleEditState } from '../pages/Article/EditArticlePage/Model';
+import {
+  ArticleEditState,
+  INITIAL_ARTICLE_VOICE_STATE,
+} from '../pages/Article/EditArticlePage/Model';
+import { buildArticleVoiceState } from './wave';
 
 const REMOVE_MARKS_REG_EXP = /[、。「」]/g;
 
@@ -42,11 +46,15 @@ export const getArticle = async (id: string) => {
   if (snapshot.exists()) {
     article = buildArticle(snapshot);
   }
+  return article;
+};
 
-  let sentences: ArticleSentence[] = [];
-  let q = query(
+export const getSentences = async (articleId: string) => {
+  if (!articleId) return [];
+  const sentences: ArticleSentence[] = [];
+  const q = query(
     collection(db, COLLECTIONS.sentences),
-    where('article', '==', id),
+    where('article', '==', articleId),
     orderBy('line')
   );
   console.log('get sentences');
@@ -54,29 +62,26 @@ export const getArticle = async (id: string) => {
   querySnapshot.forEach((doc) => {
     sentences.push(buildSentence(doc));
   });
+  return sentences;
+};
+
+export const getBlobFromArticleDownloadURL = async (downloadURL: string) => {
+  if (!downloadURL) return null;
 
   let articleBlob: Blob | null = null;
-  let { downloadURL } = article;
-  if (downloadURL) {
-    const header = downloadURL.slice(0, 4);
-    if (header !== 'http') {
-      downloadURL = await getDownloadURL(ref(storage, downloadURL));
-    }
 
-    console.log('create article blob');
-    const response = await fetch(downloadURL);
-    articleBlob = await response.blob();
+  const header = downloadURL.slice(0, 4);
+  if (header !== 'http') {
+    downloadURL = await getDownloadURL(ref(storage, downloadURL));
   }
-
-  return {
-    article,
-    sentences,
-    articleBlob,
-  };
+  console.log('create article blob');
+  const response = await fetch(downloadURL);
+  articleBlob = await response.blob();
+  return articleBlob;
 };
 
 export const getArticles = async () => {
-  const articleList: Article[] = [];
+  const articles: { [key: string]: Article } = {};
   let q = query(
     collection(db, COLLECTIONS.articles),
     orderBy('createdAt', 'desc'),
@@ -84,10 +89,11 @@ export const getArticles = async () => {
   );
   console.log('get articles');
   let querySnapshot = await getDocs(q);
+
   querySnapshot.forEach((doc) => {
-    articleList.push(buildArticle(doc));
+    articles[doc.id] = buildArticle(doc);
   });
-  return articleList;
+  return articles;
 };
 
 export const setArticle = async (article: Article) => {
@@ -126,56 +132,38 @@ export const deleteArticle = async (articleId: string) => {
   await deleteDoc(doc(db, COLLECTIONS.articles, articleId));
 };
 
-export const buildArticleEditState = (
+export const buildArticleEditState = async (
   state: State,
   articleId: string
-): ArticleEditState => {
-  if (!articleId) {
-    return {
-      uid: state.users.length ? state.users[0].id : '',
-      date: new Date(),
-      users: state.users,
-      title: '',
-      embedId: '',
-      articleMarksString: '',
-    };
-  }
-
+): Promise<ArticleEditState> => {
   const article = state.articles[articleId];
-  let articleMarksString = '';
-  if (state.sentences[articleId] && state.sentences[articleId].length) {
-    const lines: string[] = [];
-    state.sentences[articleId].forEach(({ japanese }, index) => {
-      const items: string[] = [];
-      const mark = article.marks[index];
-      const initial = index === 0 ? '' : '0:00';
-      items.push(mark || initial);
-      const hasMore = japanese.length > 5 ? '…' : '';
-      items.push(japanese.slice(0, 5) + hasMore);
-      const line = items.join(' ');
-      lines.push(line);
-    });
-    articleMarksString = lines.join('\n');
-  }
+  const blob = state.blobs[article.downloadURL] || null;
+  let sentences = state.sentences[articleId];
+  const audioContext = state.audioContext;
 
+  let wave = INITIAL_ARTICLE_VOICE_STATE;
+  if (!!blob && !!audioContext) {
+    const { wave: _wave, sentences: _sentences } = await buildArticleVoiceState(
+      { blob, sentences, audioContext }
+    );
+    wave = _wave;
+    sentences = _sentences;
+  }
   return {
-    uid: article.uid,
-    date: new Date(article.createdAt),
+    blob,
+    wave,
     users: state.users,
-    title: article.title,
-    embedId: article.embedID,
-    articleMarksString,
+    article,
+    sentences,
+    audioContext,
   };
 };
 
 const buildArticle = (doc: DocumentData) => {
   const {
     uid,
-    marks,
     title,
-    embedID,
     createdAt,
-    isShowParse,
     downloadURL,
     hasRecButton,
     isShowAccents,
@@ -184,11 +172,8 @@ const buildArticle = (doc: DocumentData) => {
   const article: Article = {
     id: doc.id,
     uid: uid || '',
-    marks: marks || [],
     title: title || '',
-    embedID: embedID || '',
     createdAt: createdAt || 0,
-    isShowParse: isShowParse || false,
     downloadURL: downloadURL || '',
     hasRecButton: hasRecButton || false,
     isShowAccents: isShowAccents || false,

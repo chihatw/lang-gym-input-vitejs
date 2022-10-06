@@ -1,6 +1,6 @@
 import { Button, Container, Table, TableBody, Typography } from '@mui/material';
-import React, { useContext, useEffect } from 'react';
-import { Article, State } from '../../../Model';
+import React, { useContext, useEffect, useState } from 'react';
+import { State } from '../../../Model';
 import { ActionTypes } from '../../../Update';
 import { getArticles } from '../../../services/article';
 import LinkButton from '../../../components/ui/LinkButton';
@@ -11,27 +11,23 @@ import { AppContext } from '../../../App';
 const ArticleListPage = () => {
   const { state, dispatch } = useContext(AppContext);
   const navigate = useNavigate();
+  const [initializing, setInitializing] = useState(true);
   useEffect(() => {
-    if (!state.isFetching || !dispatch) return;
+    if (!state.users.length || !initializing) return;
     const fetchData = async () => {
-      let _articles: { [key: string]: Article } = {};
-      if (Object.keys(state.articles).length) {
-        _articles = state.articles;
-      } else {
-        const articles = await getArticles();
-        for (const article of articles) {
-          _articles[article.id] = article;
-        }
-      }
+      const articles =
+        Object.keys(state.articles).length > 1
+          ? state.articles
+          : await getArticles();
       const updatedState: State = {
         ...state,
-        articles: _articles,
-        isFetching: false,
+        articles,
       };
       dispatch({ type: ActionTypes.setState, payload: updatedState });
+      setInitializing(false);
     };
     fetchData();
-  }, [state.isFetching, state.articles]);
+  }, [initializing, state.users]);
 
   return (
     <Container maxWidth={'sm'} sx={{ paddingTop: 2 }}>

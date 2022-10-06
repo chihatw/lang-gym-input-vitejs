@@ -1,49 +1,29 @@
 import * as R from 'ramda';
 import { Button, Container } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import React, { useContext, useEffect, useReducer } from 'react';
+import React, { useContext } from 'react';
 
 import { deleteFile, uploadStorage } from '../../../repositories/file';
 
-import { Article, ArticleSentence, State } from '../../../Model';
+import { Article, ArticleSentence } from '../../../Model';
 import { ActionTypes } from '../../../Update';
-import { setArticleVoiceInitialValue } from '../../../services/wave';
-import { articleVoiceReducer } from './Update';
-import { INITIAL_ARTICLE_VOICE_STATE } from './Model';
+
+import { ArticleEditState, ArticleVoiceState } from './Model';
 import EditAudioPane from './EditAudioPane';
 import { setSentences, setArticle } from '../../../services/article';
 import { AppContext } from '../../../App';
+import { buildArticleVoiceState } from '../../../services/wave';
 
 const EditArticleVoicePane = ({
-  article,
-  blob,
-  sentences,
+  state,
+  dispatch,
 }: {
-  article: Article;
-  blob: Blob | null;
-  sentences: ArticleSentence[];
+  state: ArticleEditState;
+  dispatch: React.Dispatch<ArticleEditState>;
 }) => {
-  const { state, dispatch } = useContext(AppContext);
-
-  const navigate = useNavigate();
-
-  const [articleVoiceState, articleVoiceDispatch] = useReducer(
-    articleVoiceReducer,
-    INITIAL_ARTICLE_VOICE_STATE
-  );
-
-  useEffect(() => {
-    setArticleVoiceInitialValue(
-      state,
-      article,
-      sentences,
-      articleVoiceDispatch
-    );
-  }, [state]);
+  const { dispatch: appDispatch } = useContext(AppContext);
 
   const uploadAudio = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!dispatch) return;
-    const path = `/articles/${article.id}`;
+    const path = `/articles/${state.article.id}`;
     if (!e.target.files) return;
     const file = e.target.files[0];
 
@@ -53,85 +33,92 @@ const EditArticleVoicePane = ({
       const blob = await response.blob();
 
       uploadStorage(blob, path);
-      const newArticle: Article = {
-        ...article,
+      const updatedArticle: Article = {
+        ...state.article,
         downloadURL: path,
       };
-      dispatch({
+
+      // update appState
+      appDispatch({
         type: ActionTypes.uploadArticleAudioFile,
-        payload: { article: newArticle, articleBlob: blob },
+        payload: { article: updatedArticle, articleBlob: blob },
       });
 
-      setArticle(newArticle);
+      // update remote
+      setArticle(updatedArticle);
+
+      // update formState
+      const { wave, sentences } = await buildArticleVoiceState({
+        blob,
+        sentences: state.sentences,
+        audioContext: state.audioContext!,
+      });
+
+      const updatedState = R.compose(
+        R.assocPath<Blob, ArticleEditState>(['blob'], blob),
+        R.assocPath<Article, ArticleEditState>(['article'], updatedArticle),
+        R.assocPath<ArticleVoiceState, ArticleEditState>(['wave'], wave),
+        R.assocPath<ArticleSentence[], ArticleEditState>(
+          ['sentences'],
+          sentences
+        )
+      )(state);
+      dispatch(updatedState);
     };
     reader.readAsDataURL(file);
   };
 
-  const updateMarks = async () => {
-    if (!dispatch) return;
-    const { marks } = articleVoiceState;
-    const newSentences: ArticleSentence[] = sentences.map(
-      (senetence, index) => ({
-        ...senetence,
-        start: marks[index].start,
-        end: marks[index].end,
-      })
-    );
-
-    const updatedState = R.compose(
-      R.assocPath<ArticleSentence[], State>(['sentences'], newSentences),
-      R.assocPath<ArticleSentence[], State>(
-        ['sentences', article.id],
-        newSentences
-      )
-    )(state);
-
-    dispatch({
-      type: ActionTypes.setState,
-      payload: updatedState,
-    });
-
-    setSentences(newSentences);
-    navigate(`/article/list`);
-  };
   const deleteAudio = () => {
-    if (!dispatch) return;
-
     if (window.confirm('audio ファイルを削除しますか')) {
       let path = '';
-      const header = article.downloadURL.slice(0, 4);
+      const header = state.article.downloadURL.slice(0, 4);
       if (header === 'http') {
-        const audioURL = new URL(article.downloadURL);
+        const audioURL = new URL(state.article.downloadURL);
         path = audioURL.pathname.split('/').slice(-1)[0].replace('%2F', '/');
+        // update remote storage
         deleteFile(path);
       } else {
-        path = article.downloadURL;
+        path = state.article.downloadURL;
       }
 
-      const newArticle: Article = { ...article, downloadURL: '' };
-      const newSentences: ArticleSentence[] = sentences.map((sentence) => ({
-        ...sentence,
-        start: 0,
-        end: 0,
-      }));
-      dispatch({
+      const updatedArticle: Article = { ...state.article, downloadURL: '' };
+      const updatedSentences: ArticleSentence[] = state.sentences.map(
+        (sentence) => ({
+          ...sentence,
+          start: 0,
+          end: 0,
+        })
+      );
+      // update appState
+      appDispatch({
         type: ActionTypes.deleteArticleAudioFile,
-        payload: { article: newArticle, sentences: newSentences },
+        payload: { article: updatedArticle, sentences: updatedSentences },
       });
 
-      setArticle(newArticle);
-      setSentences(newSentences);
+      // update remote
+      setArticle(updatedArticle);
+      setSentences(updatedSentences);
+
+      // update formState
+      const updatedState = R.compose(
+        R.assocPath<Article, ArticleEditState>(['article'], updatedArticle),
+        R.assocPath<ArticleSentence[], ArticleEditState>(
+          ['sentences'],
+          updatedSentences
+        ),
+        R.assocPath<null, ArticleEditState>(['blob'], null)
+      )(state);
+      dispatch(updatedState);
     }
   };
 
   return (
     <Container maxWidth='sm'>
       <div style={{ display: 'grid', rowGap: 16 }}>
-        {blob ? (
+        {state.blob ? (
           <EditAudioPane
-            state={articleVoiceState}
-            dispatch={articleVoiceDispatch}
-            updateMarks={updateMarks}
+            state={state}
+            dispatch={dispatch}
             deleteAudio={deleteAudio}
           />
         ) : (

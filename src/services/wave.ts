@@ -1,8 +1,8 @@
 import React from 'react';
-import { Article, ArticleSentence, Mark, State } from '../Model';
+import { ArticleSentence, Mark } from '../Model';
 import {
   ArticleVoiceState,
-  SentenceLine,
+  INITIAL_ARTICLE_VOICE_STATE,
 } from '../pages/Article/EditArticlePage/Model';
 import { blobToAudioBuffer } from './utils';
 
@@ -12,79 +12,60 @@ const INITIAL_BLANK_DURATION = 700;
 const STEP = 0.01; // 0.01秒毎にchannelDataをチェックする
 const ACCURANCY = 1000;
 
-export const setArticleVoiceInitialValue = async (
-  state: State,
-  article: Article,
-  sentences: ArticleSentence[],
-  dispatch: React.Dispatch<ArticleVoiceState>
-) => {
+export const buildArticleVoiceState = async ({
+  blob,
+  sentences,
+  audioContext,
+}: {
+  blob: Blob;
+  sentences: ArticleSentence[];
+  audioContext: AudioContext;
+}): Promise<{ wave: ArticleVoiceState; sentences: ArticleSentence[] }> => {
   let scale = 0;
   let peaks: number[] = [];
-  let marks: Mark[] = [];
-  let labels: string[] = [];
   let hasMarks = false;
   let duration = 0;
   let channelData: Float32Array | null = null;
-  let sentenceLines: SentenceLine[] = [];
   let blankDuration = INITIAL_BLANK_DURATION;
-  let sampleRate = 0;
 
-  const { audioContext, blobs } = state;
-  const { downloadURL } = article;
-  let blob: Blob | null = null;
-  if (downloadURL) {
-    blob = blobs[downloadURL];
-  }
   for (const sentence of sentences) {
-    const { end, start, japanese } = sentence;
-    marks.push({ end, start });
-    labels.push(japanese.slice(0, 20));
-    if (end !== 0) {
+    if (sentence.end !== 0) {
       hasMarks = true;
     }
   }
 
-  if (downloadURL && !!audioContext && !!blob) {
-    sampleRate = audioContext.sampleRate;
+  const buffer = await blobToAudioBuffer(blob, audioContext);
+  channelData = buffer.getChannelData(0);
+  if (!channelData) return { wave: INITIAL_ARTICLE_VOICE_STATE, sentences };
 
-    const buffer = await blobToAudioBuffer(blob, audioContext);
-    channelData = buffer.getChannelData(0);
-    if (!!channelData) {
-      scale = (CANVAS_WIDTH * audioContext.sampleRate) / channelData.length;
-      peaks = buildPeaks({
-        scale,
-        sampleRate: audioContext.sampleRate,
-        channelData,
-      });
-      if (!hasMarks) {
-        marks = buildMarks({
-          sampleRate: audioContext.sampleRate,
-          channelData,
-          blankDuration,
-        });
-      }
-      duration = peaks.length / scale;
-      sentenceLines = buildSentenceLines({ marks, scale });
-      const initialState: ArticleVoiceState = {
-        scale,
-        peaks,
-        marks,
-        labels,
-        hasMarks,
-        duration,
-        sampleRate,
-        downloadURL,
-        channelData,
-        articleBlob: blob,
-        sentenceLines,
-        blankDuration,
-        audioContext,
-      };
-      dispatch(initialState);
+  scale = (CANVAS_WIDTH * audioContext.sampleRate) / channelData.length;
+  peaks = buildPeaks({
+    scale,
+    sampleRate: audioContext.sampleRate,
+    channelData,
+  });
+  if (!hasMarks) {
+    const marks = buildMarks({
+      sampleRate: audioContext.sampleRate,
+      channelData,
+      blankDuration,
+    });
+    for (let i = 0; i < sentences.length; i++) {
+      sentences[i].start = marks[i]?.start || 0;
+      sentences[i].end = marks[i]?.end || 0;
     }
   }
-
-  return;
+  duration = peaks.length / scale;
+  return {
+    wave: {
+      scale,
+      peaks,
+      duration,
+      channelData,
+      blankDuration,
+    },
+    sentences,
+  };
 };
 
 const buildPeaks = ({

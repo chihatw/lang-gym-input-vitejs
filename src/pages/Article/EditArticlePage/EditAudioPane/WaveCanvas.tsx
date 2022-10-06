@@ -1,13 +1,19 @@
 import React, { useEffect, useRef } from 'react';
-import { ArticleVoiceState } from '../Model';
+import { buildSentenceLines } from '../../../../services/wave';
+import { ArticleEditState } from '../Model';
 
 const WAVE_COLOR = 'pink';
 const HEIGHT = 100;
 
-const WaveCanvas = ({ state }: { state: ArticleVoiceState }) => {
+const WaveCanvas = ({ state }: { state: ArticleEditState }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
-    const { peaks, sentenceLines } = state;
+    const { peaks, scale } = state.wave;
+    const marks = state.sentences.map((sentence) => ({
+      start: sentence.start,
+      end: sentence.end,
+    }));
+    const sentenceLines = buildSentenceLines({ marks, scale });
     const height = HEIGHT;
     const color = WAVE_COLOR;
 
@@ -20,7 +26,7 @@ const WaveCanvas = ({ state }: { state: ArticleVoiceState }) => {
     context.clearRect(0, 0, canvas.width, canvas.height);
     peaks.forEach((peak, xPos) => {
       const sentenceLine = sentenceLines.filter(
-        ({ xPos: _xPos }) => xPos === _xPos
+        (item) => xPos === item.xPos
       )[0];
 
       if (!!sentenceLine) {

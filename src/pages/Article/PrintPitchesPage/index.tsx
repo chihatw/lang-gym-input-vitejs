@@ -2,51 +2,47 @@ import * as R from 'ramda';
 import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import { Container, Divider } from '@mui/material';
 import accentsForPitchesArray from 'accents-for-pitches-array';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { AppContext } from '../../../App';
-import { ArticleSentence, INITIAL_ARTICLE, State } from '../../../Model';
-import { getArticle } from '../../../services/article';
+import { ArticleSentence, State } from '../../../Model';
 
 import { ActionTypes } from '../../../Update';
+import { getSentences } from '../../../services/article';
 
 const PrintPitchesPage = () => {
   const { state, dispatch } = useContext(AppContext);
   const { articleId } = useParams();
+  const [initializing, setInitializing] = useState(true);
+
   if (!articleId) return <></>;
 
-  const article = state.articles[articleId];
-  if (!article) return <></>;
-
   useEffect(() => {
-    if (!state.isFetching || !dispatch) return;
-
+    if (!state.users.length) return;
     const fetchData = async () => {
-      let _sentences: ArticleSentence[] = [];
-
-      if (state.sentences[articleId]) {
-        _sentences = state.sentences[articleId];
-      } else {
-        const { sentences } = await getArticle(articleId);
-        _sentences = sentences;
-      }
+      const sentences =
+        state.sentences[articleId] ||
+        (initializing ? await getSentences(articleId) : []);
 
       const updatedState = R.compose(
-        R.assocPath<boolean, State>(['isFetching'], false),
         R.assocPath<ArticleSentence[], State>(
           ['sentences', articleId],
-          _sentences
+          sentences
         )
       )(state);
+
+      // update appState
       dispatch({
         type: ActionTypes.setState,
         payload: updatedState,
       });
+
+      setInitializing(false);
     };
     fetchData();
-  }, [state.isFetching, articleId]);
+  }, [articleId, state.users, initializing]);
 
-  if (state.isFetching) return <></>;
+  if (initializing) return <></>;
 
   return (
     <Container sx={{ paddingTop: 5, width: '180mm' }}>

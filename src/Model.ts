@@ -8,12 +8,9 @@ export type Mark = {
 export type Article = {
   id: string;
   uid: string;
-  marks: string[];
   title: string;
-  embedID: string;
   createdAt: number;
   downloadURL: string;
-  isShowParse: boolean;
   hasRecButton: boolean;
   isShowAccents: boolean;
   userDisplayname: string;
@@ -22,12 +19,9 @@ export type Article = {
 export const INITIAL_ARTICLE: Article = {
   id: '',
   uid: '',
-  marks: [],
   title: '',
-  embedID: '',
   createdAt: 0,
   downloadURL: '',
-  isShowParse: false,
   hasRecButton: false,
   isShowAccents: false,
   userDisplayname: '',

@@ -2,14 +2,13 @@ import * as R from 'ramda';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import React, { useContext, useEffect, useState } from 'react';
 
-import {
-  Article,
-  ArticleSentence,
-  INITIAL_ARTICLE,
-  State,
-} from '../../../Model';
+import { Article, ArticleSentence, State } from '../../../Model';
 import { ActionTypes } from '../../../Update';
-import { getArticle } from '../../../services/article';
+import {
+  getArticle,
+  getSentences,
+  getBlobFromArticleDownloadURL,
+} from '../../../services/article';
 import TableLayout from '../../../components/templates/TableLayout';
 import { Button } from '@mui/material';
 import SentenceRow from './SentenceRow';
@@ -22,59 +21,66 @@ import InitializeSentencesPane from './InitializeSentencesPane';
 import { AppContext } from '../../../App';
 
 const ArticlePage = () => {
-  const { state, dispatch } = useContext(AppContext);
-  const { articleId } = useParams();
-  if (!articleId) return <></>;
-
-  const article = state.articles[articleId];
-  if (!article) return <></>;
-
   const navigate = useNavigate();
   const [isSm, setIsSm] = useState(true);
+  const { state, dispatch } = useContext(AppContext);
+  const { articleId } = useParams();
+  const [initializing, setInitializing] = useState(true);
+
+  if (!articleId) return <></>;
 
   useEffect(() => {
-    if (!state.isFetching || !dispatch) return;
-
+    if (!state.users.length) return;
     const fetchData = async () => {
-      let _sentences: ArticleSentence[] = [];
-      let _articleBlob: Blob | null = null;
+      // メモになければ、remote から取得
+      const article =
+        state.articles[articleId] || (await getArticle(articleId));
 
-      const memoSentences = state.sentences[articleId];
-      let memoArticleBlob = undefined;
+      // メモになくて、初期化中なら、remote から取得
+      const sentences: ArticleSentence[] = !!state.sentences[articleId]
+        ? state.sentences[articleId]
+        : initializing
+        ? await getSentences(articleId)
+        : [];
 
-      if (article.downloadURL) {
-        memoArticleBlob = state.blobs[article.downloadURL];
-      }
-
-      if (memoSentences && memoArticleBlob !== undefined) {
-        _sentences = memoSentences;
-        _articleBlob = memoArticleBlob;
-      } else {
-        const { sentences, articleBlob } = await getArticle(articleId);
-        _sentences = sentences;
-        _articleBlob = articleBlob;
-      }
-
-      const updatedBlobs = { ...state.blobs };
-      if (article.downloadURL && _articleBlob) {
-        updatedBlobs[article.downloadURL] = _articleBlob;
-      }
-      const updatedState = R.compose(
-        R.assocPath<boolean, State>(['isFetching'], false),
-        R.assocPath<{ [downloadURL: string]: Blob | null }, State>(
-          ['blobs'],
-          updatedBlobs
-        ),
+      // update state.articles and state.sentences
+      let updatedState = R.compose(
+        R.assocPath<Article, State>(['articles', article.id], article),
         R.assocPath<ArticleSentence[], State>(
           ['sentences', articleId],
-          _sentences
+          sentences
         )
       )(state);
 
-      dispatch({ type: ActionTypes.setState, payload: updatedState });
+      let articleBlob: Blob | null = null;
+      if (article.downloadURL) {
+        // メモにあれば、それを使用
+        if (state.blobs[article.downloadURL]) {
+          articleBlob = state.blobs[article.downloadURL];
+        }
+        // メモにない場合、初期化中なら remote から取得
+        else {
+          articleBlob = initializing
+            ? await getBlobFromArticleDownloadURL(article.downloadURL)
+            : null;
+          // update state.blobs
+          if (articleBlob) {
+            updatedState = R.assocPath<Blob, State>(
+              ['blobs', article.downloadURL],
+              articleBlob
+            )(updatedState);
+          }
+        }
+      }
+
+      dispatch({
+        type: ActionTypes.setState,
+        payload: updatedState,
+      });
+      setInitializing(false);
     };
     fetchData();
-  }, [state.isFetching, articleId, state.memo]);
+  }, [articleId, state.blobs, state.users, state.audioContext, initializing]);
 
   const handleCreatePitchQuiz = async () => {
     if (!dispatch) return;
@@ -113,7 +119,8 @@ const ArticlePage = () => {
   };
 
   // データ取得中
-  if (state.isFetching) return <></>;
+  if (initializing) return <></>;
+  const article = state.articles[articleId];
   // article が 初期値
   if (!article.title) return <Navigate to={'/article/list'} />;
   return (

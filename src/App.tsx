@@ -16,13 +16,14 @@ const App = () => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
 
   useEffect(() => {
+    if (!state.user) return;
     const fetchData = async () => {
       const _users = !!state.users.length ? state.users : await getUsers();
       const updatedState: State = { ...state, users: _users };
       dispatch({ type: ActionTypes.setState, payload: updatedState });
     };
     fetchData();
-  }, [state.users, state.user]);
+  }, [state.user]);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {

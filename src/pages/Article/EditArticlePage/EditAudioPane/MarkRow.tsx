@@ -1,3 +1,4 @@
+import * as R from 'ramda';
 import PauseIcon from '@mui/icons-material/Pause';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import React, { useRef, useState } from 'react';
@@ -8,48 +9,36 @@ import {
   TableRow,
   TextField,
 } from '@mui/material';
-import { ArticleVoiceState } from '../Model';
+import { ArticleEditState } from '../Model';
 import { createSourceNode } from '../../../../services/utils';
-import { buildSentenceLines } from '../../../../services/wave';
-import { Mark } from '../../../../Model';
 
 const MarkRow = ({
   index,
   state,
+  label,
   dispatch,
 }: {
+  label: string;
   index: number;
-  state: ArticleVoiceState;
-  dispatch: React.Dispatch<ArticleVoiceState>;
+  state: ArticleEditState;
+  dispatch: React.Dispatch<ArticleEditState>;
 }) => {
-  const { labels, marks, articleBlob, audioContext, scale } = state;
-  const label: string = labels[index] || '';
-  const mark: Mark = marks[index] || { start: 0, end: 0 };
-  const { start, end } = mark;
+  const sentence = state.sentences[index];
   const [isPlaying, setIsPlaying] = useState(false);
   const sourseNodeRef = useRef<AudioBufferSourceNode | null>(null);
 
-  const handleMark = (value: number, isEnd?: boolean) => {
-    const newMark = isEnd ? { end: value, start } : { end, start: value };
-    const newMarks = [...marks];
-    newMarks.splice(index, 1, newMark);
-    const sentenceLines = buildSentenceLines({
-      marks: newMarks,
-      scale,
-    });
-
-    const updatedState: ArticleVoiceState = {
-      ...state,
-      sentenceLines,
-      marks: newMarks,
-    };
+  const handleChangeMark = (value: number, isEnd?: boolean) => {
+    const updatedState = R.assocPath<number, ArticleEditState>(
+      ['sentences', index, isEnd ? 'end' : 'start'],
+      value
+    )(state);
 
     dispatch(updatedState);
   };
 
   const play = async (start: number, end: number) => {
-    if (!audioContext || !articleBlob) return;
-    const sourceNode = await createSourceNode(articleBlob, audioContext);
+    if (!state.audioContext || !state.blob) return;
+    const sourceNode = await createSourceNode(state.blob, state.audioContext);
 
     // 停止された場合
     sourceNode.onended = () => setIsPlaying(false);
@@ -75,7 +64,10 @@ const MarkRow = ({
   return (
     <TableRow>
       <TableCell padding='none'>
-        <IconButton color='primary' onClick={() => handlePlay(start, end)}>
+        <IconButton
+          color='primary'
+          onClick={() => handlePlay(sentence.start, sentence.end)}
+        >
           {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
         </IconButton>
       </TableCell>
@@ -85,16 +77,16 @@ const MarkRow = ({
           label='start'
           size='small'
           type='number'
-          value={start}
+          value={sentence.start}
           inputProps={{ step: 0.1 }}
-          onChange={(e) => handleMark(Number(e.target.value))}
+          onChange={(e) => handleChangeMark(Number(e.target.value))}
         />
       </TableCell>
       <TableCell padding='none' width={'10%'}>
         <Button
           color='primary'
           size='small'
-          onClick={() => handlePlay(end - 1, end)}
+          onClick={() => handlePlay(sentence.end - 1, sentence.end)}
         >
           -1.0
         </Button>
@@ -105,8 +97,8 @@ const MarkRow = ({
           size='small'
           type='number'
           inputProps={{ step: 0.1 }}
-          value={end}
-          onChange={(e) => handleMark(Number(e.target.value), true)}
+          value={sentence.end}
+          onChange={(e) => handleChangeMark(Number(e.target.value), true)}
         />
       </TableCell>
     </TableRow>
