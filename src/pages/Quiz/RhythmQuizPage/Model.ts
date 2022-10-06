@@ -12,6 +12,9 @@ export type RhythmQuizFromState = {
   questions: QuizQuestion[];
   scores: QuizScores;
   audioContext: AudioContext | null;
+  type: string;
+  createdAt: number;
+  downloadURL: string;
 };
 
 export const INITIAL_RHYTHM_QUIZ_FORM_STATE: RhythmQuizFromState = {
@@ -26,4 +29,7 @@ export const INITIAL_RHYTHM_QUIZ_FORM_STATE: RhythmQuizFromState = {
   questions: [],
   scores: {},
   audioContext: null,
+  type: '',
+  createdAt: 0,
+  downloadURL: '',
 };

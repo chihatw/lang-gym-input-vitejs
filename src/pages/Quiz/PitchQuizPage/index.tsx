@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useReducer } from 'react';
+import * as R from 'ramda';
+import React, { useContext, useEffect, useReducer, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { buildPitchQuizFormState, setQuiz } from '../../../services/quiz';
 import { AppContext } from '../../../App';
@@ -12,12 +13,12 @@ import { State, Quiz, QuizQuestions } from '../../../Model';
 const PitchQuizPage = () => {
   const { quizId } = useParams();
   const navigate = useNavigate();
+  const [initializing, setInitializing] = useState(true);
   if (!quizId) return <></>;
 
   const { state, dispatch } = useContext(AppContext);
 
-  const quiz = state.quizzes.find((item) => item.id === quizId);
-  if (!quiz) return <></>;
+  const quiz = state.quizzes[quizId];
 
   const [pitchQuizFormState, pitchQuizFormDispatch] = useReducer(
     pitchQuizFormReducer,
@@ -25,15 +26,18 @@ const PitchQuizPage = () => {
   );
 
   useEffect(() => {
-    if (!dispatch || !state.isFetching) return;
-    const updatedState: State = { ...state, isFetching: false };
-    dispatch({ type: ActionTypes.setState, payload: updatedState });
-    const pitchQuizFormState = buildPitchQuizFormState(updatedState, quizId);
-    pitchQuizFormDispatch(pitchQuizFormState);
-  }, [state.isFetching, quizId]);
+    if (!initializing || !state.users.length) return;
+
+    const fetchData = async () => {
+      const pitchQuizFormState = await buildPitchQuizFormState(state, quizId);
+
+      pitchQuizFormDispatch(pitchQuizFormState);
+      setInitializing(false);
+    };
+    fetchData();
+  }, [state.users, quizId]);
 
   const handleSubmit = async () => {
-    if (!dispatch) return;
     let questionCount = 0;
     const updatedQuestions: QuizQuestions = {};
     pitchQuizFormState.questions.forEach((question, sentenceIndex) => {
@@ -45,24 +49,29 @@ const PitchQuizPage = () => {
     });
 
     const updatedQuiz: Quiz = {
-      ...quiz,
+      ...quiz!,
       uid: pitchQuizFormState.uid,
       title: pitchQuizFormState.title,
       scores: pitchQuizFormState.scores,
       questions: updatedQuestions,
       questionCount: questionCount,
     };
-    const updatedQuizzes = state.quizzes.map((item) =>
-      item.id !== quizId ? item : updatedQuiz
-    );
-    const updatedState: State = {
-      ...state,
-      quizzes: updatedQuizzes,
-    };
+
+    // update appState
+    const updatedState = R.assocPath<Quiz, State>(
+      ['quizzes', quizId],
+      updatedQuiz
+    )(state);
     dispatch({ type: ActionTypes.setState, payload: updatedState });
+
+    // update remote
     await setQuiz(updatedQuiz);
+
     navigate(`/quiz/list`);
   };
+
+  if (initializing) return <></>;
+  if (!pitchQuizFormState.title) return <></>;
   return (
     <PitchQuizForm
       state={pitchQuizFormState}

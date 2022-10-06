@@ -2,7 +2,7 @@ import * as R from 'ramda';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import React, { useContext, useEffect, useState } from 'react';
 
-import { Article, ArticleSentence, State } from '../../../Model';
+import { Article, ArticleSentence, Quiz, State } from '../../../Model';
 import { ActionTypes } from '../../../Update';
 import {
   getArticle,
@@ -83,20 +83,21 @@ const ArticlePage = () => {
   }, [articleId, state.blobs, state.users, state.audioContext, initializing]);
 
   const handleCreatePitchQuiz = async () => {
-    if (!dispatch) return;
     const quiz = buildPitchQuizFromState(state, articleId);
+    // update remote
     await createQuiz(quiz);
-    const updatedQuizzes = [...state.quizzes];
-    updatedQuizzes.unshift(quiz);
-    const updatedState: State = {
-      ...state,
-      quizzes: updatedQuizzes,
-      isFetching: true,
-    };
+
+    const updatedState = R.assocPath<Quiz, State>(
+      ['quizzes', quiz.id],
+      quiz
+    )(state);
+
+    // update appState
     dispatch({
       type: ActionTypes.setState,
       payload: updatedState,
     });
+
     navigate(`/quiz/pitch/${quiz.id}`);
   };
 
@@ -104,13 +105,10 @@ const ArticlePage = () => {
     if (!dispatch) return;
     const quiz = buildRhythmQuizFromState(state, articleId);
     await createQuiz(quiz);
-    const updatedQuizzes = [...state.quizzes];
-    updatedQuizzes.unshift(quiz);
-    const updatedState: State = {
-      ...state,
-      quizzes: updatedQuizzes,
-      isFetching: true,
-    };
+    const updatedState = R.assocPath<Quiz, State>(
+      ['quizzes', quiz.id],
+      quiz
+    )(state);
     dispatch({
       type: ActionTypes.setState,
       payload: updatedState,

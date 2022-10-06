@@ -1,3 +1,4 @@
+import * as R from 'ramda';
 import CheckIcon from '@mui/icons-material/Check';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -5,16 +6,13 @@ import { IconButton, TableCell, TableRow } from '@mui/material';
 import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../../App';
-import { INITIAL_USER } from '../../../Model';
+import { INITIAL_USER, Quiz, State } from '../../../Model';
 import { deleteQuiz } from '../../../services/quiz';
 import { ActionTypes } from '../../../Update';
 
-const QuizRow = ({ index }: { index: number }) => {
+const QuizRow = ({ quiz }: { quiz: Quiz }) => {
   const { state, dispatch } = useContext(AppContext);
   const navigate = useNavigate();
-  const { quizzes } = state;
-  const quiz = quizzes[index];
-
   const { uid, title, scores, type, id } = quiz;
 
   const handleOpenEditPage = () => {
@@ -34,8 +32,7 @@ const QuizRow = ({ index }: { index: number }) => {
   const handleDelete = () => {
     if (!dispatch) return;
     if (window.confirm('delete?')) {
-      const updatedQuizzez = state.quizzes.filter((item) => item.id !== id);
-      const updateState = { ...state, quizzes: updatedQuizzez };
+      const updateState = R.dissocPath<State>(['quizzes', id])(state);
       dispatch({ type: ActionTypes.setState, payload: updateState });
       deleteQuiz(id);
     }

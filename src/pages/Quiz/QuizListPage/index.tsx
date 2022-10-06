@@ -1,6 +1,6 @@
 import * as R from 'ramda';
 import { Table, TableBody } from '@mui/material';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../../../App';
 import TableLayout from '../../../components/templates/TableLayout';
 import { getQuizzes } from '../../../services/quiz';
@@ -10,29 +10,36 @@ import { State, Quiz } from '../../../Model';
 
 const QuizListPage = () => {
   const { state, dispatch } = useContext(AppContext);
+  const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {
-    if (!state.isFetching || !dispatch) return;
+    if (!state.users.length) return;
     const fetchData = async () => {
-      const _quizzes: Quiz[] = !!state.quizzes.length
-        ? state.quizzes
-        : await getQuizzes();
+      const quizzes: { [id: string]: Quiz } =
+        Object.keys(state.quizzes).length > 1
+          ? state.quizzes
+          : initializing
+          ? await getQuizzes()
+          : {};
       const updatedState = R.compose(
         R.assocPath<boolean, State>(['isFetching'], false),
-        R.assocPath<Quiz[], State>(['quizzes'], _quizzes)
+        R.assocPath<{ [id: string]: Quiz }, State>(['quizzes'], quizzes)
       )(state);
       dispatch({ type: ActionTypes.setState, payload: updatedState });
+      setInitializing(false);
     };
     fetchData();
-  }, [state.isFetching, state.quizzes]);
+  }, [state.users]);
 
   return (
     <TableLayout title='問題一覧'>
       <Table>
         <TableBody>
-          {state.quizzes.map((_, index) => (
-            <QuizRow key={index} index={index} />
-          ))}
+          {Object.values(state.quizzes)
+            .sort((a, b) => b.createdAt - a.createdAt)
+            .map((quiz, index) => (
+              <QuizRow key={index} quiz={quiz} />
+            ))}
         </TableBody>
       </Table>
     </TableLayout>

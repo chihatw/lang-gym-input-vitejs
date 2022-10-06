@@ -5,6 +5,7 @@ import {
   deleteDoc,
   doc,
   DocumentData,
+  getDoc,
   getDocs,
   limit,
   orderBy,
@@ -21,6 +22,7 @@ import {
   QuizQuestion,
   QuizQuestions,
   Syllable,
+  INITIAL_QUIZ,
 } from '../Model';
 import { db, storage } from '../repositories/firebase';
 
@@ -29,12 +31,10 @@ import {
   RhythmQuizFromState,
 } from '../pages/Quiz/RhythmQuizPage/Model';
 import { getDownloadURL, ref } from 'firebase/storage';
-import {
-  PitchQuizFormState,
-  INITIAL_PITCH_QUIZ_FORM_STATE,
-} from '../pages/Quiz/PitchQuizPage/Model';
+import { PitchQuizFormState } from '../pages/Quiz/PitchQuizPage/Model';
 import accentsForPitchesArray from 'accents-for-pitches-array';
 import pitchesArray2String from 'pitches-array2string';
+import { getBlobFromArticleDownloadURL } from './article';
 
 const SPACE = '　';
 
@@ -57,31 +57,45 @@ export const getBlob = async (downloadURL: string) => {
   return blob;
 };
 
-export const getQuizzes = async (): Promise<Quiz[]> => {
-  let quizzes: Quiz[] = [];
+export const getQuiz = async (id: string) => {
+  console.log('get quiz');
+  const snapshot = await getDoc(doc(db, COLLECTIONS.quizzes, id));
+  if (!snapshot.exists()) {
+    return INITIAL_QUIZ;
+  }
+  return buildQuiz(snapshot);
+};
+
+export const getQuizzes = async (): Promise<{ [id: string]: Quiz }> => {
+  let quizzes: { [id: string]: Quiz } = {};
   let q = query(
     collection(db, COLLECTIONS.quizzes),
     // 新しいものが前
     orderBy('createdAt', 'desc'),
     limit(20)
   );
+  console.log('get quizzes');
   let querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
-    quizzes.push(buildQuiz(doc));
+    quizzes[doc.id] = buildQuiz(doc);
   });
   return quizzes;
 };
 
-export const buildPitchQuizFormState = (
+export const buildPitchQuizFormState = async (
   state: State,
   quizId: string
-): PitchQuizFormState => {
-  const quiz = state.quizzes.find((item) => item.id === quizId);
-  if (!quiz) return INITIAL_PITCH_QUIZ_FORM_STATE;
+): Promise<PitchQuizFormState> => {
+  let quiz = state.quizzes[quizId] || INITIAL_QUIZ;
+  if (!quiz.id) {
+    quiz = await getQuiz(quizId);
+  }
 
-  let blob = null;
+  let blob: Blob | null = null;
   if (quiz.downloadURL) {
-    blob = state.blobs[quiz.downloadURL];
+    blob =
+      state.blobs[quiz.downloadURL] ||
+      (await getBlobFromArticleDownloadURL(quiz.downloadURL));
   }
 
   return {
@@ -108,7 +122,7 @@ export const buildRhythmInitialValues = (
   state: State,
   quizId: string
 ): RhythmQuizFromState => {
-  const quiz = state.quizzes.find((item) => item.id === quizId);
+  const quiz = state.quizzes[quizId];
   if (!quiz) return INITIAL_RHYTHM_QUIZ_FORM_STATE;
 
   const kanas: string[] = [];
@@ -127,6 +141,9 @@ export const buildRhythmInitialValues = (
     questions: Object.values(quiz.questions),
     scores: quiz.scores || {},
     audioContext: state.audioContext || null,
+    createdAt: quiz.createdAt || 0,
+    type: quiz.type || 'articleRhythms',
+    downloadURL: quiz.downloadURL || '',
   };
 };
 

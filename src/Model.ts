@@ -299,7 +299,7 @@ export type State = {
   audioContext: AudioContext | null;
   articles: { [id: string]: Article };
   sentences: { [id: string]: ArticleSentence[] };
-  quizzes: Quiz[];
+  quizzes: { [id: string]: Quiz };
   blobs: { [downloadURL: string]: Blob };
   workout: Workout;
   workoutList: Workout[];
@@ -325,7 +325,7 @@ export const INITIAL_STATE: State = {
   randomWorkouts: {},
   randomWorkoutBlobs: {},
   workingMemories: {},
-  quizzes: [],
+  quizzes: {},
   memo: {
     workouts: {},
   },
