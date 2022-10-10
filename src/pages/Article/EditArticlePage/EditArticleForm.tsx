@@ -45,10 +45,15 @@ const EditArticleForm = ({
   };
 
   const handleChangeUid = (uid: string) => {
-    const updatedState = R.assocPath<string, ArticleEditState>(
-      ['article', 'uid'],
-      uid
+    const user = state.users.filter((item) => item.id === uid)[0];
+    const updatedState = R.compose(
+      R.assocPath<string, ArticleEditState>(['article', 'uid'], uid),
+      R.assocPath<string, ArticleEditState>(
+        ['article', 'userDisplayname'],
+        user!.displayname
+      )
     )(state);
+    console.log(updatedState.article);
     dispatch(updatedState);
   };
   const handlePickDate = (date: Date | null) => {
