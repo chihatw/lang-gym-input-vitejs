@@ -7,51 +7,58 @@ import {
   buildRhythmInitialValues,
   getQuiz,
 } from '../../../services/quiz';
-import { rhythmQuizFormReducer } from './Update';
-import { INITIAL_RHYTHM_QUIZ_FORM_STATE } from './Model';
+
+import { INITIAL_RHYTHM_QUIZ_FORM_STATE, RhythmQuizFromState } from './Model';
 import RhythmQuizForm from './RhythmQuizForm';
 import { AppContext } from '../../../App';
 import { State, Quiz, QuizQuestions } from '../../../Model';
 import { ActionTypes } from '../../../Update';
 
+const reducer = (state: RhythmQuizFromState, action: RhythmQuizFromState) => {
+  return action;
+};
+
 const RhythmQuizPage = () => {
   const { quizId } = useParams();
   const navigate = useNavigate();
-  const [initializing, setInitializing] = useState(true);
-  if (!quizId) return <></>;
-
   const { state, dispatch } = useContext(AppContext);
-
+  const [initializing, setInitializing] = useState(true);
   const [rhythmQuizFormState, rhythmQuizFormDispatch] = useReducer(
-    rhythmQuizFormReducer,
+    reducer,
     INITIAL_RHYTHM_QUIZ_FORM_STATE
   );
+  if (!quizId) return <></>;
 
   useEffect(() => {
     if (!initializing || !state.users.length) return;
 
     const fetchData = async () => {
-      const quiz = state.quizzes[quizId] || (await getQuiz(quizId));
+      let quiz: Quiz | null = null;
+      let updatedState = state;
 
-      let updatedState = R.assocPath<Quiz, State>(
-        ['quizzes', quiz.id],
-        quiz
-      )(state);
-
-      let blob: Blob | null = null;
-      if (quiz.downloadURL) {
-        blob =
-          state.blobs[quiz.downloadURL] || (await getBlob(quiz.downloadURL));
-
-        updatedState = R.assocPath<Blob, State>(
-          ['blobs', quiz.downloadURL],
-          blob
+      if (state.quizzes[quizId]) {
+        quiz = state.quizzes[quizId];
+      } else {
+        quiz = await getQuiz(quizId);
+        updatedState = R.assocPath<Quiz, State>(
+          ['quizzes', quiz.id],
+          quiz
         )(state);
       }
 
-      const updatedBlobs = { ...state.blobs };
-      if (blob) {
-        updatedBlobs[quiz.downloadURL] = blob;
+      let blob: Blob | null = null;
+      if (quiz.downloadURL) {
+        if (state.blobs[quiz.downloadURL]) {
+          blob = state.blobs[quiz.downloadURL];
+        } else {
+          blob = await getBlob(quiz.downloadURL);
+          if (blob) {
+            updatedState = R.assocPath<Blob, State>(
+              ['blobs', quiz.downloadURL],
+              blob
+            )(state);
+          }
+        }
       }
 
       dispatch({ type: ActionTypes.setState, payload: updatedState });
@@ -76,12 +83,11 @@ const RhythmQuizPage = () => {
       questionCount -= question.disableds.length;
     });
 
+    const quiz = state.quizzes[quizId];
+
     const updatedQuiz: Quiz = {
-      id: quizId,
+      ...quiz,
       uid: rhythmQuizFormState.uid,
-      type: rhythmQuizFormState.type,
-      createdAt: rhythmQuizFormState.createdAt,
-      downloadURL: rhythmQuizFormState.downloadURL,
       title: rhythmQuizFormState.title,
       scores: rhythmQuizFormState.scores,
       questions: updatedQuestions,

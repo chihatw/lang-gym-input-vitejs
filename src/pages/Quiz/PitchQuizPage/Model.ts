@@ -13,6 +13,7 @@ export type PitchQuizFormState = {
   questions: QuizQuestion[];
   scores: QuizScores;
   audioContext: AudioContext | null;
+  downloadURL: string;
 };
 
 export const INITIAL_PITCH_QUIZ_FORM_STATE: PitchQuizFormState = {
@@ -28,4 +29,5 @@ export const INITIAL_PITCH_QUIZ_FORM_STATE: PitchQuizFormState = {
   questions: [],
   scores: {},
   audioContext: null,
+  downloadURL: '',
 };

@@ -2,15 +2,11 @@
   "maxAgeSeconds": 3600, 
   "method": ["GET"], 
   "origin": [
-    "http://localhost:3000", 
-    "http://localhost:3001", 
-    "http://localhost:8000", 
-    "http://localhost:8001", 
-    "http://localhost:8002", 
-    "http://localhost:4173",
-    "https://priceless-ptolemy-aa3542.netlify.app", 
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:5174",
     "https://lang-gym-input-vitejs.vercel.app",
-    "https://lang-gym-input-react.vercel.app"
+    "https://lang-gym-input-react.vercel.app",
+    "https://www.lang-gym.app"
   ], 
   "responseHeader": ["Content-Type"]
 }]

@@ -18,65 +18,53 @@ import string2PitchesArray from 'string2pitches-array';
 
 import { calcBeatCount, cuesStrToCues } from '../../../services/randomWorkout';
 import { RandomWorkoutFormState } from './Model';
-import {
-  RandomWorkoutFormAction,
-  RandomWorkoutFormActionTypes,
-} from './Update';
+import { User } from '../../../Model';
 
 const RandomWorkoutForm = ({
-  state,
-  submit,
-  dispatch,
+  users,
+  pageState,
+  handleSubmit,
+  pageDispatch,
 }: {
-  state: RandomWorkoutFormState;
-  submit: () => void;
-  dispatch: React.Dispatch<RandomWorkoutFormAction>;
+  users: User[];
+  pageState: RandomWorkoutFormState;
+  handleSubmit: () => void;
+  pageDispatch: React.Dispatch<RandomWorkoutFormState>;
 }) => {
   const navigate = useNavigate();
+
   const handleChengeRecordCount = (recordCount: number) => {
-    recordCount = Math.max(0, recordCount);
-    dispatch({
-      type: RandomWorkoutFormActionTypes.setState,
-      payload: { ...state, recordCount },
-    });
+    pageDispatch({ ...pageState, recordCount });
   };
+
   const handleChangeUid = (uid: string) => {
-    dispatch({
-      type: RandomWorkoutFormActionTypes.setState,
-      payload: { ...state, uid },
-    });
+    pageDispatch({ ...pageState, uid });
   };
+
   const handleChangeTitle = (title: string) => {
-    dispatch({
-      type: RandomWorkoutFormActionTypes.setState,
-      payload: { ...state, title },
-    });
+    pageDispatch({ ...pageState, title });
   };
+
   const handleChangeTargetBpm = (targetBpm: number) => {
     targetBpm = Math.max(0, targetBpm);
-    dispatch({
-      type: RandomWorkoutFormActionTypes.setState,
-      payload: { ...state, targetBpm },
-    });
+    pageDispatch({ ...pageState, targetBpm });
   };
+
   const handleChangeRoundCount = (roundCount: number) => {
-    roundCount = Math.max(0, roundCount);
-    dispatch({
-      type: RandomWorkoutFormActionTypes.setState,
-      payload: { ...state, roundCount },
+    pageDispatch({
+      ...pageState,
+      roundCount,
     });
   };
+
   const handleChangeCuesStr = (cuesStr: string) => {
-    const updatedCues = cuesStrToCues(cuesStr, state.cues);
+    const updatedCues = cuesStrToCues(cuesStr, pageState.cues);
     const updatedBeatCount = calcBeatCount(updatedCues);
-    dispatch({
-      type: RandomWorkoutFormActionTypes.setState,
-      payload: {
-        ...state,
-        cues: updatedCues,
-        cuesStr,
-        beatCount: updatedBeatCount,
-      },
+    pageDispatch({
+      ...pageState,
+      cues: updatedCues,
+      cuesStr,
+      beatCount: updatedBeatCount,
     });
   };
 
@@ -84,16 +72,13 @@ const RandomWorkoutForm = ({
     const updated = R.assocPath<string, RandomWorkoutFormState>(
       ['cues', cueIndex, 'imagePath'],
       imagePath
-    )(state);
-    dispatch({
-      type: RandomWorkoutFormActionTypes.setState,
-      payload: updated,
-    });
+    )(pageState);
+    pageDispatch(updated);
   };
 
   return (
     <div style={{ display: 'grid', rowGap: 16 }}>
-      <h2>{!!state.id ? `${state.title} - 更新` : '新規作成'}</h2>
+      <h2>{!!pageState.id ? `${pageState.title} - 更新` : '新規作成'}</h2>
       <div>
         <Button variant='contained' onClick={() => navigate('/random/list')}>
           戻る
@@ -101,55 +86,58 @@ const RandomWorkoutForm = ({
       </div>
       <div
         style={{ fontSize: 12, color: '#ccc' }}
-      >{`createdAt: ${state.createdAt}`}</div>
+      >{`createdAt: ${pageState.createdAt}`}</div>
       <FormControl fullWidth>
         <InputLabel>user</InputLabel>
         <Select
           size='small'
-          value={state.uid}
+          value={pageState.uid}
           variant='standard'
           onChange={(e) => handleChangeUid(e.target.value as string)}
         >
-          {state.users.map((u) => (
+          {users.map((u) => (
             <MenuItem key={u.id} value={u.id}>
               {u.displayname}
             </MenuItem>
           ))}
         </Select>
       </FormControl>
-      <div>{`beatCount: ${state.beatCount}`}</div>
+      <div>{`beatCount: ${pageState.beatCount}`}</div>
       <TextField
         size='small'
         fullWidth
         label='title'
-        value={state.title}
+        value={pageState.title}
         onChange={(e) => handleChangeTitle(e.target.value)}
+        autoComplete='off'
       />
       <TextField
         size='small'
         fullWidth
         label='targetBpm'
-        value={state.targetBpm}
+        value={pageState.targetBpm}
         type='number'
         onChange={(e) => handleChangeTargetBpm(Number(e.target.value))}
       />
       <TextField
-        size='small'
-        fullWidth
-        label='recordCount'
-        value={state.recordCount}
         type='number'
+        size='small'
+        label='recordCount'
+        value={pageState.recordCount}
         onChange={(e) => {
           handleChengeRecordCount(Number(e.target.value));
         }}
+        fullWidth
+        InputProps={{ inputProps: { min: 0 } }}
       />
       <TextField
-        size='small'
-        fullWidth
-        label='roundCount'
-        value={state.roundCount}
         type='number'
+        size='small'
+        label='roundCount'
+        value={pageState.roundCount}
         onChange={(e) => handleChangeRoundCount(Number(e.target.value))}
+        fullWidth
+        InputProps={{ inputProps: { min: 0 } }}
       />
       <TextField
         size='small'
@@ -157,11 +145,12 @@ const RandomWorkoutForm = ({
         rows={10}
         label='cuesStr'
         onChange={(e) => handleChangeCuesStr(e.target.value)}
-        value={state.cuesStr}
+        value={pageState.cuesStr}
+        autoComplete='off'
       />
       <Table>
         <TableBody>
-          {state.cues.map((cue, cueIndex) => (
+          {pageState.cues.map((cue, cueIndex) => (
             <TableRow key={cue.id}>
               <TableCell>{cue.label}</TableCell>
               <TableCell>
@@ -184,8 +173,12 @@ const RandomWorkoutForm = ({
           ))}
         </TableBody>
       </Table>
-      <Button variant='contained' sx={{ color: 'white' }} onClick={submit}>
-        {!!state.id ? `更新` : '新規作成'}
+      <Button
+        variant='contained'
+        sx={{ color: 'white' }}
+        onClick={handleSubmit}
+      >
+        {!!pageState.id ? `更新` : '新規作成'}
       </Button>
     </div>
   );

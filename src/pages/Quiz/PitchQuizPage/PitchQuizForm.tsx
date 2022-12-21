@@ -78,6 +78,15 @@ const PitchQuizForm = ({
 
     dispatch(updatedState);
   };
+
+  const handleChangeDownloadURL = (downloadURL: string) => {
+    const updatedState = R.assocPath<string, PitchQuizFormState>(
+      ['downloadURL'],
+      downloadURL
+    )(state);
+    dispatch(updatedState);
+  };
+
   return (
     <TableLayout title={state.title} backURL='/quiz/list'>
       <div style={{ display: 'grid', rowGap: 16 }}>
@@ -106,9 +115,7 @@ const PitchQuizForm = ({
         />
 
         <TextField
-          variant='outlined'
           size='small'
-          fullWidth
           label='japanese'
           value={state.input.japanese}
           multiline
@@ -121,14 +128,19 @@ const PitchQuizForm = ({
         )}
 
         <TextField
-          variant='outlined'
           size='small'
-          fullWidth
           label='accentString'
           value={state.input.pitch}
           multiline
           rows={5}
           onChange={(e) => handleChangePitchStr(e.target.value)}
+        />
+        <TextField
+          value={state.downloadURL}
+          size='small'
+          label='downloadURL'
+          autoComplete='off'
+          onChange={(e) => handleChangeDownloadURL(e.target.value)}
         />
 
         {!!state.input.pitch && (

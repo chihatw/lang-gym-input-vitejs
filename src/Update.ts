@@ -1,14 +1,13 @@
 import { User as FirebaseUser } from 'firebase/auth';
 import * as R from 'ramda';
 import {
-  Article,
-  ArticleSentence,
-  INITIAL_ARTICLE,
-  INITIAL_WORKOUT,
-  RandomWorkout,
-  State,
   User,
+  State,
+  Article,
   Workout,
+  RandomWorkout,
+  INITIAL_WORKOUT,
+  ArticleSentence,
 } from './Model';
 
 export const ActionTypes = {
@@ -18,7 +17,6 @@ export const ActionTypes = {
   startFetching: 'startFetching',
   deleteWorkout: 'deleteWorkout',
   setWorkoutList: 'setWorkoutList',
-  setAudioContext: 'setAudioContext',
   setWorkoutSingle: 'setWorkoutSingle',
   setRandomWorkouts: 'setRandomWorkouts',
   deleteArticleAudioFile: 'deleteArticleAudioFile',
@@ -37,7 +35,6 @@ export type Action = {
     | Article[]
     | Workout
     | Workout[]
-    | AudioContext
     | { [key: string]: RandomWorkout }
     | { workout: Workout; users: User[] }
     | { workoutList: Workout[]; users: User[] }
@@ -79,6 +76,7 @@ export const reducer = (state: State, action: Action): State => {
     }
     case ActionTypes.setRandomWorkouts: {
       const randomWorkouts = payload as { [key: string]: RandomWorkout };
+      console.log('%csetRandomWorkouts', 'color:green');
       return R.compose(
         R.assocPath<{ [key: string]: RandomWorkout }, State>(
           ['randomWorkouts'],
@@ -89,18 +87,15 @@ export const reducer = (state: State, action: Action): State => {
 
     case ActionTypes.setUser: {
       const user = payload as FirebaseUser | null;
+      console.log('%csetUser', 'color:green');
       return R.compose(
         R.assocPath<boolean, State>(['initializing'], false),
         R.assocPath<FirebaseUser | null, State>(['user'], user)
       )(state);
     }
-    case ActionTypes.setAudioContext: {
-      const audioContext = payload as AudioContext | null;
-      return R.compose(
-        R.assocPath<AudioContext | null, State>(['audioContext'], audioContext)
-      )(state);
-    }
+
     case ActionTypes.startFetching: {
+      console.log('%cstartFetching', 'color:green');
       return R.compose(R.assocPath<boolean, State>(['isFetching'], true))(
         state
       );
@@ -110,6 +105,7 @@ export const reducer = (state: State, action: Action): State => {
         workoutList: Workout[];
         users: User[];
       };
+      console.log('%csetWorkoutList', 'color:green');
       return R.compose(
         R.assocPath<User[], State>(['users'], users),
         R.assocPath<boolean, State>(['isFetching'], false),
@@ -118,6 +114,7 @@ export const reducer = (state: State, action: Action): State => {
     }
     case ActionTypes.setWorkout: {
       const { workout, users } = payload as { workout: Workout; users: User[] };
+      console.log('%csetWorkout', 'color:green');
       return R.compose(
         R.assocPath<boolean, State>(['isFetching'], false),
         R.assocPath<User[], State>(['users'], users),
@@ -136,6 +133,7 @@ export const reducer = (state: State, action: Action): State => {
           item.id === workout.id ? workout : item
         );
       }
+      console.log('%csetWorkoutSingle', 'color:green');
       return R.compose(
         R.assocPath<Workout, State>(['workout'], workout),
         R.assocPath<Workout[], State>(['workoutList'], updatedList),
@@ -147,7 +145,7 @@ export const reducer = (state: State, action: Action): State => {
       let updatedList = [...workoutList];
 
       updatedList = updatedList.filter((item) => item.id !== workoutIdToDelete);
-
+      console.log('%cdeleteWorkout', 'color:green');
       return R.compose(
         R.assocPath<Workout, State>(['workout'], INITIAL_WORKOUT),
         R.assocPath<Workout[], State>(['workoutList'], updatedList),
@@ -159,6 +157,7 @@ export const reducer = (state: State, action: Action): State => {
         article: Article;
         articleBlob: Blob | null;
       };
+      console.log('%cuploadArticleAudioFile', 'color:green');
       return R.compose(
         R.assocPath<Article, State>(['article'], article),
         R.assocPath<Blob | null, State>(['articleBlob'], articleBlob),
@@ -174,6 +173,7 @@ export const reducer = (state: State, action: Action): State => {
         article: Article;
         sentences: ArticleSentence[];
       };
+      console.log('%cdeleteArticleAudioFile', 'color:green');
       return R.compose(
         R.assocPath<Article, State>(['article'], article),
         R.assocPath<Blob | null, State>(['articleBlob'], null),

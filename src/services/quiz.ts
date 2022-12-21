@@ -31,7 +31,10 @@ import {
   RhythmQuizFromState,
 } from '../pages/Quiz/RhythmQuizPage/Model';
 import { getDownloadURL, ref } from 'firebase/storage';
-import { PitchQuizFormState } from '../pages/Quiz/PitchQuizPage/Model';
+import {
+  INITIAL_PITCH_QUIZ_FORM_STATE,
+  PitchQuizFormState,
+} from '../pages/Quiz/PitchQuizPage/Model';
 import accentsForPitchesArray from 'accents-for-pitches-array';
 import pitchesArray2String from 'pitches-array2string';
 import { getBlobFromArticleDownloadURL } from './article';
@@ -82,39 +85,32 @@ export const getQuizzes = async (): Promise<{ [id: string]: Quiz }> => {
   return quizzes;
 };
 
-export const buildPitchQuizFormState = async (
+export const buildPitchQuizFormState = (
   state: State,
   quizId: string
-): Promise<PitchQuizFormState> => {
-  let quiz = state.quizzes[quizId] || INITIAL_QUIZ;
-  if (!quiz.id) {
-    quiz = await getQuiz(quizId);
-  }
+): PitchQuizFormState => {
+  const quiz = state.quizzes[quizId];
+  if (!quiz) return INITIAL_PITCH_QUIZ_FORM_STATE;
 
-  let blob: Blob | null = null;
-  if (quiz.downloadURL) {
-    blob =
-      state.blobs[quiz.downloadURL] ||
-      (await getBlobFromArticleDownloadURL(quiz.downloadURL));
-  }
-
+  const input = {
+    pitch: Object.values(quiz.questions)
+      .map(({ pitchStr }) => pitchStr)
+      .join('\n'),
+    japanese: Object.values(quiz.questions)
+      .map(({ japanese }) => japanese)
+      .join('\n'),
+  };
   return {
     uid: quiz.uid,
-    blob: null,
+    blob: state.blobs[quiz.downloadURL] || null,
     users: state.users,
     title: quiz.title,
-    questionCount: quiz.questionCount,
-    input: {
-      pitch: Object.values(quiz.questions)
-        .map(({ pitchStr }) => pitchStr)
-        .join('\n'),
-      japanese: Object.values(quiz.questions)
-        .map(({ japanese }) => japanese)
-        .join('\n'),
-    },
+    questionCount: quiz.questionCount || 0,
+    input,
+    questions: Object.values(quiz.questions),
     scores: quiz.scores,
     audioContext: state.audioContext,
-    questions: Object.values(quiz.questions),
+    downloadURL: quiz.downloadURL,
   };
 };
 
@@ -141,9 +137,6 @@ export const buildRhythmInitialValues = (
     questions: Object.values(quiz.questions),
     scores: quiz.scores || {},
     audioContext: state.audioContext || null,
-    createdAt: quiz.createdAt || 0,
-    type: quiz.type || 'articleRhythms',
-    downloadURL: quiz.downloadURL || '',
   };
 };
 
@@ -179,16 +172,14 @@ export const buildUpdatedRythmState = (
   const rhythmStringLines = !!rhythmString ? rhythmString.split('\n') : [];
   const updatedRhythmArray: Syllable[][][] = [];
   rhythmStringLines.forEach((s) => {
-    const { sentenceRhythm } = buildSentenceRhythm(s);
+    const sentenceRhythm = buildSentenceRhythm(s);
     updatedRhythmArray.push(sentenceRhythm);
   });
 
   return updatedRhythmArray;
 };
 
-export const buildSentenceRhythm = (
-  moraString: string
-): { sentenceRhythm: Syllable[][] } => {
+export const buildSentenceRhythm = (moraString: string): Syllable[][] => {
   const sentenceRhythm = moraString
     .split(SPACE) // 音節ごとに分ける
     .map((word) => {
@@ -216,7 +207,7 @@ export const buildSentenceRhythm = (
       });
       return syllables;
     });
-  return { sentenceRhythm };
+  return sentenceRhythm;
 };
 
 const isSpecialMora = (targetMora: string, preTargetMora?: string) => {
@@ -368,14 +359,14 @@ export const buildPitchQuizFromState = (
   let questionCount = 0;
   const questions: QuizQuestions = {};
   state.sentences[articleId].forEach((sentence, index) => {
+    const question = buildPitchQuestion(
+      sentence.japanese,
+      sentence.accents,
+      sentence.start,
+      sentence.end
+    );
+    questions[index] = question;
     questionCount += sentence.accents.length;
-    const pitchesArray = accentsForPitchesArray(sentence.accents);
-    const pitchStr = pitchesArray2String(pitchesArray);
-    questions[index] = {
-      ...INITIAL_QUIZ_QUESTION,
-      pitchStr,
-      japanese: sentence.japanese,
-    };
   });
 
   const quiz: Quiz = {
@@ -386,10 +377,28 @@ export const buildPitchQuizFromState = (
     scores: {},
     questions,
     createdAt: Date.now(),
-    downloadURL: '',
+    downloadURL: state.articles[articleId].downloadURL,
     questionCount,
   };
   return quiz;
+};
+
+const buildPitchQuestion = (
+  japanese: string,
+  accents: Accent[],
+  start: number,
+  end: number
+) => {
+  const pitchesArray = accentsForPitchesArray(accents);
+  const pitchStr = pitchesArray2String(pitchesArray);
+  const question: QuizQuestion = {
+    ...INITIAL_QUIZ_QUESTION,
+    end,
+    start,
+    pitchStr,
+    japanese,
+  };
+  return question;
 };
 
 export const buildRhythmQuizFromState = (
@@ -398,27 +407,14 @@ export const buildRhythmQuizFromState = (
 ): Quiz => {
   let questionCount = 0;
   const questions: QuizQuestions = {};
-
   state.sentences[articleId].forEach((sentence, index) => {
-    const syllables: { [index: number]: Syllable[] } = {};
-
-    const pitchesArray = accentsForPitchesArray(sentence.accents);
-    const moraString = pitchesArray
-      .map((wordPitch) => wordPitch.map((mora) => kanaToHira(mora[0])).join(''))
-      .join(SPACE);
-    const { sentenceRhythm } = buildSentenceRhythm(moraString);
-    questionCount += sentenceRhythm.length;
-    sentenceRhythm.forEach((wordRhythm, index) => {
-      syllables[index] = wordRhythm;
-    });
-
-    const question: QuizQuestion = {
-      ...INITIAL_QUIZ_QUESTION,
-      end: sentence.end,
-      start: sentence.start,
-      syllables,
-    };
+    const { question, sentenceRhythm } = buildRhythmQuestion(
+      sentence.accents,
+      sentence.start,
+      sentence.end
+    );
     questions[index] = question;
+    questionCount += sentenceRhythm.length;
   });
 
   const quiz: Quiz = {
@@ -434,6 +430,26 @@ export const buildRhythmQuizFromState = (
   };
 
   return quiz;
+};
+
+const buildRhythmQuestion = (accents: Accent[], start: number, end: number) => {
+  const pitchesArray = accentsForPitchesArray(accents);
+  const moraString = pitchesArray
+    .map((wordPitch) => wordPitch.map((mora) => kanaToHira(mora[0])).join(''))
+    .join(SPACE);
+  const sentenceRhythm = buildSentenceRhythm(moraString);
+  const syllables: { [index: number]: Syllable[] } = {};
+  sentenceRhythm.forEach((wordRhythm, index) => {
+    syllables[index] = wordRhythm;
+  });
+
+  const question: QuizQuestion = {
+    ...INITIAL_QUIZ_QUESTION,
+    end,
+    start,
+    syllables,
+  };
+  return { question, sentenceRhythm };
 };
 
 export const createQuiz = async (quiz: Quiz) => {

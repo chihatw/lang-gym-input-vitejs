@@ -30,7 +30,7 @@ const RhythmQuizForm = ({
     kanas.forEach((kana, index) => {
       const question = state.questions[index];
       const syllables: { [index: number]: Syllable[] } = {};
-      const { sentenceRhythm } = buildSentenceRhythm(kana);
+      const sentenceRhythm = buildSentenceRhythm(kana);
       sentenceRhythm.forEach((wordRhythm, wordIndex) => {
         syllables[wordIndex] = wordRhythm;
       });

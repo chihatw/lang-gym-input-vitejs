@@ -17,7 +17,7 @@ import QuizListPage from './pages/Quiz/QuizListPage';
 import ArticlePage from './pages/Article/ArticlePage';
 import PrintPitchesPage from './pages/Article/PrintPitchesPage';
 import RandomWorkoutList from './pages/RandomWorkout/RandomWorkoutListPage';
-import RandomWorkoutEdit from './pages/RandomWorkout/RandomWorkoutEdit';
+import RandomWorkoutEdit from './pages/RandomWorkout/RandomWorkoutEditPage';
 import { AppContext } from './App';
 import TempPage from './pages/TempPage';
 import WorkingMemoryListPage from './pages/WorkingMemory/WorkingMemoryListPage';

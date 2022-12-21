@@ -3,11 +3,11 @@ import {
   deleteDoc,
   doc,
   DocumentData,
+  getDoc,
   getDocs,
   orderBy,
   query,
   setDoc,
-  where,
 } from 'firebase/firestore';
 import { nanoid } from 'nanoid';
 import string2PitchesArray from 'string2pitches-array';
@@ -15,17 +15,20 @@ import {
   INITIAL_RANDOM_WORKOUT,
   RandomWorkout,
   RandomWorkoutCue,
-  State,
-  User,
 } from '../Model';
-import {
-  INITIAL_RANDOM_WORKOUT_FORM_STATE,
-  RandomWorkoutFormState,
-} from '../pages/RandomWorkout/RandomWorkoutEdit/Model';
 import { db } from '../repositories/firebase';
 
 const COLLECTIONS = {
   randomWorkouts: 'randomWorkouts',
+};
+
+export const getRandomWorkout = async (id: string) => {
+  const docSnapshot = await getDoc(doc(db, COLLECTIONS.randomWorkouts, id));
+  if (!docSnapshot.exists()) {
+    return INITIAL_RANDOM_WORKOUT;
+  }
+  const randomWorkout = buildRandomWorkout(docSnapshot);
+  return randomWorkout;
 };
 
 export const getRandomWorkouts = async () => {
@@ -92,22 +95,6 @@ const buildRandomWorkout = (doc: DocumentData) => {
     recordCount: recordCount || 0,
   };
   return randomWorkout;
-};
-
-export const buildRandomWorkoutFormInitialState = (
-  state: State,
-  workoutId: string,
-  users: User[]
-): RandomWorkoutFormState => {
-  const { randomWorkouts } = state;
-
-  let initialState = INITIAL_RANDOM_WORKOUT_FORM_STATE;
-  if (randomWorkouts[workoutId]) {
-    const { cues } = randomWorkouts[workoutId];
-    const cuesStr = cuesToCuesStr(cues);
-    initialState = { ...randomWorkouts[workoutId], cuesStr, users };
-  }
-  return initialState;
 };
 
 export const cuesToCuesStr = (cues: RandomWorkoutCue[]): string => {

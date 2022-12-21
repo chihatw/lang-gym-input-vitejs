@@ -32,18 +32,6 @@ const App = () => {
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    const createAudioContext = () => {
-      const factory = new AudioContextFactory();
-      const _audioContext = factory.create();
-      dispatch({ type: ActionTypes.setAudioContext, payload: _audioContext });
-      window.removeEventListener('click', createAudioContext);
-    };
-    if (!state.audioContext) {
-      window.addEventListener('click', createAudioContext);
-    }
-  }, [state.audioContext]);
-
   return (
     <AppContext.Provider value={{ state, dispatch }}>
       <AppRoutes />
