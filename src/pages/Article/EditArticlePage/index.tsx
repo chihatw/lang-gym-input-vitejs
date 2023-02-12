@@ -1,7 +1,7 @@
 import * as R from 'ramda';
 import { useParams } from 'react-router-dom';
-import React, { useContext, useEffect, useReducer, useState } from 'react';
-import { Divider } from '@mui/material';
+import { useContext, useEffect, useReducer, useState } from 'react';
+import { Button, Divider } from '@mui/material';
 
 import {
   State,
@@ -26,6 +26,7 @@ import {
 import EditArticleForm from './EditArticleForm';
 import { nanoid } from 'nanoid';
 import { AppContext } from '../../../App';
+import AudioContextFactory from '../../../services/AudioContextFactory';
 
 const reducer = (
   state: ArticleEditState,
@@ -122,6 +123,16 @@ const EditArticlePage = () => {
     fetchData();
   }, [initializing, state.blobs, state.users, state.audioContext]);
 
+  const handleClick = () => {
+    const audioContextFactory = new AudioContextFactory();
+    const audioContext = audioContextFactory.create();
+    const updatedState = R.assocPath<AudioContext, State>(
+      ['audioContext'],
+      audioContext
+    )(state);
+    dispatch({ type: ActionTypes.setState, payload: updatedState });
+  };
+
   if (initializing) return <></>;
 
   return (
@@ -133,7 +144,21 @@ const EditArticlePage = () => {
         <EditArticleVoicePane state={formState} dispatch={formDispatch} />
       )}
       {!state.audioContext && formState.blob && (
-        <div style={{ textAlign: 'center' }}>Touch me</div>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Button
+            variant='outlined'
+            sx={{ width: 400, height: 60 }}
+            onClick={handleClick}
+          >
+            Touch me
+          </Button>
+        </div>
       )}
     </div>
   );

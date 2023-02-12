@@ -10,7 +10,7 @@ import {
   getBlobFromArticleDownloadURL,
 } from '../../../services/article';
 import TableLayout from '../../../components/templates/TableLayout';
-import { Button } from '@mui/material';
+import { Button, Container } from '@mui/material';
 import SentenceRow from './SentenceRow';
 import {
   buildPitchQuizFromState,
@@ -19,6 +19,7 @@ import {
 } from '../../../services/quiz';
 import InitializeSentencesPane from './InitializeSentencesPane';
 import { AppContext } from '../../../App';
+import AudioContextFactory from '../../../services/AudioContextFactory';
 
 const ArticlePage = () => {
   const navigate = useNavigate();
@@ -116,11 +117,33 @@ const ArticlePage = () => {
     navigate(`/quiz/rhythm/${quiz.id}`);
   };
 
+  const handleClick = () => {
+    const audioContextFactory = new AudioContextFactory();
+    const audioContext = audioContextFactory.create();
+    const updatedState = R.assocPath<AudioContext, State>(
+      ['audioContext'],
+      audioContext
+    )(state);
+    dispatch({ type: ActionTypes.setState, payload: updatedState });
+  };
+
   // データ取得中
   if (initializing) return <></>;
   const article = state.articles[articleId];
   // article が 初期値
   if (!article.title) return <Navigate to={'/article/list'} />;
+
+  if (!state.audioContext)
+    return (
+      <Container maxWidth='sm' sx={{ paddingTop: 30 }}>
+        <div style={{ display: 'grid' }}>
+          <Button variant='outlined' onClick={handleClick}>
+            create audioContext
+          </Button>
+        </div>
+      </Container>
+    );
+
   return (
     <TableLayout
       maxWidth={isSm ? 'sm' : 'md'}
