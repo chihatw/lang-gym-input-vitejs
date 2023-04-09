@@ -9,7 +9,6 @@
     "upgrade-interactive": "npm-check --update"
   },
   "dependencies": {
-    "@chihatw/lang-gym-h.ui.youtube-embeded": "^1.0.4",
     "@chihatw/pitch-line.pitch-line": "^1.0.1",
     "@chihatw/pitch-line.sentence-pitch-line": "^1.0.2",
     "@chihatw/sentence-form.sentence-form-input": "^1.0.10",
