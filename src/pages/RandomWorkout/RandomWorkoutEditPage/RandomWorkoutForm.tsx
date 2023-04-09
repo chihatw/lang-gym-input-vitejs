@@ -3,9 +3,12 @@ import { SentencePitchLine } from '@chihatw/pitch-line.sentence-pitch-line';
 import {
   Button,
   FormControl,
+  FormControlLabel,
+  Input,
   InputLabel,
   MenuItem,
   Select,
+  Switch,
   Table,
   TableBody,
   TableCell,
@@ -33,7 +36,7 @@ const RandomWorkoutForm = ({
 }) => {
   const navigate = useNavigate();
 
-  const handleChengeRecordCount = (recordCount: number) => {
+  const handleChengeCount = (recordCount: number) => {
     pageDispatch({ ...pageState, recordCount });
   };
 
@@ -50,7 +53,7 @@ const RandomWorkoutForm = ({
     pageDispatch({ ...pageState, targetBpm });
   };
 
-  const handleChangeRoundCount = (roundCount: number) => {
+  const handleChangeRound = (roundCount: number) => {
     pageDispatch({
       ...pageState,
       roundCount,
@@ -66,14 +69,6 @@ const RandomWorkoutForm = ({
       cuesStr,
       beatCount: updatedBeatCount,
     });
-  };
-
-  const handleChangeImagePath = (imagePath: string, cueIndex: number) => {
-    const updated = R.assocPath<string, RandomWorkoutFormState>(
-      ['cues', cueIndex, 'imagePath'],
-      imagePath
-    )(pageState);
-    pageDispatch(updated);
   };
 
   return (
@@ -122,23 +117,26 @@ const RandomWorkoutForm = ({
       <TextField
         type='number'
         size='small'
-        label='recordCount'
+        label='Count'
         value={pageState.recordCount}
-        onChange={(e) => {
-          handleChengeRecordCount(Number(e.target.value));
-        }}
+        onChange={(e) => handleChengeCount(Number(e.target.value))}
         fullWidth
         InputProps={{ inputProps: { min: 0 } }}
       />
-      <TextField
-        type='number'
-        size='small'
-        label='roundCount'
-        value={pageState.roundCount}
-        onChange={(e) => handleChangeRoundCount(Number(e.target.value))}
-        fullWidth
-        InputProps={{ inputProps: { min: 0 } }}
-      />
+      <FormControl>
+        <InputLabel id='roundSelect'>Round</InputLabel>
+        <Select
+          labelId='roundSelect'
+          size='small'
+          label='Round'
+          value={pageState.roundCount}
+          onChange={(e) => handleChangeRound(Number(e.target.value))}
+        >
+          <MenuItem value={1}>1</MenuItem>
+          <MenuItem value={2}>2</MenuItem>
+        </Select>
+      </FormControl>
+
       <TextField
         size='small'
         multiline
@@ -151,22 +149,11 @@ const RandomWorkoutForm = ({
       <Table>
         <TableBody>
           {pageState.cues.map((cue, cueIndex) => (
-            <TableRow key={cue.id}>
+            <TableRow key={cueIndex}>
               <TableCell>{cue.label}</TableCell>
               <TableCell>
                 <SentencePitchLine
                   pitchesArray={string2PitchesArray(cue.pitchStr)}
-                />
-              </TableCell>
-              <TableCell>
-                <TextField
-                  fullWidth
-                  value={cue.imagePath}
-                  size='small'
-                  variant='standard'
-                  onChange={(e) =>
-                    handleChangeImagePath(e.target.value, cueIndex)
-                  }
                 />
               </TableCell>
             </TableRow>
